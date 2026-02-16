@@ -1,0 +1,42 @@
+// RPC Messages: Command History & Output
+//
+// Messages for retrieving terminal command history and output.
+//
+// Version: 1.1.0
+// Date: 2026-02-14
+//
+// Changelog:
+// - v1.1.0: Added GetOutput RPC for retrieving terminal output buffer (SDK execute() support)
+// - v1.0.0: Initial history messages
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Get command history (list of commands from database)
+message GetHistoryRequest {
+  string session_id = 1;
+  int32 limit = 2;                             // Max commands to return (default 50)
+  int32 offset = 3;                            // Offset for pagination
+}
+
+message GetHistoryResponse {
+  repeated string commands = 1;                // List of commands
+  int32 total = 2;                             // Total count (for pagination)
+}
+
+// Get terminal output buffer (raw PTY output from Redis)
+// v1.1.0 - For SDK execute() method
+message GetOutputRequest {
+  string session_id = 1;
+  int32 offset = 2;                            // Byte offset to start from (0 = beginning)
+  int32 limit = 3;                             // Max bytes to return (0 = default 1MB)
+}
+
+message GetOutputResponse {
+  bytes data = 1;                              // Raw terminal output bytes
+  int32 total_bytes = 2;                       // Total buffer size
+  bool has_more = 3;                           // True if more data available
+}

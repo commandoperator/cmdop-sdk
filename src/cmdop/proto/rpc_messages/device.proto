@@ -1,0 +1,39 @@
+// RPC Messages: Device Token Registration
+//
+// Messages for push notification device token management.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Register device token for push notifications
+message RegisterDeviceTokenRequest {
+  string device_id = 1;                        // Unique device identifier
+  string token = 2;                            // Push notification token (APNs/FCM)
+  string platform = 3;                         // "ios" or "android"
+  string machine_id = 4;                       // Optional machine UUID to associate
+  string apns_environment = 5;                 // "development" or "production" (iOS only)
+  string app_version = 6;                      // App version for tracking
+}
+
+message RegisterDeviceTokenResponse {
+  bool success = 1;
+  string error = 2;
+  string token_id = 3;                         // Unique token ID for reference
+}
+
+// Unregister device token (on logout or app uninstall)
+message UnregisterDeviceTokenRequest {
+  string device_id = 1;
+  string token = 2;                            // Optional: if not provided, removes all tokens for device
+}
+
+message UnregisterDeviceTokenResponse {
+  bool success = 1;
+  string error = 2;
+}

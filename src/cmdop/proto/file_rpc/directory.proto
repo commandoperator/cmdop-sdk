@@ -1,0 +1,29 @@
+// File RPC: Directory Operations
+//
+// RPC wrappers for directory listing operations.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "file_operations.proto";
+
+// --- List Directory RPC ---
+message FileListDirectoryRpcRequest {
+  string session_id = 1;
+  string path = 2;
+  bool include_hidden = 3;
+  int32 page_size = 4;
+  string page_token = 5;
+}
+
+message FileListDirectoryRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileListDirectoryResult result = 3;
+}

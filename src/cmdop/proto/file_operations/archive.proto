@@ -1,0 +1,32 @@
+// File Operations - Archive creation (ZIP, TAR).
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+// Added in v2.6.0
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "file_operations/common.proto";
+
+// ============================================================================
+// CREATE ARCHIVE
+// ============================================================================
+
+message FileCreateArchiveRequest {
+  repeated string source_paths = 1;              // Files/directories to archive
+  string destination_path = 2;                   // Where to save archive (auto-generated if empty)
+  string format = 3;                             // "zip" (default), "tar", "tar.gz"
+  bool include_hidden = 4;                       // DEPRECATED: Use visibility_mode instead
+  FileVisibilityMode visibility_mode = 5;       // Smart visibility control (v2.10.0)
+}
+
+message FileCreateArchiveResult {
+  StreamFileEntry entry = 1;                     // Archive file info
+  int64 bytes_archived = 2;                      // Total uncompressed size
+  int32 files_archived = 3;                      // Number of files
+  int32 dirs_archived = 4;                       // Number of directories
+}

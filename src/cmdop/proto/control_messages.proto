@@ -1,0 +1,255 @@
+// Django → Agent Control Messages
+//
+// Messages sent from Django server to Agent via gRPC stream.
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "google/protobuf/timestamp.proto";
+import "common_types.proto";
+import "file_operations.proto";
+import "tunnel.proto";
+
+// ============================================================================
+// DJANGO → AGENT MESSAGES (via stream)
+// ============================================================================
+
+// Message from Django to Agent (control commands)
+message ControlMessage {
+  string command_id = 1;                     // Unique command ID
+  google.protobuf.Timestamp timestamp = 2;
+
+  oneof payload {
+    // Terminal input
+    TerminalInput input = 10;                // Keyboard input from browser
+    ResizeCommand resize = 11;               // Terminal resize
+
+    // Session control
+    StartSessionCommand start_session = 20;  // Start terminal session
+    CloseSessionCommand close_session = 21;  // Close terminal session
+
+    // Process control
+    SignalCommand signal = 30;               // Send signal (SIGINT, SIGTERM, etc.)
+    CancelCommand cancel = 31;               // Cancel running command
+
+    // Connection management
+    PingCommand ping = 40;                   // Ping for latency check
+    ConfigUpdateCommand config_update = 41;  // Update session config
+
+    // History request (agent reads shell history file)
+    GetHistoryCommand get_history = 50;      // Request shell history
+
+    // File operations (routed through streaming)
+    FileOperationRequest file_operation = 60; // File manager operations
+
+    // Push notifications (desktop notifications to user)
+    PushNotification push_notification = 70;  // Desktop notification
+
+    // Streaming relay (file transfer chunks)
+    StreamingRelayChunk streaming_relay_chunk = 80;  // File chunk for relay transfer
+
+    // Tunnel (HTTP/TCP tunnel to local service)
+    TunnelCreate tunnel_create = 90;                 // Create tunnel to local port
+    TunnelData tunnel_data = 91;                     // Tunnel data packet (request)
+    TunnelClose tunnel_close = 92;                   // Close tunnel
+
+    // Permission management (v2.3.0)
+    RefreshPermissionsCommand refresh_permissions = 100;  // Re-check all permissions
+
+    // AI Agent execution (v2.12.0)
+    AgentRunCommand agent_run = 110;                      // Run AI agent with prompt
+    AgentCancelCommand agent_cancel = 111;                // Cancel running agent (v2.15.0)
+
+    // Browser Direct Control (v2.16.0)
+    // SDK → Django → Agent browser automation without LLM
+    BrowserCommand browser = 120;                         // Browser control command
+  }
+}
+
+// ============================================================================
+// BROWSER DIRECT CONTROL (v2.16.0)
+// ============================================================================
+
+// Browser command types
+enum BrowserCommandType {
+  BROWSER_CMD_CREATE_SESSION = 0;
+  BROWSER_CMD_CLOSE_SESSION = 1;
+  BROWSER_CMD_NAVIGATE = 2;
+  BROWSER_CMD_CLICK = 3;
+  BROWSER_CMD_TYPE = 4;
+  BROWSER_CMD_WAIT = 5;
+  BROWSER_CMD_EXTRACT = 6;
+  BROWSER_CMD_EXTRACT_REGEX = 7;
+  BROWSER_CMD_GET_HTML = 8;
+  BROWSER_CMD_GET_TEXT = 9;
+  BROWSER_CMD_EXECUTE_SCRIPT = 10;
+  BROWSER_CMD_SCREENSHOT = 11;
+  BROWSER_CMD_GET_STATE = 12;
+  BROWSER_CMD_SET_COOKIES = 13;
+  BROWSER_CMD_GET_COOKIES = 14;
+  // Selector validation & data extraction (v2.17.0)
+  BROWSER_CMD_VALIDATE_SELECTORS = 15;
+  BROWSER_CMD_EXTRACT_DATA = 16;
+}
+
+// Browser command wrapper
+// Contains command type and JSON-encoded payload
+message BrowserCommand {
+  string request_id = 1;              // Unique request ID for correlation
+  BrowserCommandType type = 2;        // Command type
+  string payload_json = 3;            // JSON-encoded request (BrowserNavigateRequest, etc.)
+}
+
+// Notification delivery method
+enum NotificationMethod {
+  NOTIFICATION_METHOD_AUTO = 0;              // System decides (visual if available, else audio)
+  NOTIFICATION_METHOD_VISUAL = 1;            // Desktop notification only
+  NOTIFICATION_METHOD_AUDIO = 2;             // Voice/sound only (TTS)
+  NOTIFICATION_METHOD_BOTH = 3;              // Visual + audio
+}
+
+// Push notification to show on agent's desktop
+message PushNotification {
+  string id = 1;                             // Notification ID
+  string type = 2;                           // Type: info, success, warning, error, session, system, custom
+  string title = 3;                          // Notification title
+  string message = 4;                        // Notification message
+  map<string, string> data = 5;              // Additional data
+  int32 priority = 6;                        // Priority: 0=normal, 1=high, 2=urgent
+  bool silent = 7;                           // If true, process without showing notification
+  NotificationMethod method = 8;             // Delivery method (visual, audio, both)
+}
+
+// Terminal input from browser (keyboard, paste)
+message TerminalInput {
+  bytes data = 1;                            // Raw input bytes
+  int64 sequence = 2;                        // Sequence number
+}
+
+// Terminal resize
+message ResizeCommand {
+  TerminalSize size = 1;                     // New terminal size
+}
+
+// Start terminal session (after registration)
+message StartSessionCommand {
+  SessionConfig config = 1;                  // Session configuration
+  string web_terminal_url = 2;               // Browser terminal URL (e.g., https://cmdop.com/terminal?s=abc123)
+  google.protobuf.Timestamp expires_at = 3;  // Optional: URL expiration time
+}
+
+// Close terminal session
+message CloseSessionCommand {
+  string reason = 1;                         // Reason for closing
+  bool force = 2;                            // Force close (kill processes)
+}
+
+// Send signal to PTY process
+message SignalCommand {
+  int32 signal = 1;                          // Signal number (2=SIGINT, 15=SIGTERM, 9=SIGKILL)
+}
+
+// Cancel running command
+message CancelCommand {
+  string command_id = 1;                     // Command to cancel (if tracking)
+}
+
+// Ping for latency measurement
+message PingCommand {
+  int64 sequence = 1;                        // Ping sequence number
+}
+
+// Configuration update
+message ConfigUpdateCommand {
+  SessionConfig config = 1;                  // New configuration
+}
+
+// Get history command (request shell history from agent)
+message GetHistoryCommand {
+  int32 limit = 1;                           // Max commands to return
+  int32 offset = 2;                          // Offset for pagination
+  string source = 3;                         // History source: "shell" (file), "session" (memory)
+}
+
+// Refresh permissions command (v2.3.0)
+// Triggers agent to re-check all protected directories
+// On macOS, this will show TCC dialogs for any denied directories
+message RefreshPermissionsCommand {
+  // Empty - just triggers re-check of all protected directories
+  // Agent will send PermissionStatus when complete
+}
+
+// ============================================================================
+// AI AGENT COMMANDS (v2.12.0)
+// ============================================================================
+
+// Agent type enum
+enum AgentType {
+  AGENT_TYPE_CHAT = 0;        // Simple chat agent (no PTY)
+  AGENT_TYPE_TERMINAL = 1;    // Terminal agent with PTY access
+  AGENT_TYPE_COMMAND = 2;     // Command execution agent
+  AGENT_TYPE_ROUTER = 3;      // Router agent (delegates to specialists)
+  AGENT_TYPE_PLANNER = 4;     // Planner agent (complex tasks)
+  AGENT_TYPE_BROWSER = 5;     // Browser automation agent (v2.13.0)
+  AGENT_TYPE_SCRAPER = 6;     // Web scraping agent (v2.13.0)
+  AGENT_TYPE_FORM_FILLER = 7; // Form automation agent (v2.13.0)
+}
+
+// Run AI agent command
+// Sent from Django to Agent to execute AI prompt
+message AgentRunCommand {
+  string request_id = 1;      // Unique request ID for correlation
+  string prompt = 2;          // User prompt/question
+  AgentType agent_type = 3;   // Type of agent to run
+  map<string, string> options = 4;  // Additional options (model, max_turns, etc.)
+  bool stream_events = 5;     // If true, stream events back (tokens, tool calls)
+
+  // Optional: JSON Schema for structured output
+  // If provided, agent returns output_json matching this schema
+  string output_schema = 6;
+
+  // Browser agent options (v2.13.0)
+  BrowserAgentOptions browser_options = 7;
+}
+
+// Browser agent configuration options (v2.13.0)
+message BrowserAgentOptions {
+  // Session configuration
+  string session_type = 1;    // ephemeral, persistent, long_lived
+  string profile_id = 2;      // Browser profile ID for persistent sessions
+  string start_url = 3;       // Initial URL to navigate to
+
+  // Perception settings
+  bool use_axtree = 4;        // Use accessibility tree (default: true)
+  bool use_diff = 5;          // Use differential perception (default: true)
+  int32 max_tokens = 6;       // Max tokens for state (default: 8000)
+
+  // Stealth settings
+  string stealth_level = 7;   // none, minimal, standard, aggressive
+  bool use_proxy = 8;         // Enable proxy rotation
+  string proxy_url = 9;       // Specific proxy URL
+
+  // Session limits
+  int32 max_actions = 10;     // Max browser actions per run
+  int32 navigation_timeout_ms = 11;  // Navigation timeout (default: 30000)
+  int32 action_timeout_ms = 12;      // Action timeout (default: 10000)
+
+  // Screenshot settings
+  bool screenshot_on_action = 13;  // Take screenshot after each action
+  bool screenshot_fullpage = 14;   // Full page screenshots
+  string screenshot_format = 15;   // png, jpeg (default: png)
+}
+
+// ============================================================================
+// AI AGENT CANCELLATION (v2.15.0)
+// ============================================================================
+
+// Cancel running AI agent
+// Sent from Django to Agent to stop ongoing agent execution
+message AgentCancelCommand {
+  string request_id = 1;      // Request ID to cancel (from AgentRunCommand)
+  string reason = 2;          // Cancellation reason: "user", "timeout", "error"
+}

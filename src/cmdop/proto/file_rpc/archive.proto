@@ -1,0 +1,29 @@
+// File RPC: Archive Operations
+//
+// RPC wrappers for archive creation.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "file_operations.proto";
+
+// --- Create Archive RPC ---
+message FileCreateArchiveRpcRequest {
+  string session_id = 1;
+  repeated string source_paths = 2;              // Files/directories to archive
+  string destination_path = 3;                   // Where to save (auto-generated if empty)
+  string format = 4;                             // "zip", "tar", "tar.gz"
+  bool include_hidden = 5;                       // Include hidden files
+}
+
+message FileCreateArchiveRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileCreateArchiveResult result = 3;
+}

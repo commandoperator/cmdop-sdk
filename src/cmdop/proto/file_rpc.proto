@@ -1,0 +1,28 @@
+// File Operation RPC Wrappers
+//
+// Unary RPC wrappers for file operations.
+// These wrap the streaming messages with session_id for routing.
+//
+// This is a facade file that re-exports all file RPC messages
+// from the file_rpc/ subdirectory for backward compatibility.
+//
+// Version: 3.0.0
+// Date: 2025-12-27
+//
+// Changelog:
+// - v3.0.0: Decomposed into file_rpc/ subdirectory with public imports
+// - v2.3.0: Added FileSearch RPC wrapper
+// - v2.2.0: Added FileCreateArchive RPC wrapper
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Re-export all file RPC types using public import
+import public "file_rpc/directory.proto";
+import public "file_rpc/file_crud.proto";
+import public "file_rpc/archive.proto";
+import public "file_rpc/search.proto";
+import public "file_rpc/hls.proto";

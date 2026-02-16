@@ -1,0 +1,21 @@
+// RPC Messages: Health Check
+//
+// Messages for service health monitoring.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  bool healthy = 1;
+  string version = 2;
+  int32 active_sessions = 3;
+  int32 connected_clients = 4;
+}

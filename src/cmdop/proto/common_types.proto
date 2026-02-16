@@ -1,0 +1,93 @@
+// Common types for Terminal Streaming service.
+//
+// Version: 2.1.0
+// Date: 2025-12-19
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+// Terminal session status
+enum SessionStatus {
+  SESSION_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  CONNECTED = 2;
+  BACKGROUND = 3;        // Mobile app in background (added in v2.1.0)
+  DISCONNECTED = 4;
+  ERROR = 5;
+}
+
+// Command execution status
+enum CommandStatus {
+  COMMAND_STATUS_UNSPECIFIED = 0;
+  CMD_PENDING = 1;
+  CMD_RUNNING = 2;
+  CMD_SUCCESS = 3;
+  CMD_FAILED = 4;
+  CMD_CANCELLED = 5;
+  CMD_TIMEOUT = 6;
+}
+
+// Log levels
+enum LogLevel {
+  LOG_LEVEL_UNSPECIFIED = 0;
+  LOG_DEBUG = 1;
+  LOG_INFO = 2;
+  LOG_WARNING = 3;
+  LOG_ERROR = 4;
+}
+
+// ============================================================================
+// COMMON MESSAGES
+// ============================================================================
+
+// Terminal dimensions
+message TerminalSize {
+  int32 rows = 1;                            // Number of rows
+  int32 cols = 2;                            // Number of columns
+  int32 width = 3;                           // Width in pixels (optional)
+  int32 height = 4;                          // Height in pixels (optional)
+}
+
+// Session configuration
+message SessionConfig {
+  string session_id = 1;                     // UUID of the session
+  string shell = 2;                          // Shell to use (e.g., /bin/zsh)
+  string working_directory = 3;              // Initial working directory
+  map<string, string> env = 4;               // Environment variables
+  TerminalSize size = 5;                     // Terminal dimensions
+}
+
+// System metrics collected from the agent machine
+// Sent with HeartbeatUpdate every 30 seconds
+message SystemMetrics {
+  // Battery information (for laptops/mobile)
+  float battery_level = 1;                   // 0-100%, -1 if no battery
+  bool is_charging = 2;                      // Currently charging
+  bool is_on_ac_power = 3;                   // Connected to AC power
+
+  // Resource utilization
+  float cpu_usage = 4;                       // 0-100% current CPU usage (0 if not available on mobile)
+  float memory_usage = 5;                    // 0-100% RAM usage
+  float memory_total_gb = 6;                 // Total RAM in GB
+  float disk_usage = 7;                      // 0-100% root disk usage
+  float disk_total_gb = 8;                   // Total disk in GB
+
+  // System information
+  string os_version = 9;                     // OS version (e.g., "14.2.1", "22.04", "18.0" for iOS)
+  string kernel_version = 10;                // Kernel version (empty on iOS)
+  string ip_address = 11;                    // Primary local IP address
+  int64 uptime_seconds = 12;                 // Seconds since boot (0 if not available)
+  int32 process_count = 13;                  // Number of running processes (0 on mobile)
+
+  // Architecture info (added in v1.2.0)
+  string architecture = 14;                  // CPU architecture (arm64, x86_64, etc.)
+}

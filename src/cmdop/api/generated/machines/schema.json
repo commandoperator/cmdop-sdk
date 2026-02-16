@@ -1,0 +1,2073 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Cmdop API",
+        "version": "1.0.0",
+        "description": "Complete API documentation for Django CFG Demo Project",
+        "x-django-metadata": {
+            "group": "machines",
+            "apps": [
+                "machines"
+            ],
+            "generator": "django-client",
+            "generator_version": "1.0.0"
+        }
+    },
+    "paths": {
+        "/api/machines/logs/": {
+            "get": {
+                "operationId": "machines_logs_list",
+                "description": "ViewSet for MachineLog operations.\n\nRead-only except for creation. Logs are created by agents.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedMachineLogList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "machines_logs_create",
+                "description": "ViewSet for MachineLog operations.\n\nRead-only except for creation. Logs are created by agents.",
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineLogRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineLogRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineLogRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MachineLog"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/logs/{id}/": {
+            "get": {
+                "operationId": "machines_logs_retrieve",
+                "description": "ViewSet for MachineLog operations.\n\nRead-only except for creation. Logs are created by agents.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine Log.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MachineLog"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/": {
+            "get": {
+                "operationId": "machines_machines_list",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedMachineList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "machines_machines_create",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MachineCreate"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/": {
+            "get": {
+                "operationId": "machines_machines_retrieve",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Machine"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "put": {
+                "operationId": "machines_machines_update",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Machine"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "patch": {
+                "operationId": "machines_machines_partial_update",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedMachineRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedMachineRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedMachineRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Machine"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "machines_machines_destroy",
+                "description": "ViewSet for Machine operations.\n\nProvides CRUD operations for remote machines with monitoring capabilities.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/logs/": {
+            "get": {
+                "operationId": "machines_machines_logs_list",
+                "description": "Get logs for this machine.",
+                "summary": "Get machine logs",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    },
+                    {
+                        "in": "query",
+                        "name": "level",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by log level"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Limit results (default: 50)"
+                    },
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedMachineLogList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/regenerate-token/": {
+            "post": {
+                "operationId": "machines_machines_regenerate_token_create",
+                "description": "Regenerate machine agent token.",
+                "summary": "Regenerate agent token",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MachineRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "agent_token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "New agent token"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/share/": {
+            "post": {
+                "operationId": "machines_machines_share_create",
+                "description": "Create a public share link for read-only terminal viewing. Only workspace owner or admin can create shares.",
+                "summary": "Create share link for machine",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machine Sharing"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SharedMachineCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SharedMachineCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SharedMachineCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SharedMachine"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "403": {
+                        "description": "Permission denied - only owner/admin can share"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/shares/": {
+            "get": {
+                "operationId": "machines_machines_shares_list",
+                "description": "Get all active share links for this machine",
+                "summary": "List active shares for machine",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    },
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Machine Sharing"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedSharedMachineListList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/stats/": {
+            "get": {
+                "operationId": "machines_machines_stats_retrieve",
+                "description": "Get machine statistics.",
+                "summary": "Get machine statistics",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Machine statistics"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/unshare/": {
+            "delete": {
+                "operationId": "machines_machines_unshare_destroy",
+                "description": "Deactivate all share links for this machine. Only workspace owner or admin can remove shares.",
+                "summary": "Remove all shares for machine",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machine Sharing"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    },
+                    "403": {
+                        "description": "Permission denied - only owner/admin can unshare"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/machines/machines/{id}/update-metrics/": {
+            "post": {
+                "operationId": "machines_machines_update_metrics_create",
+                "description": "Update machine metrics (called by agent).",
+                "summary": "Update machine metrics",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Machine.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Machines"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "cpu_usage": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                    },
+                                    "memory_usage": {
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "online",
+                                            "offline"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Machine"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ActiveTerminalSession": {
+                "type": "object",
+                "description": "Serializer for active terminal session info.",
+                "properties": {
+                    "session_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "session_id"
+                ]
+            },
+            "Machine": {
+                "type": "object",
+                "description": "Serializer for Machine model.\n\nAll fields are always present in responses.\nRead-only fields are explicitly defined to ensure correct OpenAPI schema.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "workspace_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Machine name",
+                        "maxLength": 100
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "title": "System hostname",
+                        "maxLength": 255
+                    },
+                    "os": {
+                        "enum": [
+                            "macos",
+                            "windows",
+                            "linux",
+                            "ios",
+                            "android"
+                        ],
+                        "type": "string",
+                        "description": "* `macos` - macOS\n* `windows` - Windows\n* `linux` - Linux\n* `ios` - iOS\n* `android` - Android",
+                        "x-spec-enum-id": "f2a0b86726500480",
+                        "title": "Operating system"
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "kernel_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "status": {
+                        "enum": [
+                            "online",
+                            "offline"
+                        ],
+                        "type": "string",
+                        "description": "* `online` - Online\n* `offline` - Offline",
+                        "x-spec-enum-id": "18dd9c052fc1ec43"
+                    },
+                    "status_emoji": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "is_online": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "heartbeat_age_seconds": {
+                        "type": "number",
+                        "format": "double",
+                        "readOnly": true,
+                        "description": "Seconds since last heartbeat"
+                    },
+                    "device_type": {
+                        "type": "string",
+                        "description": "Device type: desktop, ios, android",
+                        "maxLength": 20
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
+                        "maxLength": 255
+                    },
+                    "architecture": {
+                        "type": "string",
+                        "title": "CPU architecture",
+                        "description": "CPU architecture (arm64, x86_64, etc.)",
+                        "maxLength": 50
+                    },
+                    "has_shell": {
+                        "type": "boolean",
+                        "description": "Whether device has shell access (false for mobile)"
+                    },
+                    "public_ip": {
+                        "type": "string",
+                        "nullable": true,
+                        "title": "Public IP address"
+                    },
+                    "local_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "readOnly": true,
+                        "description": "List of local network IP addresses"
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Current username running the agent",
+                        "maxLength": 255
+                    },
+                    "uid": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0,
+                        "nullable": true,
+                        "title": "User ID",
+                        "description": "Unix user ID"
+                    },
+                    "is_root": {
+                        "type": "boolean",
+                        "title": "Is root/admin",
+                        "description": "Whether agent is running as root/admin"
+                    },
+                    "home_dir": {
+                        "type": "string",
+                        "title": "Home directory",
+                        "maxLength": 500
+                    },
+                    "cpu_model": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "cpu_count": {
+                        "type": "integer",
+                        "maximum": 32767,
+                        "minimum": 0,
+                        "title": "CPU cores"
+                    },
+                    "total_ram_bytes": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Total RAM (bytes)"
+                    },
+                    "cpu_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "CPU usage (%)"
+                    },
+                    "memory_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory usage (%)"
+                    },
+                    "memory_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory total (GB)"
+                    },
+                    "disk_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk usage (%)"
+                    },
+                    "disk_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk total (GB)"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Battery level (%)",
+                        "description": "-1 means no battery"
+                    },
+                    "is_charging": {
+                        "type": "boolean"
+                    },
+                    "is_on_ac_power": {
+                        "type": "boolean"
+                    },
+                    "uptime_seconds": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Uptime (seconds)"
+                    },
+                    "process_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": -2147483648
+                    },
+                    "agent_version": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "last_seen": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "active_terminal_session": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/ActiveTerminalSession"
+                            }
+                        ],
+                        "nullable": true,
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "active_terminal_session",
+                    "created_at",
+                    "heartbeat_age_seconds",
+                    "hostname",
+                    "id",
+                    "is_online",
+                    "last_seen",
+                    "local_ips",
+                    "name",
+                    "os",
+                    "status_emoji",
+                    "workspace",
+                    "workspace_name"
+                ]
+            },
+            "MachineCreate": {
+                "type": "object",
+                "description": "Serializer for creating machines.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Machine name",
+                        "maxLength": 100
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "title": "System hostname",
+                        "maxLength": 255
+                    },
+                    "os": {
+                        "enum": [
+                            "macos",
+                            "windows",
+                            "linux",
+                            "ios",
+                            "android"
+                        ],
+                        "type": "string",
+                        "description": "* `macos` - macOS\n* `windows` - Windows\n* `linux` - Linux\n* `ios` - iOS\n* `android` - Android",
+                        "x-spec-enum-id": "f2a0b86726500480",
+                        "title": "Operating system"
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    }
+                },
+                "required": [
+                    "hostname",
+                    "name",
+                    "os",
+                    "workspace"
+                ]
+            },
+            "MachineCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating machines.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Machine name",
+                        "maxLength": 100
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "System hostname",
+                        "maxLength": 255
+                    },
+                    "os": {
+                        "enum": [
+                            "macos",
+                            "windows",
+                            "linux",
+                            "ios",
+                            "android"
+                        ],
+                        "type": "string",
+                        "description": "* `macos` - macOS\n* `windows` - Windows\n* `linux` - Linux\n* `ios` - iOS\n* `android` - Android",
+                        "x-spec-enum-id": "f2a0b86726500480",
+                        "title": "Operating system"
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    }
+                },
+                "required": [
+                    "hostname",
+                    "name",
+                    "os",
+                    "workspace"
+                ]
+            },
+            "MachineLog": {
+                "type": "object",
+                "description": "Serializer for MachineLog model.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "machine_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "level": {
+                        "enum": [
+                            "info",
+                            "warning",
+                            "error"
+                        ],
+                        "type": "string",
+                        "description": "* `info` - Info\n* `warning` - Warning\n* `error` - Error",
+                        "x-spec-enum-id": "8775729096d8268e",
+                        "title": "Log level"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "level",
+                    "machine",
+                    "machine_name",
+                    "message"
+                ]
+            },
+            "MachineLogRequest": {
+                "type": "object",
+                "description": "Serializer for MachineLog model.",
+                "properties": {
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "level": {
+                        "enum": [
+                            "info",
+                            "warning",
+                            "error"
+                        ],
+                        "type": "string",
+                        "description": "* `info` - Info\n* `warning` - Warning\n* `error` - Error",
+                        "x-spec-enum-id": "8775729096d8268e",
+                        "title": "Log level"
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "source": {
+                        "type": "string",
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "level",
+                    "machine",
+                    "message"
+                ]
+            },
+            "MachineRequest": {
+                "type": "object",
+                "description": "Serializer for Machine model.\n\nAll fields are always present in responses.\nRead-only fields are explicitly defined to ensure correct OpenAPI schema.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Machine name",
+                        "maxLength": 100
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "System hostname",
+                        "maxLength": 255
+                    },
+                    "os": {
+                        "enum": [
+                            "macos",
+                            "windows",
+                            "linux",
+                            "ios",
+                            "android"
+                        ],
+                        "type": "string",
+                        "description": "* `macos` - macOS\n* `windows` - Windows\n* `linux` - Linux\n* `ios` - iOS\n* `android` - Android",
+                        "x-spec-enum-id": "f2a0b86726500480",
+                        "title": "Operating system"
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "kernel_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "status": {
+                        "enum": [
+                            "online",
+                            "offline"
+                        ],
+                        "type": "string",
+                        "description": "* `online` - Online\n* `offline` - Offline",
+                        "x-spec-enum-id": "18dd9c052fc1ec43"
+                    },
+                    "device_type": {
+                        "type": "string",
+                        "description": "Device type: desktop, ios, android",
+                        "maxLength": 20
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
+                        "maxLength": 255
+                    },
+                    "architecture": {
+                        "type": "string",
+                        "title": "CPU architecture",
+                        "description": "CPU architecture (arm64, x86_64, etc.)",
+                        "maxLength": 50
+                    },
+                    "has_shell": {
+                        "type": "boolean",
+                        "description": "Whether device has shell access (false for mobile)"
+                    },
+                    "public_ip": {
+                        "type": "string",
+                        "nullable": true,
+                        "minLength": 1,
+                        "title": "Public IP address"
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Current username running the agent",
+                        "maxLength": 255
+                    },
+                    "uid": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0,
+                        "nullable": true,
+                        "title": "User ID",
+                        "description": "Unix user ID"
+                    },
+                    "is_root": {
+                        "type": "boolean",
+                        "title": "Is root/admin",
+                        "description": "Whether agent is running as root/admin"
+                    },
+                    "home_dir": {
+                        "type": "string",
+                        "title": "Home directory",
+                        "maxLength": 500
+                    },
+                    "cpu_model": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "cpu_count": {
+                        "type": "integer",
+                        "maximum": 32767,
+                        "minimum": 0,
+                        "title": "CPU cores"
+                    },
+                    "total_ram_bytes": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Total RAM (bytes)"
+                    },
+                    "cpu_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "CPU usage (%)"
+                    },
+                    "memory_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory usage (%)"
+                    },
+                    "memory_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory total (GB)"
+                    },
+                    "disk_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk usage (%)"
+                    },
+                    "disk_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk total (GB)"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Battery level (%)",
+                        "description": "-1 means no battery"
+                    },
+                    "is_charging": {
+                        "type": "boolean"
+                    },
+                    "is_on_ac_power": {
+                        "type": "boolean"
+                    },
+                    "uptime_seconds": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Uptime (seconds)"
+                    },
+                    "process_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": -2147483648
+                    },
+                    "agent_version": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "agent_token": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1,
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "agent_token",
+                    "hostname",
+                    "name",
+                    "os",
+                    "workspace"
+                ]
+            },
+            "PaginatedMachineList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Machine"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PaginatedMachineLogList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MachineLog"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PaginatedSharedMachineListList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SharedMachineList"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PatchedMachineRequest": {
+                "type": "object",
+                "description": "Serializer for Machine model.\n\nAll fields are always present in responses.\nRead-only fields are explicitly defined to ensure correct OpenAPI schema.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Machine name",
+                        "maxLength": 100
+                    },
+                    "hostname": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "System hostname",
+                        "maxLength": 255
+                    },
+                    "os": {
+                        "enum": [
+                            "macos",
+                            "windows",
+                            "linux",
+                            "ios",
+                            "android"
+                        ],
+                        "type": "string",
+                        "description": "* `macos` - macOS\n* `windows` - Windows\n* `linux` - Linux\n* `ios` - iOS\n* `android` - Android",
+                        "x-spec-enum-id": "f2a0b86726500480",
+                        "title": "Operating system"
+                    },
+                    "os_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "kernel_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "status": {
+                        "enum": [
+                            "online",
+                            "offline"
+                        ],
+                        "type": "string",
+                        "description": "* `online` - Online\n* `offline` - Offline",
+                        "x-spec-enum-id": "18dd9c052fc1ec43"
+                    },
+                    "device_type": {
+                        "type": "string",
+                        "description": "Device type: desktop, ios, android",
+                        "maxLength": 20
+                    },
+                    "device_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
+                        "maxLength": 255
+                    },
+                    "architecture": {
+                        "type": "string",
+                        "title": "CPU architecture",
+                        "description": "CPU architecture (arm64, x86_64, etc.)",
+                        "maxLength": 50
+                    },
+                    "has_shell": {
+                        "type": "boolean",
+                        "description": "Whether device has shell access (false for mobile)"
+                    },
+                    "public_ip": {
+                        "type": "string",
+                        "nullable": true,
+                        "minLength": 1,
+                        "title": "Public IP address"
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Current username running the agent",
+                        "maxLength": 255
+                    },
+                    "uid": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0,
+                        "nullable": true,
+                        "title": "User ID",
+                        "description": "Unix user ID"
+                    },
+                    "is_root": {
+                        "type": "boolean",
+                        "title": "Is root/admin",
+                        "description": "Whether agent is running as root/admin"
+                    },
+                    "home_dir": {
+                        "type": "string",
+                        "title": "Home directory",
+                        "maxLength": 500
+                    },
+                    "cpu_model": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "cpu_count": {
+                        "type": "integer",
+                        "maximum": 32767,
+                        "minimum": 0,
+                        "title": "CPU cores"
+                    },
+                    "total_ram_bytes": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Total RAM (bytes)"
+                    },
+                    "cpu_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "CPU usage (%)"
+                    },
+                    "memory_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory usage (%)"
+                    },
+                    "memory_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Memory total (GB)"
+                    },
+                    "disk_usage": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk usage (%)"
+                    },
+                    "disk_total_gb": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Disk total (GB)"
+                    },
+                    "battery_level": {
+                        "type": "number",
+                        "format": "double",
+                        "title": "Battery level (%)",
+                        "description": "-1 means no battery"
+                    },
+                    "is_charging": {
+                        "type": "boolean"
+                    },
+                    "is_on_ac_power": {
+                        "type": "boolean"
+                    },
+                    "uptime_seconds": {
+                        "type": "integer",
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
+                        "title": "Uptime (seconds)"
+                    },
+                    "process_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": -2147483648
+                    },
+                    "agent_version": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "agent_token": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1,
+                        "maxLength": 255
+                    }
+                }
+            },
+            "SharedMachine": {
+                "type": "object",
+                "description": "Full shared machine details (for owners).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "share_token": {
+                        "type": "string",
+                        "readOnly": true,
+                        "description": "Unique token for public access"
+                    },
+                    "share_url": {
+                        "type": "string",
+                        "description": "Generate full share URL.",
+                        "readOnly": true
+                    },
+                    "permission": {
+                        "enum": [
+                            "read_only"
+                        ],
+                        "type": "string",
+                        "description": "* `read_only` - Read Only",
+                        "x-spec-enum-id": "461e1a4aee593c52"
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "machine_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "machine_hostname": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "machine_status": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "When this share expires (null = never)"
+                    },
+                    "views_count": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "last_viewed_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "title": "Active",
+                        "description": "Can be deactivated without deleting"
+                    },
+                    "is_expired": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "is_valid": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "active_sessions_count": {
+                        "type": "integer",
+                        "description": "Count active terminal sessions on this machine.",
+                        "readOnly": true
+                    },
+                    "created_by": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "active_sessions_count",
+                    "created_at",
+                    "created_by",
+                    "id",
+                    "is_expired",
+                    "is_valid",
+                    "last_viewed_at",
+                    "machine",
+                    "machine_hostname",
+                    "machine_name",
+                    "machine_status",
+                    "share_token",
+                    "share_url",
+                    "views_count"
+                ]
+            },
+            "SharedMachineCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating a new share.",
+                "properties": {
+                    "expires_in_hours": {
+                        "type": "integer",
+                        "maximum": 720,
+                        "minimum": 1,
+                        "nullable": true,
+                        "description": "Hours until share expires (null = never)"
+                    }
+                }
+            },
+            "SharedMachineList": {
+                "type": "object",
+                "description": "Lightweight serializer for listing shares.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "share_token": {
+                        "type": "string",
+                        "description": "Unique token for public access",
+                        "maxLength": 64
+                    },
+                    "permission": {
+                        "enum": [
+                            "read_only"
+                        ],
+                        "type": "string",
+                        "description": "* `read_only` - Read Only",
+                        "x-spec-enum-id": "461e1a4aee593c52"
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "machine_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "When this share expires (null = never)"
+                    },
+                    "views_count": {
+                        "type": "integer",
+                        "maximum": 2147483647,
+                        "minimum": 0
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "title": "Active",
+                        "description": "Can be deactivated without deleting"
+                    },
+                    "is_expired": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "is_valid": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "is_expired",
+                    "is_valid",
+                    "machine",
+                    "machine_name",
+                    "share_token"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "jwtAuthWithLastLogin": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ]
+}

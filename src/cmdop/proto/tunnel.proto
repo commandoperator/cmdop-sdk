@@ -1,0 +1,93 @@
+// Tunnel Messages
+//
+// Messages for HTTP/TCP tunnel functionality (ngrok-like).
+// Enables exposing local services via public URLs.
+//
+// Version: 1.0.0
+// Date: 2025-12-21
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// ============================================================================
+// TUNNEL MESSAGES
+// ============================================================================
+
+// Tunnel state enum
+enum TunnelState {
+  TUNNEL_STATE_UNSPECIFIED = 0;
+  TUNNEL_STATE_CREATING = 1;
+  TUNNEL_STATE_ACTIVE = 2;
+  TUNNEL_STATE_CLOSED = 3;
+  TUNNEL_STATE_ERROR = 4;
+}
+
+// Tunnel protocol type
+enum TunnelProtocol {
+  TUNNEL_PROTOCOL_HTTP = 0;
+  TUNNEL_PROTOCOL_HTTPS = 1;
+  TUNNEL_PROTOCOL_TCP = 2;
+}
+
+// ----------------------------------------------------------------------------
+// DJANGO -> AGENT MESSAGES (included in ControlMessage oneof)
+// ----------------------------------------------------------------------------
+
+// Request to create a tunnel (Server -> Agent)
+message TunnelCreate {
+  string tunnel_id = 1;          // Unique tunnel identifier
+  string local_address = 2;      // Target address on agent machine (localhost:8080)
+  TunnelProtocol protocol = 3;   // Protocol type (http, https, tcp)
+  string subdomain = 4;          // Assigned subdomain (abc123.tunnel.cmdop.com)
+}
+
+// Tunnel data packet (bidirectional - wraps HTTP request/response)
+message TunnelData {
+  string tunnel_id = 1;          // Tunnel identifier
+  string connection_id = 2;      // Per-connection UUID (each HTTP request gets one)
+  bytes data = 3;                // Raw HTTP request or response bytes
+  int32 sequence = 4;            // Sequence number for ordering chunks
+  bool is_request = 5;           // true = from internet (Server->Agent), false = response (Agent->Server)
+  bool is_close = 6;             // true = connection closed
+
+  // HTTP metadata (optional, for logging/debugging)
+  string method = 7;             // HTTP method (GET, POST, etc.) - only for requests
+  string path = 8;               // Request path - only for requests
+  int32 status_code = 9;         // HTTP status code - only for responses
+  map<string, string> headers = 10;  // Headers (optional)
+}
+
+// Request to close a tunnel (Server -> Agent)
+message TunnelClose {
+  string tunnel_id = 1;          // Tunnel to close
+  string reason = 2;             // Reason for closing
+}
+
+// ----------------------------------------------------------------------------
+// AGENT -> DJANGO MESSAGES (included in AgentMessage oneof)
+// ----------------------------------------------------------------------------
+
+// Tunnel creation result (Agent -> Server)
+message TunnelCreated {
+  string tunnel_id = 1;          // Tunnel identifier
+  bool success = 2;              // Whether tunnel was created successfully
+  string error = 3;              // Error message if failed
+  string public_url = 4;         // Full public URL (https://abc123.tunnel.cmdop.com)
+}
+
+// Tunnel closed acknowledgement (Agent -> Server)
+message TunnelClosed {
+  string tunnel_id = 1;          // Tunnel that was closed
+}
+
+// Tunnel error report (Agent -> Server)
+message TunnelError {
+  string tunnel_id = 1;          // Tunnel identifier
+  string connection_id = 2;      // Connection that errored (if applicable)
+  string error_code = 3;         // Error code
+  string message = 4;            // Error message
+  bool is_fatal = 5;             // If true, tunnel will be closed
+}

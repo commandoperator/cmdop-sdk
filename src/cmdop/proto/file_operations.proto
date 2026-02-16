@@ -1,0 +1,49 @@
+// File Operations - Facade file for backward compatibility.
+//
+// This file re-exports all types from the file_operations/ directory.
+// Import this file to get access to all file operation types.
+//
+// DEPRECATED: Consider importing specific subfiles instead for smaller builds:
+//   - file_operations/common.proto      (StreamFileEntry, enums)
+//   - file_operations/directory.proto   (list, create directory)
+//   - file_operations/file_crud.proto   (read, write, delete, move, copy)
+//   - file_operations/archive.proto     (create archive)
+//   - file_operations/search.proto      (file search)
+//   - file_operations/transfer.proto    (chunked transfer, streaming relay)
+//   - file_operations/hls.proto         (HLS streaming)
+//   - file_operations/changes.proto     (incremental sync for FileProvider)
+//   - file_operations/requests.proto    (FileOperationRequest/Result wrappers)
+//
+// Version: 2.13.0
+// Date: 2025-12-30
+//
+// Changelog:
+// - v2.13.0: Added changes.proto for NSFileProvider incremental sync
+// - v2.12.0: Decomposed into file_operations/ directory for better maintainability
+// - v2.11.1: Added start_time for HLS seeking support
+// - v2.11.0: Added LOAD_HTTP_HLS for adaptive HLS streaming
+// - v2.10.0: Added FileVisibilityMode for smart visibility control
+// - v2.9.0: Added transcoding support for browser-incompatible video formats
+// - v2.8.0: Added MediaMetadata for audio/video metadata extraction
+// - v2.7.0: Added FileSearch for filename/content search
+// - v2.6.0: Added FileCreateArchive for creating archives
+// - v2.5.0: Added LoadMethod enum for content loading strategy
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+// Re-export all types from subfiles using public import
+// This allows files that import file_operations.proto to access all types
+
+import public "file_operations/common.proto";
+import public "file_operations/directory.proto";
+import public "file_operations/file_crud.proto";
+import public "file_operations/archive.proto";
+import public "file_operations/search.proto";
+import public "file_operations/transfer.proto";
+import public "file_operations/hls.proto";
+import public "file_operations/changes.proto";
+import public "file_operations/requests.proto";

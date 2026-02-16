@@ -1,0 +1,333 @@
+// Agent → Django Messages
+//
+// Messages sent from the Agent to Django server via gRPC stream.
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "google/protobuf/timestamp.proto";
+import "common_types.proto";
+import "file_operations.proto";
+import "tunnel.proto";
+
+// ============================================================================
+// AGENT → DJANGO MESSAGES (via stream)
+// ============================================================================
+
+// Message from Agent to Django
+message AgentMessage {
+  string session_id = 1;                     // Session UUID
+  string message_id = 2;                     // Unique message ID
+  google.protobuf.Timestamp timestamp = 3;
+
+  oneof payload {
+    // Connection lifecycle
+    RegisterRequest register = 10;           // Initial registration
+    HeartbeatUpdate heartbeat = 11;          // Keepalive
+
+    // Terminal output
+    TerminalOutput output = 20;              // PTY stdout/stderr chunk
+    CommandComplete command_complete = 21;   // Command finished
+
+    // Status updates
+    StatusUpdate status = 30;                // Session status change
+    ErrorReport error = 31;                  // Error notification
+
+    // Acknowledgements
+    CommandAck ack = 40;                     // Command acknowledgement
+
+    // History response
+    HistoryResult history = 50;              // Shell history result
+
+    // File operation result
+    FileOperationResult file_operation_result = 60; // File manager result
+
+    // Tunnel responses
+    TunnelCreated tunnel_created = 70;              // Tunnel creation result
+    TunnelData tunnel_data = 71;                    // Tunnel data packet (response)
+    TunnelClosed tunnel_closed = 72;                // Tunnel closed ack
+    TunnelError tunnel_error = 73;                  // Tunnel error report
+
+    // Permission status (added in v2.3.0)
+    PermissionStatus permission_status = 80;        // Directory permission status
+
+    // AI Agent responses (v2.12.0)
+    AgentResult agent_result = 90;                  // Final agent response
+    AgentStreamEvent agent_event = 91;              // Streaming event (token, tool)
+
+    // Browser Direct Control result (v2.16.0)
+    // Response to BrowserCommand from control_messages.proto
+    BrowserCommandResult browser_result = 100;      // Browser command result
+  }
+}
+
+// ============================================================================
+// BROWSER DIRECT CONTROL RESULTS (v2.16.0)
+// ============================================================================
+
+// Result of BrowserCommand execution
+// Sent from Agent to Django as response to BrowserCommand
+message BrowserCommandResult {
+  string request_id = 1;              // Correlates with BrowserCommand.request_id
+  bool success = 2;                   // Whether command succeeded
+  string result_json = 3;             // JSON-encoded result (BrowserNavigateResponse, etc.)
+  string error = 4;                   // Error message if !success
+  int64 duration_ms = 5;              // Command execution time
+}
+
+// Registration request from Agent
+message RegisterRequest {
+  string version = 1;                        // Agent version
+  string hostname = 2;                       // Machine hostname
+  string platform = 3;                       // OS platform (darwin, win32, linux, ios, android)
+  repeated string supported_shells = 4;      // Available shells (empty for mobile)
+  TerminalSize initial_size = 5;             // Initial terminal size
+
+  // Mobile device support (added in v2.1.0)
+  string architecture = 6;                   // CPU architecture (arm64, x86_64, etc.)
+  string device_id = 7;                      // Unique device ID (UDID for iOS, Android ID)
+  string device_type = 8;                    // Device type: desktop, ios, android
+  bool has_shell = 9;                        // Whether device has shell access (false for mobile)
+  string device_model = 10;                  // Device model (iPhone 14 Pro, Pixel 8, etc.)
+
+  // Extended system info (added in v2.2.0)
+  string public_ip = 11;                     // Public IP address
+  repeated string local_ips = 12;            // Local IP addresses
+  string username = 13;                      // Current username
+  uint32 uid = 14;                           // User ID (Unix)
+  bool is_root = 15;                         // Running as root/admin
+  string home_dir = 16;                      // User home directory
+  string os_version = 17;                    // OS version (e.g., "Ubuntu 22.04", "macOS 14.2")
+  string kernel_version = 18;                // Kernel version
+  string cpu_model = 19;                     // CPU model name
+  uint32 cpu_count = 20;                     // Number of CPU cores
+  uint64 total_ram = 21;                     // Total RAM in bytes
+  uint64 uptime_seconds = 22;                // System uptime in seconds
+}
+
+// Heartbeat with optional system metrics
+// Sent every 30 seconds to keep connection alive and report machine status
+message HeartbeatUpdate {
+  SystemMetrics metrics = 1;                 // System metrics (optional, for monitoring)
+}
+
+// Terminal output chunk (stdout/stderr from PTY)
+message TerminalOutput {
+  bytes data = 1;                            // Raw output bytes
+  bool is_stderr = 2;                        // True if from stderr
+  int64 sequence = 3;                        // Sequence number for ordering
+}
+
+// Command completed notification
+message CommandComplete {
+  string command_id = 1;                     // Command that completed
+  int32 exit_code = 2;                       // Exit code
+  int64 duration_ms = 3;                     // Execution time in ms
+}
+
+// Status update from Agent
+message StatusUpdate {
+  SessionStatus old_status = 1;
+  SessionStatus new_status = 2;
+  string reason = 3;                         // Reason for status change
+  string working_directory = 4;              // Current working directory
+}
+
+// Error report with user-friendly suggestions
+message ErrorReport {
+  string error_code = 1;                     // Error code
+  string message = 2;                        // Error message
+  string stack_trace = 3;                    // Optional stack trace
+  bool is_fatal = 4;                         // If true, session will close
+  repeated string suggestions = 5;           // User-friendly suggestions for resolution
+  bool can_retry = 6;                        // Whether the operation can be retried
+}
+
+// Command acknowledgement
+message CommandAck {
+  string command_id = 1;                     // ID of acknowledged command
+  bool success = 2;                          // Successful?
+  string message = 3;                        // Optional message
+}
+
+// History result from agent (shell history file content)
+message HistoryResult {
+  string command_id = 1;                     // Correlates with GetHistoryCommand
+  repeated string commands = 2;              // List of commands from history
+  int32 total = 3;                           // Total count in history file
+  string source = 4;                         // Source: "bash_history", "zsh_history", etc.
+  string error = 5;                          // Error message if failed
+}
+
+// ============================================================================
+// PERMISSION STATUS (added in v2.3.0)
+// ============================================================================
+
+// Permission status for directories
+// Sent after warm-up to inform Django about accessible directories
+message PermissionStatus {
+  repeated DirectoryPermission directories = 1; // List of checked directories
+  string platform = 2;                          // Platform (darwin, windows, linux)
+  int64 checked_at = 3;                         // Unix timestamp when checked
+}
+
+// Permission status for a single directory
+message DirectoryPermission {
+  string path = 1;                              // Directory path
+  PermissionAccessStatus status = 2;            // Access status
+  string error_message = 3;                     // Error message if denied
+  bool is_sensitive = 4;                        // True for protected directories (Desktop, Documents, etc.)
+}
+
+// Permission access status enum
+enum PermissionAccessStatus {
+  PERMISSION_GRANTED = 0;   // Access is granted
+  PERMISSION_DENIED = 1;    // Access is denied (TCC, UAC, etc.)
+  PERMISSION_PENDING = 2;   // OS is showing permission dialog
+  PERMISSION_UNKNOWN = 3;   // Status could not be determined
+}
+
+// ============================================================================
+// AI AGENT RESPONSES (v2.12.0)
+// ============================================================================
+
+// Final result from AI agent execution
+message AgentResult {
+  string request_id = 1;          // Correlates with AgentRunCommand.request_id
+  bool success = 2;               // Whether execution succeeded
+  string text = 3;                // Response text from agent
+  string error = 4;               // Error message if failed
+  repeated AgentToolResult tool_results = 5;  // Tool execution results
+  AgentUsage usage = 6;           // Token usage stats
+  int64 duration_ms = 7;          // Execution duration in milliseconds
+
+  // Structured output JSON (if output_schema was provided)
+  string output_json = 8;
+}
+
+// Tool execution result
+message AgentToolResult {
+  string tool_name = 1;           // Name of the tool
+  string tool_call_id = 2;        // Tool call ID
+  bool success = 3;               // Whether tool succeeded
+  string result = 4;              // Tool result (JSON string)
+  string error = 5;               // Error if failed
+  int64 duration_ms = 6;          // Tool execution time
+}
+
+// Token usage statistics
+message AgentUsage {
+  int32 prompt_tokens = 1;        // Input tokens
+  int32 completion_tokens = 2;    // Output tokens
+  int32 total_tokens = 3;         // Total tokens
+}
+
+// Streaming event from agent (tokens, tool calls)
+message AgentStreamEvent {
+  string request_id = 1;          // Correlates with AgentRunCommand.request_id
+  AgentEventType type = 2;        // Event type
+  string payload = 3;             // Event-specific payload (JSON)
+  int64 timestamp = 4;            // Unix timestamp in milliseconds
+}
+
+// Agent event types
+enum AgentEventType {
+  AGENT_EVENT_TOKEN = 0;          // Token generated (payload: token string)
+  AGENT_EVENT_TOOL_START = 1;     // Tool execution started
+  AGENT_EVENT_TOOL_END = 2;       // Tool execution completed
+  AGENT_EVENT_THINKING = 3;       // Agent is thinking/processing
+  AGENT_EVENT_ERROR = 4;          // Error occurred
+  AGENT_EVENT_HANDOFF = 5;        // Handoff to another agent
+  AGENT_EVENT_CANCELLED = 6;      // Agent run cancelled (v2.15.0)
+
+  // Browser-specific events (v2.13.0)
+  AGENT_EVENT_BROWSER_NAVIGATE = 10;   // Browser navigated to URL
+  AGENT_EVENT_BROWSER_CLICK = 11;      // Element clicked
+  AGENT_EVENT_BROWSER_TYPE = 12;       // Text typed
+  AGENT_EVENT_BROWSER_STATE = 13;      // Page state captured
+  AGENT_EVENT_BROWSER_SCREENSHOT = 14; // Screenshot taken
+  AGENT_EVENT_BROWSER_ERROR = 15;      // Browser error occurred
+  AGENT_EVENT_BROWSER_DETECTION = 16;  // Bot detection suspected
+  AGENT_EVENT_BROWSER_ESCALATION = 17; // Stealth escalation triggered
+  AGENT_EVENT_BROWSER_SESSION = 18;    // Session start/end
+}
+
+// ============================================================================
+// BROWSER AGENT MESSAGES (v2.13.0)
+// ============================================================================
+
+// Browser page state (sent with AGENT_EVENT_BROWSER_STATE)
+message BrowserPageState {
+  string url = 1;                     // Current URL
+  string title = 2;                   // Page title
+  string content = 3;                 // Semantic markdown content
+  int32 token_count = 4;              // Token count of content
+  int32 element_count = 5;            // Number of interactive elements
+  bool is_diff = 6;                   // True if content is differential
+  int32 changes_count = 7;            // Number of changes (if is_diff)
+  repeated BrowserLink links = 8;     // Reified links map
+}
+
+// Link reference for URL reification
+message BrowserLink {
+  int32 index = 1;                    // Link index [1], [2], etc.
+  string url = 2;                     // Full URL
+  string text = 3;                    // Link text
+}
+
+// Browser navigation result (sent with AGENT_EVENT_BROWSER_NAVIGATE)
+message BrowserNavigateResult {
+  string url = 1;                     // Target URL
+  string from_url = 2;                // Previous URL
+  int64 duration_ms = 3;              // Navigation time
+  bool success = 4;                   // Success status
+  int32 status_code = 5;              // HTTP status code
+  string title = 6;                   // Page title
+}
+
+// Browser action result (click, type, etc.)
+message BrowserActionResult {
+  string action = 1;                  // Action type: click, type, scroll
+  string selector = 2;                // Target selector
+  string text = 3;                    // Text typed or element text
+  int64 duration_ms = 4;              // Action time
+  bool success = 5;                   // Success status
+  string error = 6;                   // Error if !success
+}
+
+// Browser screenshot result
+message BrowserScreenshotResult {
+  bool fullpage = 1;                  // Full page or viewport
+  string selector = 2;                // Element selector if element shot
+  string format = 3;                  // Image format: png, jpeg
+  int32 size_bytes = 4;               // Image size
+  bytes data = 5;                     // Image data (base64 in JSON)
+}
+
+// Browser detection event (bot detection)
+message BrowserDetectionEvent {
+  string type = 1;                    // Detection type: captcha, block, rate_limit, challenge
+  string url = 2;                     // URL where detected
+  double confidence = 3;              // Detection confidence 0-1
+  string details = 4;                 // Additional details
+}
+
+// Browser escalation event (stealth escalation)
+message BrowserEscalationEvent {
+  string from_level = 1;              // Previous level
+  string to_level = 2;                // New level
+  string reason = 3;                  // Escalation reason
+  bool success = 4;                   // Escalation success
+}
+
+// Browser session event
+message BrowserSessionEvent {
+  string session_id = 1;              // Session UUID
+  string profile_id = 2;              // Browser profile ID
+  string session_type = 3;            // ephemeral, persistent, long_lived
+  bool is_start = 4;                  // True=start, False=end
+  string url = 5;                     // Current/final URL
+}

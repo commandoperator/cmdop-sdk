@@ -1,0 +1,54 @@
+// RPC Messages: Session Lifecycle
+//
+// Messages for push-wake flow and background session handling.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Enter background mode (app goes to background)
+message EnterBackgroundRequest {
+  string session_id = 1;
+}
+
+message EnterBackgroundResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Wake from background (app wakes from push)
+message WakeFromBackgroundRequest {
+  string session_id = 1;
+}
+
+message WakeFromBackgroundResponse {
+  bool success = 1;
+  string error = 2;
+  repeated PendingCommand pending_commands = 3;
+}
+
+// Pending command structure
+message PendingCommand {
+  string command_id = 1;
+  string type = 2;                               // "input", "resize", "signal", etc.
+  bytes data = 3;                                // Command data
+  int64 queued_at = 4;                           // Unix timestamp
+}
+
+// Queue command for background session
+message QueueCommandRequest {
+  string session_id = 1;
+  PendingCommand command = 2;
+}
+
+message QueueCommandResponse {
+  bool queued = 1;
+  bool push_sent = 2;
+  string status = 3;                             // Current session status
+  string error = 4;
+}

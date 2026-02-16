@@ -1,0 +1,112 @@
+// RPC Messages: Session Management
+//
+// Messages for creating, closing, and checking session status.
+//
+// Version: 2.0.0
+// Date: 2026-02-16
+//
+// Changelog:
+// - v2.0.0: Added GetSessionByHostname for SDK set_machine()
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "google/protobuf/timestamp.proto";
+import "common_types.proto";
+
+// Create session
+message CreateSessionRequest {
+  string user_id = 1;                        // User ID (from auth)
+  string name = 2;                           // Optional session name
+  SessionConfig config = 3;                  // Initial configuration
+}
+
+message CreateSessionResponse {
+  bool success = 1;
+  string session_id = 2;                     // Created session UUID
+  string error = 3;                          // Error message if failed
+}
+
+// Close session
+message CloseSessionRequest {
+  string session_id = 1;
+  string reason = 2;
+  bool force = 3;
+}
+
+message CloseSessionResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Get session status
+message GetSessionStatusRequest {
+  string session_id = 1;
+}
+
+message GetSessionStatusResponse {
+  bool exists = 1;
+  SessionStatus status = 2;
+  string agent_hostname = 3;                 // Hostname of the agent
+  google.protobuf.Timestamp connected_at = 4;
+  google.protobuf.Timestamp last_heartbeat_at = 5;
+  int32 commands_count = 6;
+}
+
+// List sessions (v2.14.0) - for SDK session discovery
+message ListSessionsRequest {
+  string hostname_filter = 1;                // Optional: filter by machine hostname
+  string status_filter = 2;                  // Optional: "connected", "disconnected"
+  int32 limit = 3;                           // Max sessions to return (default: 20)
+  int32 offset = 4;                          // Pagination offset
+}
+
+message SessionInfoItem {
+  string session_id = 1;                     // Session UUID
+  string machine_hostname = 2;               // Machine hostname
+  string machine_name = 3;                   // Machine display name
+  string status = 4;                         // connected, disconnected, grace_period
+  string os = 5;                             // macos, linux, windows
+  string agent_version = 6;                  // Agent version string
+  int64 heartbeat_age_seconds = 7;           // Seconds since last heartbeat
+  bool has_shell = 8;                        // Whether machine has shell access
+  string shell = 9;                          // Shell path (/bin/bash, etc.)
+  string working_directory = 10;             // Current working directory
+  google.protobuf.Timestamp connected_at = 11;
+}
+
+message ListSessionsResponse {
+  repeated SessionInfoItem sessions = 1;     // List of sessions
+  int32 total = 2;                           // Total count (for pagination)
+  string workspace_name = 3;                 // Workspace name for context
+  string error = 4;                          // Error message if failed
+}
+
+// Get session by hostname (v2.21.0) - for SDK set_machine()
+// Returns the best active session for a given hostname.
+// If partial_match=true and multiple machines match, returns ambiguous=true.
+message GetSessionByHostnameRequest {
+  string hostname = 1;                       // Machine hostname (exact or partial match)
+  bool partial_match = 2;                    // If true, use ICONTAINS; if false, exact match
+}
+
+message GetSessionByHostnameResponse {
+  bool found = 1;                            // Whether session was found
+  string session_id = 2;                     // Session UUID
+  string machine_hostname = 3;               // Full hostname
+  string machine_name = 4;                   // Machine display name
+  string status = 5;                         // Session status
+  string error = 6;                          // Error message if not found
+  google.protobuf.Timestamp connected_at = 7;
+  int32 heartbeat_age_seconds = 8;
+  bool has_shell = 9;
+  string shell = 10;
+  string working_directory = 11;
+  bool ambiguous = 12;                       // True if multiple machines matched
+  int32 matches_count = 13;                  // Number of matching machines (for ambiguous)
+  string os = 14;                            // Operating system
+  string agent_version = 15;                 // Agent version
+}

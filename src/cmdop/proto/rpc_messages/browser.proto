@@ -1,0 +1,575 @@
+// RPC Messages: Browser Direct Control
+//
+// Messages for SDK → Agent direct browser automation without LLM.
+// Developer controls browser programmatically via selectors/regex/JS.
+//
+// Flow:
+//   1. SDK calls BrowserCreateSession to start browser
+//   2. SDK calls BrowserNavigate, BrowserClick, etc.
+//   3. SDK calls BrowserExtract/BrowserExtractRegex for data
+//   4. SDK calls BrowserCloseSession when done
+//
+// Version: 1.0.0
+// Date: 2026-01-16
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// ============================================================================
+// SESSION MANAGEMENT
+// ============================================================================
+
+// Create browser session
+message BrowserCreateSessionRequest {
+  // Session ID with connected agent (required for cloud, optional for local)
+  string session_id = 1;
+
+  // Browser provider: "camoufox" (default) or "rod"
+  string provider = 2;
+
+  // Profile ID for session persistence (cookies, localStorage)
+  string profile_id = 3;
+
+  // Initial URL to navigate to
+  string start_url = 4;
+
+  // Headless mode
+  bool headless = 5;
+
+  // Viewport dimensions
+  int32 width = 6;
+  int32 height = 7;
+
+  // Resource blocking (set at browser launch, cannot be changed at runtime)
+  bool block_images = 8;  // Disable loading images for faster page loads
+  bool block_media = 9;   // Disable loading audio/video media
+}
+
+message BrowserCreateSessionResponse {
+  bool success = 1;
+  string browser_session_id = 2;  // Browser session ID for subsequent calls
+  string error = 3;
+}
+
+// Close browser session
+message BrowserCloseSessionRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserCloseSessionResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// ============================================================================
+// NAVIGATION
+// ============================================================================
+
+// Wait strategy for navigation (v2.19.0)
+// Determines when navigation is considered complete.
+enum WaitUntil {
+  WAIT_LOAD = 0;              // Wait for load event (default, not recommended for SPA)
+  WAIT_DOMCONTENTLOADED = 1;  // Wait for DOMContentLoaded event
+  WAIT_NETWORKIDLE = 2;       // Wait until no network activity for 500ms (best for SPA)
+  WAIT_COMMIT = 3;            // Return immediately after navigation commits (fastest)
+}
+
+message BrowserNavigateRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string url = 3;
+  int32 timeout_ms = 4;       // Default: 30000
+  WaitUntil wait_until = 5;   // Default: WAIT_LOAD (for backwards compatibility)
+}
+
+message BrowserNavigateResponse {
+  bool success = 1;
+  string final_url = 2;  // After redirects
+  string error = 3;
+}
+
+// ============================================================================
+// INTERACTION
+// ============================================================================
+
+message BrowserClickRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;
+  int32 timeout_ms = 4;  // Default: 10000
+  bool move_cursor = 5;  // Move cursor to element before click (human-like)
+}
+
+message BrowserClickResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message BrowserTypeRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;
+  string text = 4;
+  bool human_like = 5;  // Enable human-like typing delays
+  bool clear_first = 6; // Clear field before typing
+}
+
+message BrowserTypeResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message BrowserWaitRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;
+  int32 timeout_ms = 4;  // Default: 10000
+}
+
+message BrowserWaitResponse {
+  bool success = 1;
+  bool found = 2;
+  string error = 3;
+}
+
+// ============================================================================
+// DATA EXTRACTION
+// ============================================================================
+
+// CSS Selector extraction
+message BrowserExtractRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;        // CSS selector
+  string attribute = 4;       // Attribute to extract (empty = textContent)
+  int32 limit = 5;            // Max elements (default: 100)
+}
+
+message BrowserExtractResponse {
+  bool success = 1;
+  repeated string values = 2;
+  int32 count = 3;
+  string error = 4;
+}
+
+// Regex extraction
+message BrowserExtractRegexRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string pattern = 3;         // Regex pattern
+  bool from_html = 4;         // true=HTML, false=text (default)
+  int32 limit = 5;            // Max matches (default: 100)
+}
+
+message BrowserExtractRegexResponse {
+  bool success = 1;
+  repeated string matches = 2;
+  int32 count = 3;
+  string error = 4;
+}
+
+// Get HTML
+message BrowserGetHTMLRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;        // Optional: specific element (empty = full page)
+}
+
+message BrowserGetHTMLResponse {
+  bool success = 1;
+  string html = 2;
+  string error = 3;
+}
+
+// Get clean text
+message BrowserGetTextRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;        // Optional: specific element (empty = full page)
+}
+
+message BrowserGetTextResponse {
+  bool success = 1;
+  string text = 2;
+  string error = 3;
+}
+
+// Execute JavaScript
+message BrowserExecuteScriptRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string script = 3;          // JavaScript code to execute
+}
+
+message BrowserExecuteScriptResponse {
+  bool success = 1;
+  string result = 2;          // JSON-encoded result
+  string error = 3;
+}
+
+// ============================================================================
+// SCREENSHOT
+// ============================================================================
+
+message BrowserScreenshotRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  bool full_page = 3;
+  string format = 4;          // "png" (default) or "jpeg"
+  int32 quality = 5;          // JPEG quality 1-100 (default: 80)
+}
+
+message BrowserScreenshotResponse {
+  bool success = 1;
+  bytes data = 2;
+  string error = 3;
+}
+
+// ============================================================================
+// STATE / INFO
+// ============================================================================
+
+message BrowserGetStateRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserGetStateResponse {
+  bool success = 1;
+  string url = 2;
+  string title = 3;
+  string error = 4;
+}
+
+// Get comprehensive page info (v2.18.0)
+message BrowserGetPageInfoRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserGetPageInfoResponse {
+  bool success = 1;
+  string error = 2;
+
+  // Basic
+  string url = 3;
+  string title = 4;
+  int32 page_height = 5;
+  int32 viewport_height = 6;
+  int32 viewport_width = 7;
+
+  // Scroll position
+  int32 scroll_x = 8;
+  int32 scroll_y = 9;
+  bool at_top = 10;
+  bool at_bottom = 11;
+
+  // Technical
+  int32 load_time_ms = 12;
+  int32 cookies_count = 13;
+  bool is_https = 14;
+  bool has_iframes = 15;
+
+  // DOM complexity
+  int32 dom_nodes_raw = 16;
+  int32 dom_nodes_cleaned = 17;
+  int32 tokens_estimate = 18;
+
+  // Protection detection
+  bool cloudflare_detected = 19;
+  bool captcha_detected = 20;
+}
+
+// ============================================================================
+// COOKIES
+// ============================================================================
+
+message BrowserCookie {
+  string name = 1;
+  string value = 2;
+  string domain = 3;
+  string path = 4;
+  bool secure = 5;
+  bool http_only = 6;
+  string same_site = 7;
+  int64 expires = 8;
+}
+
+message BrowserSetCookiesRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  repeated BrowserCookie cookies = 3;
+}
+
+message BrowserSetCookiesResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message BrowserGetCookiesRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string domain = 3;          // Optional: filter by domain
+}
+
+message BrowserGetCookiesResponse {
+  bool success = 1;
+  repeated BrowserCookie cookies = 2;
+  string error = 3;
+}
+
+// ============================================================================
+// MOUSE & INPUT (v2.18.0)
+// ============================================================================
+
+// Move mouse to coordinates (with optional human-like movement)
+message BrowserMouseMoveRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  int32 x = 3;                    // Target X coordinate
+  int32 y = 4;                    // Target Y coordinate
+  int32 steps = 5;                // Steps for smooth movement (0 = instant, default: 10)
+}
+
+message BrowserMouseMoveResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Hover over element (move mouse to element center)
+message BrowserHoverRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string selector = 3;            // CSS selector
+  int32 timeout_ms = 4;           // Default: 5000
+}
+
+message BrowserHoverResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Scroll page or element
+message BrowserScrollRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string direction = 3;           // "up", "down", "left", "right"
+  int32 amount = 4;               // Pixels to scroll
+  string selector = 5;            // Optional: scroll element into view instead
+  string container = 6;           // Optional: scroll container selector
+  bool smooth = 7;                // Smooth scroll animation (default: true)
+}
+
+message BrowserScrollResponse {
+  bool success = 1;
+  int32 scroll_x = 2;
+  int32 scroll_y = 3;
+  int32 scrolled_by = 4;
+  int32 page_height = 5;      // Total document height
+  int32 viewport_height = 6;  // Visible viewport height
+  bool at_bottom = 7;
+  string error = 8;
+}
+
+// ============================================================================
+// SELECTOR VALIDATION & DATA EXTRACTION (v2.17.0)
+// ============================================================================
+
+// Validate CSS selectors on page
+message BrowserValidateSelectorsRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string item = 3;            // Item container selector (e.g., ".product-card")
+  map<string, string> fields = 4;  // field name -> CSS selector (relative to item)
+}
+
+message BrowserValidateSelectorsResponse {
+  bool success = 1;
+  bool valid = 2;             // True if all selectors match at least 1 element
+  map<string, int32> counts = 3;   // Selector -> element count
+  map<string, string> samples = 4; // Selector -> sample text (first match)
+  repeated string errors = 5;      // Validation error messages
+  string error = 6;                // General error (gRPC/connection)
+}
+
+// Extract structured data from page
+message BrowserExtractDataRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string item = 3;            // Item container selector
+  string fields_json = 4;     // JSON: {"field": "selector" | {"selector": "...", "attr": "...", "regex": "..."}}
+  int32 limit = 5;            // Max items to extract (default: 100)
+}
+
+message BrowserExtractDataResponse {
+  bool success = 1;
+  string items_json = 2;      // JSON array of extracted items
+  int32 count = 3;            // Number of items extracted
+  string error = 4;
+}
+
+// ============================================================================
+// NETWORK CAPTURE (v2.19.0)
+// ============================================================================
+
+// Enable network capture
+message BrowserNetworkEnableRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  int32 max_exchanges = 3;        // Max exchanges to keep (default: 1000, FIFO eviction)
+  int64 max_response_size = 4;    // Max response body size in bytes (default: 10MB)
+}
+
+message BrowserNetworkEnableResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Disable network capture
+message BrowserNetworkDisableRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserNetworkDisableResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Get captured exchanges
+message BrowserNetworkGetExchangesRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  // Filter options
+  string url_pattern = 3;             // Regex pattern for URL
+  repeated string methods = 4;        // GET, POST, etc.
+  repeated int32 status_codes = 5;    // 200, 404, etc.
+  repeated string resource_types = 6; // xhr, fetch, document, script, image, etc.
+  int32 limit = 7;                    // Max results (0 = unlimited)
+}
+
+message BrowserNetworkGetExchangesResponse {
+  bool success = 1;
+  repeated NetworkExchange exchanges = 2;
+  int32 count = 3;
+  string error = 4;
+}
+
+// Get single exchange by ID
+message BrowserNetworkGetExchangeRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string exchange_id = 3;
+}
+
+message BrowserNetworkGetExchangeResponse {
+  bool success = 1;
+  NetworkExchange exchange = 2;
+  string error = 3;
+}
+
+// Get last exchange matching URL pattern
+message BrowserNetworkGetLastRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  string url_pattern = 3;
+}
+
+message BrowserNetworkGetLastResponse {
+  bool success = 1;
+  NetworkExchange exchange = 2;
+  string error = 3;
+}
+
+// Clear captured exchanges
+message BrowserNetworkClearRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserNetworkClearResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Get network capture stats
+message BrowserNetworkStatsRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+}
+
+message BrowserNetworkStatsResponse {
+  bool success = 1;
+  bool enabled = 2;
+  int32 total_captured = 3;
+  int32 total_errors = 4;
+  int64 total_bytes = 5;
+  int32 average_duration_ms = 6;
+  string error = 7;
+}
+
+// Export to HAR format
+message BrowserNetworkExportHARRequest {
+  string session_id = 1;
+  string browser_session_id = 2;
+  // Filter options (same as GetExchanges)
+  string url_pattern = 3;
+  repeated string methods = 4;
+  repeated int32 status_codes = 5;
+  repeated string resource_types = 6;
+}
+
+message BrowserNetworkExportHARResponse {
+  bool success = 1;
+  bytes har_data = 2;             // HAR JSON bytes
+  string error = 3;
+}
+
+// ============================================================================
+// NETWORK CAPTURE TYPES
+// ============================================================================
+
+// Captured HTTP request
+message NetworkRequest {
+  string url = 1;
+  string method = 2;
+  map<string, string> headers = 3;
+  bytes body = 4;
+  string content_type = 5;
+  string resource_type = 6;       // document, script, xhr, fetch, image, etc.
+}
+
+// Captured HTTP response
+message NetworkResponse {
+  int32 status = 1;
+  string status_text = 2;
+  map<string, string> headers = 3;
+  bytes body = 4;
+  string content_type = 5;
+  int64 size = 6;
+  bool from_cache = 7;
+}
+
+// Request timing
+message NetworkTiming {
+  int64 started_at_ms = 1;        // Unix timestamp ms
+  int64 ended_at_ms = 2;          // Unix timestamp ms
+  int32 duration_ms = 3;
+  int32 wait_time_ms = 4;         // Time to first byte
+  int32 receive_time_ms = 5;      // Time to download body
+}
+
+// Complete request/response exchange
+message NetworkExchange {
+  string id = 1;
+  NetworkRequest request = 2;
+  NetworkResponse response = 3;   // null if error/aborted
+  NetworkTiming timing = 4;
+  string error = 5;               // Error message if failed
+  string frame_id = 6;
+  string initiator = 7;           // URL or script that initiated
+}
