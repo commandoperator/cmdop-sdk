@@ -1,0 +1,172 @@
+// File Operations - Common types shared across all file operation modules.
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum StreamFileType {
+  STREAM_FILE_TYPE_UNSPECIFIED = 0;
+  STREAM_FILE = 1;
+  STREAM_DIRECTORY = 2;
+  STREAM_SYMLINK = 3;
+}
+
+// Icon types for UI rendering (detected by backend based on path/name/OS)
+enum FileIconType {
+  ICON_UNSPECIFIED = 0;
+  // File types
+  ICON_FILE = 1;
+  ICON_CODE = 2;
+  ICON_TEXT = 3;
+  ICON_IMAGE = 4;
+  ICON_VIDEO = 5;
+  ICON_AUDIO = 6;
+  ICON_ARCHIVE = 7;
+  ICON_DATA = 8;
+  ICON_PDF = 9;
+  // Folder types
+  ICON_FOLDER = 10;
+  ICON_FOLDER_HOME = 11;
+  ICON_FOLDER_DESKTOP = 12;
+  ICON_FOLDER_DOCUMENTS = 13;
+  ICON_FOLDER_DOWNLOADS = 14;
+  ICON_FOLDER_PICTURES = 15;
+  ICON_FOLDER_MUSIC = 16;
+  ICON_FOLDER_VIDEOS = 17;
+  ICON_FOLDER_APPLICATIONS = 18;
+  ICON_FOLDER_LIBRARY = 19;
+  ICON_FOLDER_SYSTEM = 20;
+  ICON_FOLDER_DRIVE = 21;
+  ICON_FOLDER_CLOUD = 22;
+  ICON_FOLDER_TRASH = 23;
+  ICON_FOLDER_HIDDEN = 24;
+  ICON_FOLDER_CODE = 25;
+  ICON_FOLDER_SERVER = 26;
+  ICON_FOLDER_DATABASE = 27;
+  ICON_FOLDER_ARCHIVE = 28;
+}
+
+// Viewer types for file preview/editing (detected by backend)
+// Frontend maps these 1:1 to viewer components
+enum ViewerType {
+  VIEWER_UNKNOWN = 0;
+  VIEWER_CODE = 1;      // Monaco Editor (editable)
+  VIEWER_TEXT = 2;      // Plain text
+  VIEWER_IMAGE = 3;     // Image viewer with zoom/pan
+  VIEWER_VIDEO = 4;     // Video player
+  VIEWER_AUDIO = 5;     // Audio player
+  VIEWER_PDF = 6;       // PDF viewer
+  VIEWER_MARKDOWN = 7;  // Markdown (editable)
+  VIEWER_JSON = 8;      // JSON tree viewer (editable)
+  VIEWER_YAML = 9;      // YAML viewer (editable)
+  VIEWER_XML = 10;      // XML viewer (editable)
+  VIEWER_ARCHIVE = 11;  // Archive contents viewer
+  VIEWER_HEX = 12;      // Hex viewer for binary
+}
+
+// Load method for file content (added in v2.5.0)
+// Backend determines the best method based on file type and size
+enum LoadMethod {
+  LOAD_UNSPECIFIED = 0;   // Let frontend decide (fallback)
+  LOAD_RPC = 1;           // Load via Centrifugo RPC (small text/images)
+  LOAD_HTTP_STREAM = 2;   // Use HTTP Range streaming (large video/audio)
+  LOAD_SKIP = 3;          // Don't load content (directories, unsupported)
+  LOAD_HTTP_TRANSCODE = 4; // Use HTTP streaming with real-time transcoding (v2.9.0)
+  LOAD_HTTP_HLS = 5;      // Use HLS adaptive streaming for long videos (v2.11.0)
+}
+
+// File visibility mode for smart filtering (added in v2.10.0)
+// Controls whether hidden files and system paths are shown based on context
+enum FileVisibilityMode {
+  // Auto-detect based on device type: servers show all, clients hide
+  VISIBILITY_AUTO = 0;
+  // User-friendly mode: hide hidden files and system paths
+  VISIBILITY_USER = 1;
+  // Admin mode: show hidden files and system paths
+  VISIBILITY_ADMIN = 2;
+  // Show all files including hidden (respects security blocks for .ssh, .aws, etc.)
+  VISIBILITY_ALL = 3;
+}
+
+// ============================================================================
+// MEDIA METADATA
+// ============================================================================
+
+// Media metadata for audio/video files (added in v2.8.0)
+// Extracted from MP3/FLAC/M4A/OGG/MP4/MKV/WebM files
+message MediaMetadata {
+  // Common properties
+  int32 duration_seconds = 1;              // Total duration in seconds
+  int32 bitrate_kbps = 2;                  // Bitrate in kbps
+
+  // Audio properties
+  int32 sample_rate_hz = 3;                // Sample rate (44100, 48000, etc.)
+  int32 audio_channels = 4;                // 1=mono, 2=stereo, 6=5.1
+  string audio_codec = 5;                  // mp3, aac, flac, vorbis, opus
+
+  // Video properties
+  int32 width = 6;                         // Video width in pixels
+  int32 height = 7;                        // Video height in pixels
+  float frame_rate = 8;                    // FPS (29.97, 60.0, etc.)
+  string video_codec = 9;                  // h264, h265, vp9, av1
+
+  // Music tags (ID3, Vorbis Comments, MP4 atoms)
+  string title = 10;
+  string artist = 11;
+  string album = 12;
+  string album_artist = 13;
+  string genre = 14;
+  int32 year = 15;
+  int32 track_number = 16;
+  int32 disc_number = 17;
+  string comment = 18;
+  string composer = 19;
+
+  // Cover art (embedded album art)
+  bytes cover_art = 20;                    // JPEG/PNG image data
+  string cover_art_mime_type = 21;         // image/jpeg, image/png
+
+  // Format info
+  string container_format = 22;            // mp3, mp4, mkv, webm, flac
+  bool has_video = 23;                     // Contains video stream
+  bool has_audio = 24;                     // Contains audio stream
+
+  // Transcoding info (added in v2.9.0)
+  bool needs_transcode = 25;               // True if file needs transcoding for browser playback
+  string transcode_reason = 26;            // Reason for transcoding (e.g., "unsupported container: avi")
+}
+
+// ============================================================================
+// STREAM FILE ENTRY
+// ============================================================================
+
+message StreamFileEntry {
+  string name = 1;
+  string path = 2;
+  StreamFileType type = 3;
+  int64 size = 4;
+  string permissions = 5;                      // e.g., "rwxr-xr-x"
+  string owner = 6;
+  google.protobuf.Timestamp modified_at = 7;
+  bool is_hidden = 8;                          // Hidden file (dot prefix on Unix, hidden attr on Windows)
+  bool is_readable = 9;
+  bool is_writable = 10;
+  string mime_type = 11;
+  string symlink_target = 12;
+  FileIconType icon_type = 13;                 // Icon type for UI rendering (added in v2.1.0)
+  bool is_system = 14;                         // System/protected path (OS-specific, added in v2.2.0)
+  ViewerType viewer_type = 15;                 // Viewer type for file preview (added in v2.3.0)
+  LoadMethod load_method = 16;                 // Recommended content load method (added in v2.5.0)
+  MediaMetadata media_metadata = 17;           // Audio/video metadata (added in v2.8.0)
+}

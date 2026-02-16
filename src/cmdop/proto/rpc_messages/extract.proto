@@ -1,0 +1,161 @@
+// RPC Messages: Structured Data Extraction
+//
+// Messages for SDK structured output extraction using Pydantic models.
+// Agent fills user-defined model based on prompt and returns JSON.
+//
+// Usage:
+//   1. SDK converts Pydantic model to JSON Schema
+//   2. SDK sends ExtractRequest with prompt + schema
+//   3. Agent uses tools to gather data
+//   4. Agent returns JSON conforming to schema in ExtractResponse
+//
+// Version: 1.0.0
+// Date: 2025-12-30
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// ============================================================================
+// EXTRACT REQUEST
+// ============================================================================
+
+// Request for structured data extraction
+message ExtractRequest {
+  // User prompt describing what to extract
+  // Example: "Find database configuration in config files"
+  string prompt = 1;
+
+  // JSON Schema for expected output (from Pydantic model.model_json_schema())
+  // Defines the structure of the result field in response
+  string json_schema = 2;
+
+  // Optional extraction configuration
+  ExtractOptions options = 3;
+}
+
+// Extraction configuration options
+message ExtractOptions {
+  // LLM model override (empty = use default)
+  // Example: "anthropic/claude-3-5-sonnet", "openai/gpt-4o"
+  string model = 1;
+
+  // Temperature for LLM (0.0 = deterministic, 2.0 = creative)
+  // Default: 0.0 for reliable extraction
+  float temperature = 2;
+
+  // Maximum tokens for LLM response
+  // Default: 4096
+  int32 max_tokens = 3;
+
+  // Maximum validation retry attempts on schema mismatch
+  // Default: 3
+  int32 max_retries = 4;
+
+  // Request timeout in seconds
+  // Default: 60, Max: 300
+  int32 timeout_seconds = 5;
+
+  // Working directory for tool execution
+  // Default: agent's current directory
+  string working_directory = 6;
+
+  // Tools to enable for extraction (empty = all available)
+  // Available: "execute_command", "read_file", "list_directory", "write_file"
+  repeated string enabled_tools = 7;
+}
+
+// ============================================================================
+// EXTRACT RESPONSE
+// ============================================================================
+
+// Response from extraction
+message ExtractResponse {
+  // Whether extraction succeeded
+  bool success = 1;
+
+  // Error message if !success
+  string error = 2;
+
+  // Error code for programmatic handling
+  ExtractErrorCode error_code = 3;
+
+  // Agent's reasoning/explanation of extraction process
+  // Example: "Read ~/.config/app.yaml and found database settings..."
+  string reasoning = 4;
+
+  // Extracted data as JSON string (matches requested json_schema)
+  // Only populated if success = true
+  string result_json = 5;
+
+  // Execution metrics
+  ExtractMetrics metrics = 6;
+}
+
+// Error codes for extraction failures
+enum ExtractErrorCode {
+  // No error
+  EXTRACT_ERROR_NONE = 0;
+
+  // JSON Schema from SDK is invalid
+  EXTRACT_ERROR_INVALID_SCHEMA = 1;
+
+  // Agent couldn't extract data (no data found, access denied, etc.)
+  EXTRACT_ERROR_EXTRACTION_FAILED = 2;
+
+  // LLM response doesn't match schema after all retries
+  EXTRACT_ERROR_VALIDATION_FAILED = 3;
+
+  // Request timed out
+  EXTRACT_ERROR_TIMEOUT = 4;
+
+  // LLM API error
+  EXTRACT_ERROR_LLM_ERROR = 5;
+
+  // Tool execution error (file read failed, command failed, etc.)
+  EXTRACT_ERROR_TOOL_ERROR = 6;
+
+  // Request was cancelled
+  EXTRACT_ERROR_CANCELLED = 7;
+
+  // JSON Schema exceeds size limit (64KB)
+  EXTRACT_ERROR_SCHEMA_TOO_LARGE = 8;
+}
+
+// Extraction execution metrics
+message ExtractMetrics {
+  // Total execution time in milliseconds
+  int32 duration_ms = 1;
+
+  // LLM API call time in milliseconds
+  int32 llm_duration_ms = 2;
+
+  // Tool execution time in milliseconds
+  int32 tool_duration_ms = 3;
+
+  // Number of LLM calls made
+  int32 llm_calls = 4;
+
+  // Number of tool calls made
+  int32 tool_calls = 5;
+
+  // Number of validation retries
+  int32 retries = 6;
+
+  // Token usage
+  ExtractTokenUsage tokens = 7;
+}
+
+// Token usage statistics
+message ExtractTokenUsage {
+  // Input tokens sent to LLM
+  int32 prompt_tokens = 1;
+
+  // Output tokens received from LLM
+  int32 completion_tokens = 2;
+
+  // Total tokens (prompt + completion)
+  int32 total_tokens = 3;
+}

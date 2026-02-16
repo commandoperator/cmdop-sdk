@@ -1,0 +1,54 @@
+// File Operations - HLS adaptive video streaming.
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+// Added in v2.11.0
+// v2.11.1: Added start_time for on-demand seeking support
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+// ============================================================================
+// HLS STREAMING
+// Adaptive bitrate video streaming via HLS protocol
+// ============================================================================
+
+// Get HLS playlist (master or quality-specific)
+message HlsGetPlaylistRequest {
+  string path = 1;                             // Video file path
+  string quality = 2;                          // Quality level (empty for master playlist)
+  float start_time = 3;                        // Start position in seconds for seeking (v2.11.1)
+}
+
+message HlsGetPlaylistResult {
+  bytes content = 1;                           // Playlist content (m3u8)
+  string content_type = 2;                     // "application/vnd.apple.mpegurl"
+  float duration = 3;                          // Total video duration in seconds (v2.11.1)
+  int32 segment_duration = 4;                  // Segment duration in seconds (v2.11.1)
+}
+
+// Get HLS video segment
+message HlsGetSegmentRequest {
+  string path = 1;                             // Video file path
+  string quality = 2;                          // Quality level
+  int32 segment_num = 3;                       // Segment number (0, 1, 2, ...)
+  float start_time = 4;                        // Session start time for seeking (v2.11.1)
+}
+
+message HlsGetSegmentResult {
+  bytes content = 1;                           // Segment content (.ts)
+  string content_type = 2;                     // "video/mp2t"
+  bool created_new_session = 3;                // True if new FFmpeg session was created (v2.11.1)
+}
+
+// Stop HLS session (cleanup FFmpeg process)
+message HlsStopSessionRequest {
+  string path = 1;                             // Video file path
+}
+
+message HlsStopSessionResult {
+  // Empty - success indicated by FileOperationResult.success
+}

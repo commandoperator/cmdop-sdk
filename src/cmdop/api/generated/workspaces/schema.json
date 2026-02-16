@@ -1,0 +1,1834 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Cmdop API",
+        "version": "1.0.0",
+        "description": "Complete API documentation for Django CFG Demo Project",
+        "x-django-metadata": {
+            "group": "workspaces",
+            "apps": [
+                "workspaces"
+            ],
+            "generator": "django-client",
+            "generator_version": "1.0.0"
+        }
+    },
+    "paths": {
+        "/api/workspaces/invitations/": {
+            "get": {
+                "operationId": "workspaces_invitations_list",
+                "description": "List all pending invitations for workspaces you manage",
+                "summary": "List invitations",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedWorkspaceInvitationList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "workspaces_invitations_create",
+                "description": "Invite a user to a workspace by email",
+                "summary": "Create invitation",
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceInvitation"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/invitations/{id}/": {
+            "get": {
+                "operationId": "workspaces_invitations_retrieve",
+                "description": "Get details of a specific invitation",
+                "summary": "Get invitation details",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Invitation.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceInvitation"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "workspaces_invitations_destroy",
+                "description": "Cancel a pending invitation",
+                "summary": "Cancel invitation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Invitation.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/invitations/{id}/resend/": {
+            "post": {
+                "operationId": "workspaces_invitations_resend_create",
+                "description": "Resend invitation email and regenerate token",
+                "summary": "Resend invitation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Invitation.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceInvitation"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/invitations/accept/": {
+            "post": {
+                "operationId": "workspaces_invitations_accept_create",
+                "description": "Accept a workspace invitation",
+                "summary": "Accept invitation",
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "workspace_id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/invitations/decline/": {
+            "post": {
+                "operationId": "workspaces_invitations_decline_create",
+                "description": "Decline a workspace invitation (no auth required)",
+                "summary": "Decline invitation",
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceInvitationAcceptRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/invitations/details/{token}/": {
+            "get": {
+                "operationId": "workspaces_invitations_details_retrieve",
+                "description": "Get public invitation details for accept page (no auth required)",
+                "summary": "Get invitation details by token",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "token",
+                        "schema": {
+                            "type": "string",
+                            "title": "Invitation Token"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceInvitationPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/members/": {
+            "get": {
+                "operationId": "workspaces_members_list",
+                "description": "List workspace members with optional search and role filters.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "role",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by role (owner, admin, member)"
+                    },
+                    {
+                        "in": "query",
+                        "name": "search",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Search by email, first name, or last name"
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedWorkspaceMemberList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "workspaces_members_create",
+                "description": "ViewSet for WorkspaceMember operations.\n\nManage workspace memberships and roles.",
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceMember"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/members/{id}/": {
+            "get": {
+                "operationId": "workspaces_members_retrieve",
+                "description": "ViewSet for WorkspaceMember operations.\n\nManage workspace memberships and roles.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Member.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceMember"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "put": {
+                "operationId": "workspaces_members_update",
+                "description": "ViewSet for WorkspaceMember operations.\n\nManage workspace memberships and roles.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Member.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceMember"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "patch": {
+                "operationId": "workspaces_members_partial_update",
+                "description": "ViewSet for WorkspaceMember operations.\n\nManage workspace memberships and roles.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Member.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceMemberRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceMemberRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceMemberRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceMember"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "workspaces_members_destroy",
+                "description": "ViewSet for WorkspaceMember operations.\n\nManage workspace memberships and roles.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Member.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/members/{id}/update-role/": {
+            "post": {
+                "operationId": "workspaces_members_update_role_create",
+                "description": "Update workspace member role.",
+                "summary": "Update member role",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace Member.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceMemberRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WorkspaceMember"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/workspaces/": {
+            "get": {
+                "operationId": "workspaces_workspaces_list",
+                "description": "ViewSet for Workspace operations.\n\nProvides CRUD operations for workspaces with team/personal modes.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Workspace"
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "workspaces_workspaces_create",
+                "description": "Create workspace and return full workspace data.",
+                "summary": "Create new workspace",
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Workspace"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/workspaces/{id}/": {
+            "get": {
+                "operationId": "workspaces_workspaces_retrieve",
+                "description": "ViewSet for Workspace operations.\n\nProvides CRUD operations for workspaces with team/personal modes.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Workspace"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "put": {
+                "operationId": "workspaces_workspaces_update",
+                "description": "ViewSet for Workspace operations.\n\nProvides CRUD operations for workspaces with team/personal modes.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WorkspaceRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Workspace"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "patch": {
+                "operationId": "workspaces_workspaces_partial_update",
+                "description": "ViewSet for Workspace operations.\n\nProvides CRUD operations for workspaces with team/personal modes.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedWorkspaceRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Workspace"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "workspaces_workspaces_destroy",
+                "description": "ViewSet for Workspace operations.\n\nProvides CRUD operations for workspaces with team/personal modes.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/workspaces/{id}/members/": {
+            "get": {
+                "operationId": "workspaces_workspaces_members_retrieve",
+                "description": "Get all members of this workspace.",
+                "summary": "List workspace members",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of members"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/workspaces/workspaces/{id}/stats/": {
+            "get": {
+                "operationId": "workspaces_workspaces_stats_retrieve",
+                "description": "Get workspace statistics.",
+                "summary": "Get workspace statistics",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Workspace.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Workspaces"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Workspace stats"
+                    }
+                },
+                "x-async-capable": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "InvitedBy": {
+                "type": "object",
+                "description": "Basic user info for invitation inviter.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "readOnly": true
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "email",
+                    "first_name",
+                    "id",
+                    "last_name"
+                ]
+            },
+            "PaginatedWorkspaceInvitationList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WorkspaceInvitation"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PaginatedWorkspaceMemberList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WorkspaceMember"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PatchedWorkspaceMemberRequest": {
+                "type": "object",
+                "description": "Serializer for WorkspaceMember model.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "writeOnly": true
+                    },
+                    "role": {
+                        "enum": [
+                            "owner",
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `owner` - Owner\n* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "9780375b7e256eb6"
+                    }
+                }
+            },
+            "PatchedWorkspaceRequest": {
+                "type": "object",
+                "description": "Serializer for Workspace model.\n\nAll fields are always present in responses (even read_only ones).",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Workspace name",
+                        "maxLength": 100
+                    },
+                    "slug": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "URL slug",
+                        "maxLength": 100,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "type": {
+                        "enum": [
+                            "personal",
+                            "team"
+                        ],
+                        "type": "string",
+                        "description": "* `personal` - Personal\n* `team` - Team",
+                        "x-spec-enum-id": "3121ee2467f98347",
+                        "title": "Workspace type"
+                    },
+                    "plan": {
+                        "enum": [
+                            "free",
+                            "pro",
+                            "enterprise"
+                        ],
+                        "type": "string",
+                        "description": "* `free` - Free\n* `pro` - Pro\n* `enterprise` - Enterprise",
+                        "x-spec-enum-id": "607af7ca4f6c7bab"
+                    }
+                }
+            },
+            "UserBasic": {
+                "type": "object",
+                "description": "Basic user info for workspace members.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "readOnly": true
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "username": {
+                        "type": "string",
+                        "readOnly": true,
+                        "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+                    }
+                },
+                "required": [
+                    "email",
+                    "first_name",
+                    "id",
+                    "last_name",
+                    "username"
+                ]
+            },
+            "Workspace": {
+                "type": "object",
+                "description": "Serializer for Workspace model.\n\nAll fields are always present in responses (even read_only ones).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Workspace name",
+                        "maxLength": 100
+                    },
+                    "slug": {
+                        "type": "string",
+                        "title": "URL slug",
+                        "maxLength": 100,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "type": {
+                        "enum": [
+                            "personal",
+                            "team"
+                        ],
+                        "type": "string",
+                        "description": "* `personal` - Personal\n* `team` - Team",
+                        "x-spec-enum-id": "3121ee2467f98347",
+                        "title": "Workspace type"
+                    },
+                    "plan": {
+                        "enum": [
+                            "free",
+                            "pro",
+                            "enterprise"
+                        ],
+                        "type": "string",
+                        "description": "* `free` - Free\n* `pro` - Pro\n* `enterprise` - Enterprise",
+                        "x-spec-enum-id": "607af7ca4f6c7bab"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "member_count": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "machine_count": {
+                        "type": "integer",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "machine_count",
+                    "member_count",
+                    "name",
+                    "slug"
+                ]
+            },
+            "WorkspaceCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating workspaces.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Workspace name",
+                        "maxLength": 100
+                    },
+                    "type": {
+                        "enum": [
+                            "personal",
+                            "team"
+                        ],
+                        "type": "string",
+                        "description": "* `personal` - Personal\n* `team` - Team",
+                        "x-spec-enum-id": "3121ee2467f98347",
+                        "title": "Workspace type"
+                    },
+                    "plan": {
+                        "enum": [
+                            "free",
+                            "pro",
+                            "enterprise"
+                        ],
+                        "type": "string",
+                        "description": "* `free` - Free\n* `pro` - Pro\n* `enterprise` - Enterprise",
+                        "x-spec-enum-id": "607af7ca4f6c7bab"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            },
+            "WorkspaceInvitation": {
+                "type": "object",
+                "description": "Serializer for WorkspaceInvitation model.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "workspace_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Invitee Email",
+                        "maxLength": 254
+                    },
+                    "role": {
+                        "enum": [
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "13f41d897b84c2c5"
+                    },
+                    "status": {
+                        "enum": [
+                            "pending",
+                            "accepted",
+                            "declined",
+                            "expired",
+                            "cancelled"
+                        ],
+                        "type": "string",
+                        "description": "* `pending` - Pending\n* `accepted` - Accepted\n* `declined` - Declined\n* `expired` - Expired\n* `cancelled` - Cancelled",
+                        "x-spec-enum-id": "58b2bd1d755b0a28",
+                        "readOnly": true
+                    },
+                    "invited_by": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/InvitedBy"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "accepted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "is_expired": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "is_valid": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "accepted_at",
+                    "created_at",
+                    "email",
+                    "expires_at",
+                    "id",
+                    "invited_by",
+                    "is_expired",
+                    "is_valid",
+                    "status",
+                    "workspace",
+                    "workspace_name"
+                ]
+            },
+            "WorkspaceInvitationAcceptRequest": {
+                "type": "object",
+                "description": "Serializer for accepting workspace invitation.",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                    }
+                },
+                "required": [
+                    "token"
+                ]
+            },
+            "WorkspaceInvitationCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating workspace invitation.",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 1
+                    },
+                    "role": {
+                        "enum": [
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `admin` - admin\n* `member` - member",
+                        "x-spec-enum-id": "0b4d2bded1a4ea3e",
+                        "default": "member"
+                    }
+                },
+                "required": [
+                    "email"
+                ]
+            },
+            "WorkspaceInvitationPublic": {
+                "type": "object",
+                "description": "Public serializer for invitation details (for accept page).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Invitee Email",
+                        "maxLength": 254
+                    },
+                    "role": {
+                        "enum": [
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "13f41d897b84c2c5"
+                    },
+                    "status": {
+                        "enum": [
+                            "pending",
+                            "accepted",
+                            "declined",
+                            "expired",
+                            "cancelled"
+                        ],
+                        "type": "string",
+                        "description": "* `pending` - Pending\n* `accepted` - Accepted\n* `declined` - Declined\n* `expired` - Expired\n* `cancelled` - Cancelled",
+                        "x-spec-enum-id": "58b2bd1d755b0a28"
+                    },
+                    "invited_by_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "is_expired": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "is_valid": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "email",
+                    "id",
+                    "invited_by_name",
+                    "is_expired",
+                    "is_valid",
+                    "workspace_name"
+                ]
+            },
+            "WorkspaceInvitationRequest": {
+                "type": "object",
+                "description": "Serializer for WorkspaceInvitation model.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 1,
+                        "title": "Invitee Email",
+                        "maxLength": 254
+                    },
+                    "role": {
+                        "enum": [
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "13f41d897b84c2c5"
+                    }
+                },
+                "required": [
+                    "email",
+                    "workspace"
+                ]
+            },
+            "WorkspaceMember": {
+                "type": "object",
+                "description": "Serializer for WorkspaceMember model.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "workspace_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "user": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/UserBasic"
+                            }
+                        ],
+                        "readOnly": true
+                    },
+                    "role": {
+                        "enum": [
+                            "owner",
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `owner` - Owner\n* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "9780375b7e256eb6"
+                    },
+                    "joined_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "joined_at",
+                    "user",
+                    "workspace",
+                    "workspace_name"
+                ]
+            },
+            "WorkspaceMemberRequest": {
+                "type": "object",
+                "description": "Serializer for WorkspaceMember model.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "writeOnly": true
+                    },
+                    "role": {
+                        "enum": [
+                            "owner",
+                            "admin",
+                            "member"
+                        ],
+                        "type": "string",
+                        "description": "* `owner` - Owner\n* `admin` - Admin\n* `member` - Member",
+                        "x-spec-enum-id": "9780375b7e256eb6"
+                    }
+                },
+                "required": [
+                    "workspace"
+                ]
+            },
+            "WorkspaceRequest": {
+                "type": "object",
+                "description": "Serializer for Workspace model.\n\nAll fields are always present in responses (even read_only ones).",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Workspace name",
+                        "maxLength": 100
+                    },
+                    "slug": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "URL slug",
+                        "maxLength": 100,
+                        "pattern": "^[-a-zA-Z0-9_]+$"
+                    },
+                    "type": {
+                        "enum": [
+                            "personal",
+                            "team"
+                        ],
+                        "type": "string",
+                        "description": "* `personal` - Personal\n* `team` - Team",
+                        "x-spec-enum-id": "3121ee2467f98347",
+                        "title": "Workspace type"
+                    },
+                    "plan": {
+                        "enum": [
+                            "free",
+                            "pro",
+                            "enterprise"
+                        ],
+                        "type": "string",
+                        "description": "* `free` - Free\n* `pro` - Pro\n* `enterprise` - Enterprise",
+                        "x-spec-enum-id": "607af7ca4f6c7bab"
+                    }
+                },
+                "required": [
+                    "name",
+                    "slug"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "jwtAuthWithLastLogin": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ]
+}

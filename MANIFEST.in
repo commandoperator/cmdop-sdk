@@ -1,0 +1,34 @@
+# Include
+include README.md
+include LICENSE
+include py.typed
+include src/cmdop/py.typed
+
+# Source
+recursive-include src/cmdop *.py
+recursive-include src/cmdop/api *.py
+recursive-include src/cmdop/_generated *.py
+
+# Exclude proto source files (not needed at runtime)
+recursive-exclude src/cmdop/proto *
+
+# Exclude dev/test artifacts
+recursive-exclude tests *
+recursive-exclude examples *
+recursive-exclude devops *
+prune tests
+prune examples
+prune devops
+
+# Exclude caches
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
+global-exclude .coverage
+global-exclude .pytest_cache
+global-exclude .mypy_cache
+global-exclude .ruff_cache
+global-exclude *.egg-info
+
+# Exclude markdown from src/cmdop (but keep root README.md)
+recursive-exclude src/cmdop *.md

@@ -1,0 +1,107 @@
+// File Operations - CRUD operations (Read, Write, Delete, Move, Copy, GetInfo).
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "file_operations/common.proto";
+
+// ============================================================================
+// READ FILE
+// ============================================================================
+
+message FileReadRequest {
+  string path = 1;
+  int64 offset = 2;                            // Start offset
+  int64 length = 3;                            // 0 = entire file
+  bool transcode = 4;                          // Transcode video to H.264+AAC (v2.9.0)
+}
+
+message FileReadResult {
+  bytes content = 1;                           // File content (for small files)
+  string encoding = 2;                         // utf-8, binary
+  int64 total_size = 3;
+  string mime_type = 4;
+  bool is_truncated = 5;                       // True if content was truncated
+  ViewerType viewer_type = 6;                  // Viewer type for preview (added in v2.4.0)
+  bool is_transcoded = 7;                      // True if content is transcoded (v2.9.0)
+  bool transcode_complete = 8;                 // True if transcoding is finished (v2.9.0)
+}
+
+// ============================================================================
+// WRITE FILE
+// ============================================================================
+
+message FileWriteRequest {
+  string path = 1;
+  bytes content = 2;
+  bool overwrite = 3;
+  bool create_parents = 4;
+}
+
+message FileWriteResult {
+  int64 bytes_written = 1;
+  StreamFileEntry entry = 2;
+}
+
+// ============================================================================
+// DELETE FILE/DIRECTORY
+// ============================================================================
+
+message FileDeleteRequest {
+  string path = 1;
+  bool recursive = 2;                          // For directories
+}
+
+message FileDeleteResult {
+  string deleted_path = 1;
+  int32 files_deleted = 2;
+  int32 dirs_deleted = 3;
+}
+
+// ============================================================================
+// MOVE/RENAME
+// ============================================================================
+
+message FileMoveRequest {
+  string source_path = 1;
+  string destination_path = 2;
+  bool overwrite = 3;
+}
+
+message FileMoveResult {
+  StreamFileEntry entry = 1;
+}
+
+// ============================================================================
+// COPY
+// ============================================================================
+
+message FileCopyRequest {
+  string source_path = 1;
+  string destination_path = 2;
+  bool overwrite = 3;
+  bool recursive = 4;
+}
+
+message FileCopyResult {
+  StreamFileEntry entry = 1;
+  int64 bytes_copied = 2;
+}
+
+// ============================================================================
+// GET FILE INFO
+// ============================================================================
+
+message FileGetInfoRequest {
+  string path = 1;
+}
+
+message FileGetInfoResult {
+  StreamFileEntry entry = 1;
+}

@@ -1,0 +1,1973 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Cmdop API",
+        "version": "1.0.0",
+        "description": "Complete API documentation for Django CFG Demo Project",
+        "x-django-metadata": {
+            "group": "system",
+            "apps": [
+                "system"
+            ],
+            "generator": "django-client",
+            "generator_version": "1.0.0"
+        }
+    },
+    "paths": {
+        "/api/system/alerts/": {
+            "get": {
+                "operationId": "system_alerts_list",
+                "description": "List alerts with filters.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "read",
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "description": "Filter by read status"
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "type",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by alert type"
+                    },
+                    {
+                        "in": "query",
+                        "name": "workspace",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by workspace ID"
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedAlertList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "system_alerts_create",
+                "description": "ViewSet for Alert operations.\n\nSystem notifications for important events.",
+                "tags": [
+                    "System"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AlertCreate"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/alerts/{id}/": {
+            "get": {
+                "operationId": "system_alerts_retrieve",
+                "description": "ViewSet for Alert operations.\n\nSystem notifications for important events.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Alert.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Alert"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "put": {
+                "operationId": "system_alerts_update",
+                "description": "ViewSet for Alert operations.\n\nSystem notifications for important events.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Alert.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AlertRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Alert"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "patch": {
+                "operationId": "system_alerts_partial_update",
+                "description": "ViewSet for Alert operations.\n\nSystem notifications for important events.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Alert.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAlertRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAlertRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedAlertRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Alert"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "system_alerts_destroy",
+                "description": "ViewSet for Alert operations.\n\nSystem notifications for important events.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Alert.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/alerts/{id}/mark-as-read/": {
+            "post": {
+                "operationId": "system_alerts_mark_as_read_create",
+                "description": "Mark alert as read",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this Alert.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Alert"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/alerts/mark-all-as-read/": {
+            "post": {
+                "operationId": "system_alerts_mark_all_as_read_create",
+                "description": "Mark all unread alerts as read for current workspace",
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "count": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/api-keys/": {
+            "get": {
+                "operationId": "system_api_keys_list",
+                "description": "List API keys with filters.",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "workspace",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by workspace ID"
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedApiKeyList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "post": {
+                "operationId": "system_api_keys_create",
+                "description": "Create new API key (raw key shown only once).",
+                "tags": [
+                    "System"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKeyCreateRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKeyCreateRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApiKeyCreateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKeyResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/api-keys/{id}/": {
+            "get": {
+                "operationId": "system_api_keys_retrieve",
+                "description": "ViewSet for ApiKey operations.\n\nManage API keys for workspace integrations.\nNote: Raw key is only shown once during creation.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this API Key.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKey"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "put": {
+                "operationId": "system_api_keys_update",
+                "description": "ViewSet for ApiKey operations.\n\nManage API keys for workspace integrations.\nNote: Raw key is only shown once during creation.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this API Key.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKey"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "patch": {
+                "operationId": "system_api_keys_partial_update",
+                "description": "ViewSet for ApiKey operations.\n\nManage API keys for workspace integrations.\nNote: Raw key is only shown once during creation.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this API Key.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKey"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            },
+            "delete": {
+                "operationId": "system_api_keys_destroy",
+                "description": "ViewSet for ApiKey operations.\n\nManage API keys for workspace integrations.\nNote: Raw key is only shown once during creation.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this API Key.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/api-keys/{id}/regenerate/": {
+            "post": {
+                "operationId": "system_api_keys_regenerate_create",
+                "description": "Regenerate API key (deletes old key and creates new one)",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "description": "A UUID string identifying this API Key.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "System"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiKeyResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/authorize/": {
+            "post": {
+                "operationId": "system_oauth_authorize_create",
+                "description": "User approves or denies device code in browser (requires authentication).",
+                "summary": "Authorize device",
+                "tags": [
+                    "OAuth"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceAuthorizeRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceAuthorizeRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceAuthorizeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeviceAuthorizeResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "404": {
+                        "description": "Device code not found"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/device/": {
+            "post": {
+                "operationId": "system_oauth_device_create",
+                "description": "CLI initiates OAuth flow by requesting a device code and user code.",
+                "summary": "Request device code",
+                "tags": [
+                    "OAuth"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceCodeRequestRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceCodeRequestRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeviceCodeRequestRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeviceCodeResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/revoke/": {
+            "post": {
+                "operationId": "system_oauth_revoke_create",
+                "description": "Revoke access token or refresh token.",
+                "summary": "Revoke token",
+                "tags": [
+                    "OAuth"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRevokeRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRevokeRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRevokeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token revoked successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/token/": {
+            "post": {
+                "operationId": "system_oauth_token_create",
+                "description": "CLI polls for token (device flow) or refreshes expired token.",
+                "summary": "Request access token",
+                "tags": [
+                    "OAuth"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequestRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequestRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRequestRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/token/info/": {
+            "get": {
+                "operationId": "system_oauth_token_info_retrieve",
+                "description": "Get information about current access token (requires authentication).",
+                "summary": "Get token info",
+                "tags": [
+                    "OAuth"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenInfo"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "x-async-capable": false
+            }
+        },
+        "/api/system/oauth/tokens/": {
+            "get": {
+                "operationId": "system_oauth_tokens_list",
+                "description": "List all CLI tokens for authenticated user.",
+                "summary": "List user tokens",
+                "parameters": [
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Which field to use when ordering the results.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "A search term.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "OAuth"
+                ],
+                "security": [
+                    {
+                        "jwtAuthWithLastLogin": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedTokenListList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "x-async-capable": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Alert": {
+                "type": "object",
+                "description": "Serializer for Alert model.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "enum": [
+                            "machine_offline",
+                            "task_failed",
+                            "schedule_error"
+                        ],
+                        "type": "string",
+                        "description": "* `machine_offline` - Machine Offline\n* `task_failed` - Task Failed\n* `schedule_error` - Schedule Error",
+                        "x-spec-enum-id": "f8e24fc6ff81eee7",
+                        "title": "Alert type"
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "title": "Related machine"
+                    },
+                    "machine_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Get machine name.",
+                        "readOnly": true
+                    },
+                    "read": {
+                        "type": "boolean"
+                    },
+                    "is_unread": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "id",
+                    "is_unread",
+                    "machine_name",
+                    "message",
+                    "title",
+                    "type",
+                    "workspace"
+                ]
+            },
+            "AlertCreate": {
+                "type": "object",
+                "description": "Serializer for creating alerts.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "enum": [
+                            "machine_offline",
+                            "task_failed",
+                            "schedule_error"
+                        ],
+                        "type": "string",
+                        "description": "* `machine_offline` - Machine Offline\n* `task_failed` - Task Failed\n* `schedule_error` - Schedule Error",
+                        "x-spec-enum-id": "f8e24fc6ff81eee7",
+                        "title": "Alert type"
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "title": "Related machine"
+                    }
+                },
+                "required": [
+                    "message",
+                    "title",
+                    "type",
+                    "workspace"
+                ]
+            },
+            "AlertCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating alerts.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "enum": [
+                            "machine_offline",
+                            "task_failed",
+                            "schedule_error"
+                        ],
+                        "type": "string",
+                        "description": "* `machine_offline` - Machine Offline\n* `task_failed` - Task Failed\n* `schedule_error` - Schedule Error",
+                        "x-spec-enum-id": "f8e24fc6ff81eee7",
+                        "title": "Alert type"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "title": "Related machine"
+                    }
+                },
+                "required": [
+                    "message",
+                    "title",
+                    "type",
+                    "workspace"
+                ]
+            },
+            "AlertRequest": {
+                "type": "object",
+                "description": "Serializer for Alert model.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "enum": [
+                            "machine_offline",
+                            "task_failed",
+                            "schedule_error"
+                        ],
+                        "type": "string",
+                        "description": "* `machine_offline` - Machine Offline\n* `task_failed` - Task Failed\n* `schedule_error` - Schedule Error",
+                        "x-spec-enum-id": "f8e24fc6ff81eee7",
+                        "title": "Alert type"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "title": "Related machine"
+                    },
+                    "read": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "message",
+                    "title",
+                    "type",
+                    "workspace"
+                ]
+            },
+            "ApiKey": {
+                "type": "object",
+                "description": "Read-only serializer for ApiKey (hides actual key).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "readOnly": true,
+                        "title": "Key name",
+                        "description": "Descriptive name for this API key"
+                    },
+                    "key_prefix": {
+                        "type": "string",
+                        "readOnly": true,
+                        "description": "First 12 characters for display"
+                    },
+                    "last_used": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_by": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_by_email": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "created_by",
+                    "created_by_email",
+                    "id",
+                    "key_prefix",
+                    "last_used",
+                    "name",
+                    "workspace"
+                ]
+            },
+            "ApiKeyCreateRequest": {
+                "type": "object",
+                "description": "Serializer for creating new API key.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Descriptive name for this API key",
+                        "maxLength": 100
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Workspace ID"
+                    }
+                },
+                "required": [
+                    "name",
+                    "workspace"
+                ]
+            },
+            "ApiKeyResponse": {
+                "type": "object",
+                "description": "Response serializer that includes raw key (shown only once).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "readOnly": true,
+                        "title": "Key name",
+                        "description": "Descriptive name for this API key"
+                    },
+                    "key_prefix": {
+                        "type": "string",
+                        "readOnly": true,
+                        "description": "First 12 characters for display"
+                    },
+                    "raw_key": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "created_by": {
+                        "type": "integer",
+                        "readOnly": true,
+                        "nullable": true
+                    },
+                    "created_by_email": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created_at",
+                    "created_by",
+                    "created_by_email",
+                    "id",
+                    "key_prefix",
+                    "name",
+                    "raw_key",
+                    "workspace"
+                ]
+            },
+            "DeviceAuthorizeRequest": {
+                "type": "object",
+                "description": "Request body for POST /api/oauth/authorize\n\nUser approves or denies device code in browser.",
+                "properties": {
+                    "user_code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "User code to authorize (e.g., ABC-XYZ)",
+                        "maxLength": 10
+                    },
+                    "action": {
+                        "enum": [
+                            "approve",
+                            "deny"
+                        ],
+                        "type": "string",
+                        "x-spec-enum-id": "6857f7e688977787",
+                        "description": "User decision: approve or deny\n\n* `approve` - approve\n* `deny` - deny"
+                    },
+                    "workspace_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "description": "Workspace ID to grant access to (required for approve)"
+                    }
+                },
+                "required": [
+                    "action",
+                    "user_code"
+                ]
+            },
+            "DeviceAuthorizeResponse": {
+                "type": "object",
+                "description": "Response for device authorization.",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "user_code": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "message",
+                    "status",
+                    "success",
+                    "user_code"
+                ]
+            },
+            "DeviceCodeRequestRequest": {
+                "type": "object",
+                "description": "Request body for POST /api/oauth/device\n\nClient sends metadata about itself.",
+                "properties": {
+                    "client_name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "default": "CMDOP CLI",
+                        "description": "Client application name",
+                        "maxLength": 100
+                    },
+                    "client_version": {
+                        "type": "string",
+                        "description": "Client version (e.g., 1.0.0)",
+                        "maxLength": 50
+                    },
+                    "client_hostname": {
+                        "type": "string",
+                        "description": "Client machine hostname",
+                        "maxLength": 255
+                    },
+                    "client_platform": {
+                        "type": "string",
+                        "description": "OS platform: darwin, linux, windows",
+                        "maxLength": 50
+                    }
+                }
+            },
+            "DeviceCodeResponse": {
+                "type": "object",
+                "description": "Response body for POST /api/oauth/device\n\nReturns device code info for CLI to display to user.",
+                "properties": {
+                    "device_code": {
+                        "type": "string",
+                        "description": "Device code for polling (not shown to user)"
+                    },
+                    "user_code": {
+                        "type": "string",
+                        "description": "Human-readable code to show user (e.g., ABC-XYZ)"
+                    },
+                    "verification_uri": {
+                        "type": "string",
+                        "description": "URL where user authorizes (e.g., https://cmdop.com/device)"
+                    },
+                    "expires_in": {
+                        "type": "integer",
+                        "description": "Seconds until device code expires (typically 900)"
+                    },
+                    "interval": {
+                        "type": "integer",
+                        "description": "Polling interval in seconds (typically 5)"
+                    }
+                },
+                "required": [
+                    "device_code",
+                    "expires_in",
+                    "interval",
+                    "user_code",
+                    "verification_uri"
+                ]
+            },
+            "PaginatedAlertList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Alert"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PaginatedApiKeyList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ApiKey"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PaginatedTokenListList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "page",
+                    "pages",
+                    "page_size",
+                    "has_next",
+                    "has_previous",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "description": "Total number of items across all pages",
+                        "example": 150
+                    },
+                    "page": {
+                        "type": "integer",
+                        "description": "Current page number (1-based)",
+                        "example": 2
+                    },
+                    "pages": {
+                        "type": "integer",
+                        "description": "Total number of pages",
+                        "example": 15
+                    },
+                    "page_size": {
+                        "type": "integer",
+                        "description": "Number of items per page",
+                        "example": 10
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether there is a next page",
+                        "example": true
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether there is a previous page",
+                        "example": true
+                    },
+                    "next_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Next page number (null if no next page)",
+                        "example": 3
+                    },
+                    "previous_page": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Previous page number (null if no previous page)",
+                        "example": 1
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TokenList"
+                        },
+                        "description": "Array of items for current page"
+                    }
+                }
+            },
+            "PatchedAlertRequest": {
+                "type": "object",
+                "description": "Serializer for Alert model.",
+                "properties": {
+                    "workspace": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "enum": [
+                            "machine_offline",
+                            "task_failed",
+                            "schedule_error"
+                        ],
+                        "type": "string",
+                        "description": "* `machine_offline` - Machine Offline\n* `task_failed` - Task Failed\n* `schedule_error` - Schedule Error",
+                        "x-spec-enum-id": "f8e24fc6ff81eee7",
+                        "title": "Alert type"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "machine": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true,
+                        "title": "Related machine"
+                    },
+                    "read": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "TokenError": {
+                "type": "object",
+                "description": "Error response for POST /api/oauth/token\n\nOAuth 2.0 standard error format.",
+                "properties": {
+                    "error": {
+                        "enum": [
+                            "authorization_pending",
+                            "slow_down",
+                            "access_denied",
+                            "expired_token",
+                            "invalid_grant"
+                        ],
+                        "type": "string",
+                        "x-spec-enum-id": "6535c636f9ff303a",
+                        "description": "OAuth error code\n\n* `authorization_pending` - authorization_pending\n* `slow_down` - slow_down\n* `access_denied` - access_denied\n* `expired_token` - expired_token\n* `invalid_grant` - invalid_grant"
+                    },
+                    "error_description": {
+                        "type": "string",
+                        "description": "Human-readable error description"
+                    }
+                },
+                "required": [
+                    "error"
+                ]
+            },
+            "TokenInfo": {
+                "type": "object",
+                "description": "Response for GET /api/oauth/token/info\n\nReturns information about current token.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "access_token_prefix": {
+                        "type": "string",
+                        "description": "First 12 characters for identification",
+                        "maxLength": 12
+                    },
+                    "workspace_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "workspace_name": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "client_name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "client_version": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "client_hostname": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "client_platform": {
+                        "type": "string",
+                        "description": "OS platform: darwin, linux, windows",
+                        "maxLength": 50
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "access_token_expires_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "refresh_token_expires_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "last_used_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "Last time access token was used"
+                    },
+                    "is_expired": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "is_refresh_expired": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "access_token_expires_at",
+                    "access_token_prefix",
+                    "created_at",
+                    "id",
+                    "is_expired",
+                    "is_refresh_expired",
+                    "refresh_token_expires_at",
+                    "user_id",
+                    "username",
+                    "workspace_id",
+                    "workspace_name"
+                ]
+            },
+            "TokenList": {
+                "type": "object",
+                "description": "Serializer for listing user's CLI tokens.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "readOnly": true
+                    },
+                    "access_token_prefix": {
+                        "type": "string",
+                        "description": "First 12 characters for identification",
+                        "maxLength": 12
+                    },
+                    "workspace_name": {
+                        "type": "string"
+                    },
+                    "client_name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "client_hostname": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "client_platform": {
+                        "type": "string",
+                        "description": "OS platform: darwin, linux, windows",
+                        "maxLength": 50
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "last_used_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "Last time access token was used"
+                    },
+                    "revoked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "access_token_prefix",
+                    "created_at",
+                    "id",
+                    "is_active",
+                    "workspace_name"
+                ]
+            },
+            "TokenRequestRequest": {
+                "type": "object",
+                "description": "Request body for POST /api/oauth/token\n\nCLI polls with device_code until approved.",
+                "properties": {
+                    "grant_type": {
+                        "enum": [
+                            "urn:ietf:params:oauth:grant-type:device_code",
+                            "refresh_token"
+                        ],
+                        "type": "string",
+                        "x-spec-enum-id": "c13fd6212c4a7e9d",
+                        "description": "OAuth grant type\n\n* `urn:ietf:params:oauth:grant-type:device_code` - Device Code Flow\n* `refresh_token` - Refresh Token"
+                    },
+                    "device_code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Device code from initial request (for device flow)"
+                    },
+                    "refresh_token": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Refresh token (for token refresh)"
+                    }
+                },
+                "required": [
+                    "grant_type"
+                ]
+            },
+            "TokenResponse": {
+                "type": "object",
+                "description": "Response body for POST /api/oauth/token\n\nReturns access token and refresh token.",
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "description": "Access token (clit_...)"
+                    },
+                    "refresh_token": {
+                        "type": "string",
+                        "description": "Refresh token (clitr_...)"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "default": "Bearer",
+                        "description": "Token type (always Bearer)"
+                    },
+                    "expires_in": {
+                        "type": "integer",
+                        "description": "Access token expiry in seconds"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "default": "workspace:access",
+                        "description": "Token scope"
+                    },
+                    "workspace_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Workspace ID"
+                    },
+                    "workspace_name": {
+                        "type": "string",
+                        "description": "Workspace name"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "User ID"
+                    },
+                    "user_email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "User email (optional)"
+                    }
+                },
+                "required": [
+                    "access_token",
+                    "expires_in",
+                    "refresh_token",
+                    "user_id",
+                    "workspace_id",
+                    "workspace_name"
+                ]
+            },
+            "TokenRevokeRequest": {
+                "type": "object",
+                "description": "Request body for POST /api/oauth/revoke\n\nRevoke access token or refresh token.",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Token to revoke (access or refresh)"
+                    },
+                    "token_type_hint": {
+                        "enum": [
+                            "access_token",
+                            "refresh_token"
+                        ],
+                        "type": "string",
+                        "x-spec-enum-id": "ee07c31e43eeac08",
+                        "description": "Hint about token type (optional)\n\n* `access_token` - access_token\n* `refresh_token` - refresh_token"
+                    }
+                },
+                "required": [
+                    "token"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "jwtAuthWithLastLogin": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ]
+}

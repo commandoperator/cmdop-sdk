@@ -1,0 +1,57 @@
+# Dev folders (local only)
+@*/
+Makefile
+CLAUDE.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.benchmarks/
+
+# Type checking
+.mypy_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.whl
+MANIFEST
+
+# Logs
+logs/*
+
+# Lock files
+uv.lock
+poetry.lock
+
+# Environment
+.env
+.env.*

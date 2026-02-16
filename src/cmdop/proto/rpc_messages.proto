@@ -1,0 +1,31 @@
+// RPC Request/Response Messages
+//
+// Unary RPC messages for session management, terminal control, and health checks.
+//
+// This is a facade file that re-exports all RPC messages
+// from the rpc_messages/ subdirectory for backward compatibility.
+//
+// Version: 3.0.0
+// Date: 2025-12-27
+//
+// Changelog:
+// - v3.0.0: Decomposed into rpc_messages/ subdirectory with public imports
+// - v2.1.0: Added push notification messages
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Re-export all RPC message types using public import
+import public "rpc_messages/session.proto";
+import public "rpc_messages/terminal.proto";
+import public "rpc_messages/history.proto";
+import public "rpc_messages/device.proto";
+import public "rpc_messages/lifecycle.proto";
+import public "rpc_messages/health.proto";
+import public "rpc_messages/push.proto";
+import public "rpc_messages/extract.proto";
+import public "rpc_messages/agent.proto";
+import public "rpc_messages/browser.proto";

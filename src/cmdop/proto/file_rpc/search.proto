@@ -1,0 +1,33 @@
+// File RPC: Search Operations
+//
+// RPC wrappers for file search functionality.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "file_operations.proto";
+
+// --- File Search RPC ---
+message FileSearchRpcRequest {
+  string session_id = 1;
+  string path = 2;                               // Base directory to search
+  string filename_pattern = 3;                   // Glob pattern for filenames
+  string content_pattern = 4;                    // Regex pattern for file content
+  bool case_sensitive = 5;                       // Case sensitivity for content search
+  bool include_hidden = 6;                       // Include hidden files/directories
+  int32 max_results = 7;                         // Maximum results (default: 100)
+  int32 max_depth = 8;                           // Maximum directory depth
+  int32 context_lines = 9;                       // Lines of context around matches
+}
+
+message FileSearchRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileSearchResult result = 3;
+}

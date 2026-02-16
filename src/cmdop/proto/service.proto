@@ -1,0 +1,168 @@
+// Terminal Streaming Service - Main service definition.
+//
+// Architecture:
+//   Browser (xterm.js) → WebSocket → Django → gRPC → Agent → PTY
+//
+// Flow:
+//   1. Browser opens terminal → Django creates TerminalSession
+//   2. Agent connects via gRPC with session_id
+//   3. Bidirectional streaming established
+//   4. Input: Browser → Django → Agent (stdin)
+//   5. Output: Agent → Django → Browser (stdout/stderr)
+//
+// Version: 2.21.0
+// Date: 2026-02-16
+//
+// Changelog:
+// - v2.21.0: Added GetSessionByHostname RPC for SDK set_machine()
+// - v2.19.0: Added BrowserNetwork* RPCs for network capture
+// - v2.18.0: Added BrowserMouseMove, BrowserHover, BrowserScroll RPCs
+// - v2.17.0: Added BrowserValidateSelectors, BrowserExtractData RPCs
+// - v2.16.0: Added Browser Direct Control API (BrowserNavigate, BrowserClick, BrowserExtract, etc.)
+// - v2.14.0: Added ListSessions RPC for SDK session discovery
+// - v2.13.0: Added RunAgent RPC for SDK agent execution
+// - v2.12.0: Added Extract RPC for SDK structured output extraction
+// - v2.11.0: Added HLS streaming RPCs (HlsGetPlaylist, HlsGetSegment, HlsStopSession)
+// - v2.3.0: Added FileSearch RPC
+// - v2.2.0: Added FileCreateArchive RPC
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "agent_messages.proto";
+import "control_messages.proto";
+import "rpc_messages.proto";
+import "file_rpc.proto";
+import "file_operations.proto";
+
+// ============================================================================
+// SERVICE DEFINITION
+// ============================================================================
+
+service TerminalStreamingService {
+  // PRIMARY: Bidirectional streaming for terminal I/O
+  // Agent opens stream → Django sends input → Agent sends output
+  rpc ConnectTerminal(stream AgentMessage) returns (stream ControlMessage);
+
+  // Session management RPCs
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc CloseSession(CloseSessionRequest) returns (CloseSessionResponse);
+  rpc GetSessionStatus(GetSessionStatusRequest) returns (GetSessionStatusResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);  // v2.14.0
+  rpc GetSessionByHostname(GetSessionByHostnameRequest) returns (GetSessionByHostnameResponse);  // v2.21.0
+
+  // Terminal control RPCs (for external clients like Django management commands)
+  rpc SendInput(SendInputRequest) returns (SendInputResponse);
+  rpc SendResize(SendResizeRequest) returns (SendResizeResponse);
+  rpc SendSignal(SendSignalRequest) returns (SendSignalResponse);
+
+  // History & Output
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+  rpc GetOutput(GetOutputRequest) returns (GetOutputResponse);  // v2.20.0 - SDK execute() support
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // Device token registration (for push notifications)
+  rpc RegisterDeviceToken(RegisterDeviceTokenRequest) returns (RegisterDeviceTokenResponse);
+  rpc UnregisterDeviceToken(UnregisterDeviceTokenRequest) returns (UnregisterDeviceTokenResponse);
+
+  // Session lifecycle (push-wake flow)
+  rpc EnterBackground(EnterBackgroundRequest) returns (EnterBackgroundResponse);
+  rpc WakeFromBackground(WakeFromBackgroundRequest) returns (WakeFromBackgroundResponse);
+  rpc QueueCommand(QueueCommandRequest) returns (QueueCommandResponse);
+
+  // File operations (routed through streaming to agent)
+  rpc FileListDirectory(FileListDirectoryRpcRequest) returns (FileListDirectoryRpcResponse);
+  rpc FileRead(FileReadRpcRequest) returns (FileReadRpcResponse);
+  rpc FileWrite(FileWriteRpcRequest) returns (FileWriteRpcResponse);
+  rpc FileCreateDirectory(FileCreateDirectoryRpcRequest) returns (FileCreateDirectoryRpcResponse);
+  rpc FileDelete(FileDeleteRpcRequest) returns (FileDeleteRpcResponse);
+  rpc FileMove(FileMoveRpcRequest) returns (FileMoveRpcResponse);
+  rpc FileCopy(FileCopyRpcRequest) returns (FileCopyRpcResponse);
+  rpc FileGetInfo(FileGetInfoRpcRequest) returns (FileGetInfoRpcResponse);
+  rpc FileCreateArchive(FileCreateArchiveRpcRequest) returns (FileCreateArchiveRpcResponse);
+  rpc FileSearch(FileSearchRpcRequest) returns (FileSearchRpcResponse);
+
+  // HLS streaming (v2.11.0) - for adaptive video streaming
+  rpc HlsGetPlaylist(HlsGetPlaylistRpcRequest) returns (HlsGetPlaylistRpcResponse);
+  rpc HlsGetSegment(HlsGetSegmentRpcRequest) returns (HlsGetSegmentRpcResponse);
+  rpc HlsStopSession(HlsStopSessionRpcRequest) returns (HlsStopSessionRpcResponse);
+
+  // Streaming relay (for cross-device file transfer via HTTP -> gRPC)
+  rpc InitiateStreamingRelay(StreamingRelayRequest) returns (StreamingRelayResponse);
+  rpc RelayChunk(StreamingRelayChunk) returns (StreamingRelayAck);
+  rpc GetStreamingRelayStatus(StreamingRelayStatusRequest) returns (StreamingRelayStatus);
+  rpc CancelStreamingRelay(StreamingRelayCancelRequest) returns (StreamingRelayCancelResponse);
+
+  // Push notification (send desktop notification to agent)
+  rpc SendPushNotification(SendPushNotificationRequest) returns (SendPushNotificationResponse);
+
+  // Structured data extraction (v2.12.0) - for SDK programmatic access
+  // Agent uses tools to gather data and returns JSON matching provided schema
+  rpc Extract(ExtractRequest) returns (ExtractResponse);
+
+  // Run AI agent (v2.13.0) - for SDK agent execution
+  // SDK sends prompt, Django relays to connected agent, returns result
+  rpc RunAgent(RunAgentRequest) returns (RunAgentResponse);
+
+  // Cancel running agent (v2.15.0) - for SDK agent cancellation
+  // SDK sends cancel request, Django relays to connected agent, returns confirmation
+  rpc CancelAgent(CancelAgentRequest) returns (CancelAgentResponse);
+
+  // ============================================================================
+  // BROWSER DIRECT CONTROL (v2.16.0)
+  // Direct browser automation without LLM - developer controls via selectors/regex/JS
+  // ============================================================================
+
+  // Session management
+  rpc BrowserCreateSession(BrowserCreateSessionRequest) returns (BrowserCreateSessionResponse);
+  rpc BrowserCloseSession(BrowserCloseSessionRequest) returns (BrowserCloseSessionResponse);
+
+  // Navigation
+  rpc BrowserNavigate(BrowserNavigateRequest) returns (BrowserNavigateResponse);
+
+  // Interaction
+  rpc BrowserClick(BrowserClickRequest) returns (BrowserClickResponse);
+  rpc BrowserType(BrowserTypeRequest) returns (BrowserTypeResponse);
+  rpc BrowserWait(BrowserWaitRequest) returns (BrowserWaitResponse);
+
+  // Data extraction (developer controls via selectors/regex)
+  rpc BrowserExtract(BrowserExtractRequest) returns (BrowserExtractResponse);
+  rpc BrowserExtractRegex(BrowserExtractRegexRequest) returns (BrowserExtractRegexResponse);
+  rpc BrowserGetHTML(BrowserGetHTMLRequest) returns (BrowserGetHTMLResponse);
+  rpc BrowserGetText(BrowserGetTextRequest) returns (BrowserGetTextResponse);
+  rpc BrowserExecuteScript(BrowserExecuteScriptRequest) returns (BrowserExecuteScriptResponse);
+
+  // Screenshot
+  rpc BrowserScreenshot(BrowserScreenshotRequest) returns (BrowserScreenshotResponse);
+
+  // State
+  rpc BrowserGetState(BrowserGetStateRequest) returns (BrowserGetStateResponse);
+
+  // Cookies
+  rpc BrowserSetCookies(BrowserSetCookiesRequest) returns (BrowserSetCookiesResponse);
+  rpc BrowserGetCookies(BrowserGetCookiesRequest) returns (BrowserGetCookiesResponse);
+
+  // Selector validation & data extraction (v2.17.0)
+  rpc BrowserValidateSelectors(BrowserValidateSelectorsRequest) returns (BrowserValidateSelectorsResponse);
+  rpc BrowserExtractData(BrowserExtractDataRequest) returns (BrowserExtractDataResponse);
+
+  // Mouse & Input (v2.18.0)
+  rpc BrowserMouseMove(BrowserMouseMoveRequest) returns (BrowserMouseMoveResponse);
+  rpc BrowserHover(BrowserHoverRequest) returns (BrowserHoverResponse);
+  rpc BrowserScroll(BrowserScrollRequest) returns (BrowserScrollResponse);
+
+  // Network Capture (v2.19.0)
+  rpc BrowserNetworkEnable(BrowserNetworkEnableRequest) returns (BrowserNetworkEnableResponse);
+  rpc BrowserNetworkDisable(BrowserNetworkDisableRequest) returns (BrowserNetworkDisableResponse);
+  rpc BrowserNetworkGetExchanges(BrowserNetworkGetExchangesRequest) returns (BrowserNetworkGetExchangesResponse);
+  rpc BrowserNetworkGetExchange(BrowserNetworkGetExchangeRequest) returns (BrowserNetworkGetExchangeResponse);
+  rpc BrowserNetworkGetLast(BrowserNetworkGetLastRequest) returns (BrowserNetworkGetLastResponse);
+  rpc BrowserNetworkClear(BrowserNetworkClearRequest) returns (BrowserNetworkClearResponse);
+  rpc BrowserNetworkStats(BrowserNetworkStatsRequest) returns (BrowserNetworkStatsResponse);
+  rpc BrowserNetworkExportHAR(BrowserNetworkExportHARRequest) returns (BrowserNetworkExportHARResponse);
+}

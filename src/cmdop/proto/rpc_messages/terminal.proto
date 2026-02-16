@@ -1,0 +1,46 @@
+// RPC Messages: Terminal Control
+//
+// Messages for terminal input, resize, and signal operations.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Send input to terminal
+message SendInputRequest {
+  string session_id = 1;
+  bytes data = 2;                              // Input data (keyboard, paste)
+}
+
+message SendInputResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Send resize command
+message SendResizeRequest {
+  string session_id = 1;
+  int32 cols = 2;
+  int32 rows = 3;
+}
+
+message SendResizeResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+// Send signal to terminal
+message SendSignalRequest {
+  string session_id = 1;
+  int32 signal = 2;                            // Signal number (2=SIGINT, 15=SIGTERM, 9=SIGKILL)
+}
+
+message SendSignalResponse {
+  bool success = 1;
+  string error = 2;
+}

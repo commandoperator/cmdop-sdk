@@ -1,0 +1,29 @@
+// RPC Messages: Push Notifications
+//
+// Messages for sending push notifications to agent desktop.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// Send push notification to agent's desktop
+message SendPushNotificationRequest {
+  string session_id = 1;                         // Target session ID
+  string type = 2;                               // Type: info, success, warning, error
+  string title = 3;                              // Notification title
+  string message = 4;                            // Notification message
+  map<string, string> data = 5;                  // Additional data
+  int32 priority = 6;                            // Priority: 0=normal, 1=high, 2=urgent
+  bool silent = 7;                               // If true, no visual notification
+  int32 method = 8;                              // Delivery: 0=auto, 1=visual, 2=audio, 3=both
+}
+
+message SendPushNotificationResponse {
+  bool success = 1;
+  string error = 2;
+}

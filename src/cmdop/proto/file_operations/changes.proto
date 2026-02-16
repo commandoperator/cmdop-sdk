@@ -1,0 +1,51 @@
+// File Operations - Incremental file changes for NSFileProvider sync.
+//
+// Version: 2.12.0
+// Date: 2025-12-30
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "google/protobuf/timestamp.proto";
+import "file_operations/common.proto";
+
+// ============================================================================
+// FILE CHANGES (NSFileProvider Incremental Sync)
+// ============================================================================
+
+// Change type for file system operations
+enum FileChangeType {
+  FILE_CHANGE_UNSPECIFIED = 0;
+  FILE_CHANGE_CREATE = 1;      // File or directory created
+  FILE_CHANGE_MODIFY = 2;      // File content or metadata modified
+  FILE_CHANGE_DELETE = 3;      // File or directory deleted
+  FILE_CHANGE_MOVE = 4;        // File or directory moved/renamed
+}
+
+// A single file change event
+message FileChange {
+  FileChangeType change_type = 1;
+  StreamFileEntry item = 2;       // The file/directory affected (null for delete)
+  string old_path = 3;            // Previous path (only for move operations)
+}
+
+// Request for getting file changes since a sequence number
+message FileGetChangesRequest {
+  int64 since_sequence = 1;       // Fetch changes since this sequence (0 for full sync)
+  string path = 2;                // Optional: filter to specific directory path
+  int32 limit = 3;                // Max changes to return (default: 100, max: 500)
+  string cursor = 4;              // Pagination cursor from previous response
+}
+
+// Response with file changes for incremental sync
+message FileGetChangesResult {
+  repeated FileChange changes = 1;
+  int64 current_sequence = 2;     // Current sequence number to use as next anchor
+  double server_timestamp = 3;    // Unix timestamp for clock drift detection
+  bool has_more = 4;              // True if more changes available
+  string next_cursor = 5;         // Cursor for next page (if has_more is true)
+  string state_digest = 6;        // Hash of current state for corruption detection
+}

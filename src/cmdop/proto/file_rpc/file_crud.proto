@@ -1,0 +1,111 @@
+// File RPC: CRUD Operations
+//
+// RPC wrappers for file read, write, create, delete, move, copy, info.
+//
+// Version: 1.0.0
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "file_operations.proto";
+
+// --- Read File RPC ---
+message FileReadRpcRequest {
+  string session_id = 1;
+  string path = 2;
+  int64 offset = 3;
+  int64 length = 4;
+  bool transcode = 5;                          // Transcode video to H.264+AAC (v2.9.0)
+}
+
+message FileReadRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileReadResult result = 3;
+}
+
+// --- Write File RPC ---
+message FileWriteRpcRequest {
+  string session_id = 1;
+  string path = 2;
+  bytes content = 3;
+  bool overwrite = 4;
+  bool create_parents = 5;
+}
+
+message FileWriteRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileWriteResult result = 3;
+}
+
+// --- Create Directory RPC ---
+message FileCreateDirectoryRpcRequest {
+  string session_id = 1;
+  string path = 2;
+  bool create_parents = 3;
+}
+
+message FileCreateDirectoryRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileCreateDirectoryResult result = 3;
+}
+
+// --- Delete RPC ---
+message FileDeleteRpcRequest {
+  string session_id = 1;
+  string path = 2;
+  bool recursive = 3;
+}
+
+message FileDeleteRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileDeleteResult result = 3;
+}
+
+// --- Move RPC ---
+message FileMoveRpcRequest {
+  string session_id = 1;
+  string source_path = 2;
+  string destination_path = 3;
+  bool overwrite = 4;
+}
+
+message FileMoveRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileMoveResult result = 3;
+}
+
+// --- Copy RPC ---
+message FileCopyRpcRequest {
+  string session_id = 1;
+  string source_path = 2;
+  string destination_path = 3;
+  bool overwrite = 4;
+  bool recursive = 5;
+}
+
+message FileCopyRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileCopyResult result = 3;
+}
+
+// --- Get Info RPC ---
+message FileGetInfoRpcRequest {
+  string session_id = 1;
+  string path = 2;
+}
+
+message FileGetInfoRpcResponse {
+  bool success = 1;
+  string error = 2;
+  FileGetInfoResult result = 3;
+}

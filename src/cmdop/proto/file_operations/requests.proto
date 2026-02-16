@@ -1,0 +1,86 @@
+// File Operations - Request/Result wrapper messages.
+//
+// These messages are used within the bidirectional stream
+// for file manager operations routed through the terminal connection.
+//
+// Version: 2.13.0
+// Date: 2025-12-30
+//
+// Changelog:
+// - v2.13.0: Added FileGetChanges for NSFileProvider incremental sync
+// - v2.11.1: Added start_time for HLS seeking support (on-demand transcoding)
+// - v2.11.0: Added LOAD_HTTP_HLS for adaptive HLS streaming
+// - v2.10.0: Added FileVisibilityMode for smart visibility control
+// - v2.9.0: Added transcoding support for browser-incompatible video formats
+// - v2.8.0: Added MediaMetadata for audio/video metadata extraction
+// - v2.7.0: Added FileSearch for filename/content search
+// - v2.6.0: Added FileCreateArchive for creating archives
+// - v2.5.0: Added LoadMethod enum for content loading strategy
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "file_operations/directory.proto";
+import "file_operations/file_crud.proto";
+import "file_operations/archive.proto";
+import "file_operations/search.proto";
+import "file_operations/hls.proto";
+import "file_operations/changes.proto";
+
+// ============================================================================
+// FILE OPERATION REQUEST/RESULT (via streaming)
+// ============================================================================
+
+// File operation request - wrapper for all file operations
+message FileOperationRequest {
+  string request_id = 1;                       // Unique request ID for correlation
+
+  oneof operation {
+    FileListDirectoryRequest list_directory = 10;
+    FileReadRequest read_file = 11;
+    FileWriteRequest write_file = 12;
+    FileCreateDirectoryRequest create_directory = 13;
+    FileDeleteRequest delete_file = 14;
+    FileMoveRequest move_file = 15;
+    FileCopyRequest copy_file = 16;
+    FileGetInfoRequest get_info = 17;
+    FileCreateArchiveRequest create_archive = 18;        // Added in v2.6.0
+    FileSearchRequest search = 19;                       // Added in v2.7.0
+    FileGetChangesRequest get_changes = 20;              // Added in v2.13.0 (FileProvider sync)
+    // HLS streaming operations (Added in v2.11.0)
+    HlsGetPlaylistRequest hls_get_playlist = 30;
+    HlsGetSegmentRequest hls_get_segment = 31;
+    HlsStopSessionRequest hls_stop_session = 32;
+  }
+}
+
+// File operation result - wrapper for all file operation results
+message FileOperationResult {
+  string request_id = 1;                       // Correlates with FileOperationRequest
+  bool success = 2;
+  string error_code = 3;                       // Error code if failed
+  string error_message = 4;                    // Human-readable error
+  repeated string suggestions = 5;             // User-friendly suggestions (added in v2.1.0)
+  bool can_retry = 6;                          // Whether operation can be retried (added in v2.1.0)
+
+  oneof result {
+    FileListDirectoryResult list_directory = 10;
+    FileReadResult read_file = 11;
+    FileWriteResult write_file = 12;
+    FileCreateDirectoryResult create_directory = 13;
+    FileDeleteResult delete_file = 14;
+    FileMoveResult move_file = 15;
+    FileCopyResult copy_file = 16;
+    FileGetInfoResult get_info = 17;
+    FileCreateArchiveResult create_archive = 18;         // Added in v2.6.0
+    FileSearchResult search = 19;                        // Added in v2.7.0
+    FileGetChangesResult get_changes = 20;               // Added in v2.13.0 (FileProvider sync)
+    // HLS streaming results (Added in v2.11.0)
+    HlsGetPlaylistResult hls_get_playlist = 30;
+    HlsGetSegmentResult hls_get_segment = 31;
+    HlsStopSessionResult hls_stop_session = 32;
+  }
+}

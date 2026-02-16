@@ -1,0 +1,65 @@
+// File Operations - File search (glob pattern + grep content search).
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+// Added in v2.7.0
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "file_operations/common.proto";
+
+// ============================================================================
+// FILE SEARCH
+// Glob pattern for filename matching + grep for content search
+// ============================================================================
+
+// Type of search match
+enum SearchMatchType {
+  MATCH_TYPE_UNSPECIFIED = 0;
+  MATCH_FILENAME = 1;                            // Matched by glob pattern
+  MATCH_CONTENT = 2;                             // Matched by content grep
+}
+
+// File search request - combines glob (filename) and grep (content)
+message FileSearchRequest {
+  string path = 1;                               // Base directory to search
+  string filename_pattern = 2;                   // Glob pattern for filenames (e.g., "*.ts", "**/*.go")
+  string content_pattern = 3;                    // Regex pattern for file content
+  bool case_sensitive = 4;                       // Case sensitivity for content search
+  bool include_hidden = 5;                       // DEPRECATED: Use visibility_mode instead
+  int32 max_results = 6;                         // Maximum results (default: 100)
+  int32 max_depth = 7;                           // Maximum directory depth (0 = unlimited)
+  int32 context_lines = 8;                       // Lines of context around matches (default: 0)
+  FileVisibilityMode visibility_mode = 9;       // Smart visibility control (v2.10.0)
+}
+
+// Individual search match
+message FileSearchMatch {
+  StreamFileEntry entry = 1;                     // File info
+  SearchMatchType match_type = 2;                // How file was matched
+  repeated ContentMatch content_matches = 3;     // Content matches (if content_pattern used)
+}
+
+// Content match with context
+message ContentMatch {
+  int32 line_number = 1;                         // 1-based line number
+  string line = 2;                               // Matching line content
+  int32 column_start = 3;                        // Match start position in line
+  int32 column_end = 4;                          // Match end position in line
+  repeated string context_before = 5;            // Lines before match
+  repeated string context_after = 6;             // Lines after match
+}
+
+// File search result
+message FileSearchResult {
+  repeated FileSearchMatch matches = 1;          // Matched files
+  int32 total_matches = 2;                       // Total matches found
+  bool truncated = 3;                            // True if results were truncated
+  string search_path = 4;                        // Actual search path used
+  int64 files_scanned = 5;                       // Number of files scanned
+  int64 duration_ms = 6;                         // Search duration in milliseconds
+}

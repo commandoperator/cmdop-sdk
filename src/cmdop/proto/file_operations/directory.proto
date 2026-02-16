@@ -1,0 +1,45 @@
+// File Operations - Directory listing and creation.
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+import "file_operations/common.proto";
+
+// ============================================================================
+// LIST DIRECTORY
+// ============================================================================
+
+message FileListDirectoryRequest {
+  string path = 1;
+  int32 page_size = 2;                         // Default: 100
+  string page_token = 3;
+  bool include_hidden = 4;                     // DEPRECATED: Use visibility_mode instead
+  FileVisibilityMode visibility_mode = 5;     // Smart visibility control (v2.10.0)
+}
+
+message FileListDirectoryResult {
+  string current_path = 1;
+  repeated StreamFileEntry entries = 2;
+  string next_page_token = 3;
+  int32 total_count = 4;
+  bool has_more = 5;
+}
+
+// ============================================================================
+// CREATE DIRECTORY
+// ============================================================================
+
+message FileCreateDirectoryRequest {
+  string path = 1;
+  bool create_parents = 2;                     // mkdir -p
+}
+
+message FileCreateDirectoryResult {
+  StreamFileEntry entry = 1;
+}

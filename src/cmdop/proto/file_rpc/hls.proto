@@ -1,0 +1,64 @@
+// File RPC: HLS Streaming Operations
+//
+// RPC wrappers for HLS video streaming with seeking support.
+//
+// Version: 1.1.0
+// Date: 2025-12-27
+//
+// Changelog:
+// - v1.1.0: Added start_time for on-demand seeking support
+// - v1.0.0: Initial HLS streaming RPCs
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+// --- HLS Get Playlist RPC ---
+// Returns master.m3u8 or quality-specific playlist
+message HlsGetPlaylistRpcRequest {
+  string session_id = 1;
+  string path = 2;                               // Video file path
+  string quality = 3;                            // Empty for master, "720p" etc for quality playlist
+  float start_time = 4;                          // Start position in seconds for seeking
+}
+
+message HlsGetPlaylistRpcResponse {
+  bool success = 1;
+  string error = 2;
+  bytes content = 3;                             // Playlist content (.m3u8)
+  string content_type = 4;                       // "application/vnd.apple.mpegurl"
+  float duration = 5;                            // Total video duration in seconds
+  int32 segment_duration = 6;                    // Segment duration in seconds
+}
+
+// --- HLS Get Segment RPC ---
+// Returns a video segment (.ts file)
+message HlsGetSegmentRpcRequest {
+  string session_id = 1;
+  string path = 2;                               // Video file path
+  string quality = 3;                            // Quality level (e.g., "720p")
+  int32 segment_num = 4;                         // Segment number (0, 1, 2, ...)
+  float start_time = 5;                          // Session start time for seeking
+}
+
+message HlsGetSegmentRpcResponse {
+  bool success = 1;
+  string error = 2;
+  bytes content = 3;                             // Segment content (.ts)
+  string content_type = 4;                       // "video/mp2t"
+  bool created_new_session = 5;                  // True if new FFmpeg session was created
+}
+
+// --- HLS Stop Session RPC ---
+// Stops HLS transcoding and cleans up
+message HlsStopSessionRpcRequest {
+  string session_id = 1;
+  string path = 2;                               // Video file path
+}
+
+message HlsStopSessionRpcResponse {
+  bool success = 1;
+  string error = 2;
+}

@@ -1,0 +1,213 @@
+// File Operations - Chunked transfer and streaming relay.
+//
+// Version: 2.11.1
+// Date: 2025-12-27
+// Chunked transfer added in v2.2.0
+// Streaming relay added in v2.2.1
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "github.com/cmdop/cmdop/pkg/terminalpb";
+
+// ============================================================================
+// CHUNKED TRANSFER
+// ============================================================================
+
+// File chunk for streaming large files
+message FileChunk {
+  string transfer_id = 1;                      // Transfer session ID
+  int32 chunk_index = 2;                       // 0-based chunk index
+  int32 total_chunks = 3;                      // Total number of chunks
+  bytes data = 4;                              // Chunk data (default: 1MB)
+  string checksum = 5;                         // MD5 checksum of chunk data
+  int64 offset = 6;                            // Byte offset in file
+  bool is_last = 7;                            // True for final chunk
+}
+
+// Request to initiate chunked upload (agent -> Django)
+message ChunkedUploadRequest {
+  string session_id = 1;                       // Terminal session ID
+  string transfer_id = 2;                      // Unique transfer ID
+  string path = 3;                             // Source file path
+  int64 total_size = 4;                        // Total file size in bytes
+  int32 chunk_size = 5;                        // Chunk size (default: 1MB)
+  string file_checksum = 6;                    // MD5 of entire file
+}
+
+// Response to chunked upload initiation
+message ChunkedUploadResponse {
+  string transfer_id = 1;
+  bool success = 2;
+  string error = 3;
+  int32 expected_chunks = 4;
+}
+
+// Request to initiate chunked download (agent <- Django)
+message ChunkedDownloadRequest {
+  string session_id = 1;
+  string transfer_id = 2;
+  string path = 3;                             // Destination file path
+  int64 total_size = 4;
+  int32 chunk_size = 5;
+  string file_checksum = 6;
+}
+
+// Response to chunked download initiation
+message ChunkedDownloadResponse {
+  string transfer_id = 1;
+  bool success = 2;
+  string error = 3;
+}
+
+// Progress update for transfers
+message TransferProgress {
+  string transfer_id = 1;
+  int64 bytes_transferred = 2;
+  int64 total_bytes = 3;
+  float percentage = 4;
+  float speed_bps = 5;                         // Bytes per second
+  int32 eta_seconds = 6;                       // Estimated time remaining
+}
+
+// Transfer completion notification
+message TransferComplete {
+  string transfer_id = 1;
+  bool success = 2;
+  string error = 3;
+  int32 chunks_transferred = 4;
+  int64 bytes_transferred = 5;
+  string final_checksum = 6;                   // MD5 of reassembled file
+}
+
+// ============================================================================
+// CROSS-DEVICE TRANSFER
+// ============================================================================
+
+// Request to download from broker (agent <- Django)
+message BrokerDownloadRequest {
+  string transfer_id = 1;                      // Broker transfer ID
+  string target_path = 2;                      // Where to save on device
+  int64 total_size = 3;
+  string file_checksum = 4;
+  int32 chunk_size = 5;
+}
+
+// Agent requests next chunk from broker
+message BrokerChunkRequest {
+  string transfer_id = 1;
+  int32 chunk_index = 2;
+  int32 chunk_size = 3;
+}
+
+// Broker responds with chunk data
+message BrokerChunkResponse {
+  string transfer_id = 1;
+  int32 chunk_index = 2;
+  bytes data = 3;
+  string checksum = 4;
+  bool is_last = 5;
+}
+
+// ============================================================================
+// STREAMING RELAY
+// Real-time relay without temp storage - chunks forwarded immediately
+// ============================================================================
+
+// State of streaming relay transfer
+enum StreamingRelayState {
+  RELAY_STATE_UNSPECIFIED = 0;
+  RELAY_INITIATED = 1;
+  RELAY_STREAMING = 2;
+  RELAY_COMPLETED = 3;
+  RELAY_FAILED = 4;
+  RELAY_CANCELLED = 5;
+}
+
+// Request to initiate streaming relay (source -> Django)
+message StreamingRelayRequest {
+  string transfer_id = 1;                      // Unique transfer ID
+  string source_session_id = 2;                // Source device session
+  repeated string target_session_ids = 3;      // Target device session(s) - 1 to N
+
+  // File metadata
+  string file_name = 4;
+  string source_path = 5;                      // Path on source device
+  string target_path = 6;                      // Destination path on targets
+  int64 file_size = 7;
+  string file_checksum = 8;                    // MD5 of entire file
+  int32 chunk_size = 9;                        // Chunk size (default: 1MB)
+}
+
+// Response to streaming relay initiation
+message StreamingRelayResponse {
+  string transfer_id = 1;
+  bool success = 2;
+  string error = 3;
+  int32 total_chunks = 4;
+  repeated string connected_targets = 5;       // Which targets are connected
+  repeated string offline_targets = 6;         // Which targets are offline
+}
+
+// Chunk for streaming relay (source -> Django -> targets)
+message StreamingRelayChunk {
+  string transfer_id = 1;
+  string source_session_id = 2;                // Who sent this chunk
+  repeated string target_session_ids = 3;      // Where to relay (can be subset)
+
+  int32 chunk_index = 4;
+  int32 total_chunks = 5;
+  bytes data = 6;
+  string chunk_checksum = 7;                   // MD5 of chunk
+  int64 offset = 8;                            // Byte offset in file
+
+  bool is_first = 9;                           // First chunk (contains metadata)
+  bool is_last = 10;                           // Final chunk
+}
+
+// Acknowledgment from target (target -> Django -> source)
+message StreamingRelayAck {
+  string transfer_id = 1;
+  string session_id = 2;                       // Which target is acknowledging
+  int32 chunk_index = 3;
+  bool success = 4;
+  string error = 5;
+}
+
+// Status update for streaming relay (Django -> Centrifugo)
+message StreamingRelayStatus {
+  string transfer_id = 1;
+  StreamingRelayState state = 2;
+  float overall_progress = 3;                  // 0-100%
+
+  // Per-target progress
+  map<string, float> target_progress = 4;      // session_id -> progress%
+  map<string, int32> target_chunks_acked = 5;  // session_id -> chunks received
+
+  int32 chunks_sent = 6;                       // Chunks sent by source
+  int32 total_chunks = 7;
+
+  string error = 8;                            // Error message if failed
+
+  // File metadata
+  string file_name = 9;                        // Name of file being transferred
+  int64 file_size = 10;                        // Total file size in bytes
+}
+
+// Get status of streaming relay
+message StreamingRelayStatusRequest {
+  string transfer_id = 1;
+}
+
+// Cancel streaming relay
+message StreamingRelayCancelRequest {
+  string transfer_id = 1;
+  string reason = 2;
+}
+
+message StreamingRelayCancelResponse {
+  string transfer_id = 1;
+  bool success = 2;
+  string error = 3;
+}

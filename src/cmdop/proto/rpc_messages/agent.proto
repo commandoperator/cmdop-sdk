@@ -1,0 +1,115 @@
+// RPC Messages: Agent Execution
+//
+// Messages for SDK → Agent communication via RunAgent unary RPC.
+// SDK sends prompt, Django relays to connected agent, returns result.
+//
+// Flow:
+//   1. SDK calls RunAgent(RunAgentRequest)
+//   2. Django sends AgentRunCommand to connected agent via streaming
+//   3. Agent executes AI task and sends AgentResult back
+//   4. Django returns RunAgentResponse to SDK
+//
+// Version: 1.0.0
+// Date: 2026-01-01
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "control_messages.proto";  // For AgentType enum
+import "agent_messages.proto";    // For AgentToolResult, AgentUsage
+
+// ============================================================================
+// RUN AGENT REQUEST
+// ============================================================================
+
+// Request to run AI agent
+message RunAgentRequest {
+  // Session ID with connected agent (required)
+  // Use CreateSession to get a session, then cmdop agent connects to it
+  string session_id = 1;
+
+  // Unique request ID for correlation (optional, generated if empty)
+  string request_id = 2;
+
+  // User prompt/question for the agent (required)
+  string prompt = 3;
+
+  // Type of agent to run (default: AGENT_TYPE_CHAT)
+  AgentType agent_type = 4;
+
+  // Additional configuration options
+  map<string, string> options = 5;
+
+  // Maximum execution time in seconds (default: 300, max: 600)
+  int32 timeout_seconds = 6;
+
+  // Optional: JSON Schema for structured output (Pydantic model schema)
+  // If provided, agent will return output_json instead of text
+  string output_schema = 7;
+}
+
+// ============================================================================
+// RUN AGENT RESPONSE
+// ============================================================================
+
+// Response from agent execution
+message RunAgentResponse {
+  // Request ID for correlation (matches RunAgentRequest.request_id)
+  string request_id = 1;
+
+  // Whether execution succeeded
+  bool success = 2;
+
+  // Agent's response text
+  string text = 3;
+
+  // Error message if !success
+  string error = 4;
+
+  // Tool execution results (if agent used tools)
+  repeated AgentToolResult tool_results = 5;
+
+  // Token usage statistics
+  AgentUsage usage = 6;
+
+  // Execution duration in milliseconds
+  int64 duration_ms = 7;
+
+  // Structured output JSON (if output_schema was provided in request)
+  // Contains JSON matching the provided schema
+  string output_json = 8;
+}
+
+// ============================================================================
+// CANCEL AGENT (v2.15.0)
+// ============================================================================
+
+// Request to cancel running AI agent
+message CancelAgentRequest {
+  // Session ID with connected agent (required)
+  string session_id = 1;
+
+  // Request ID to cancel (from RunAgentRequest)
+  string request_id = 2;
+
+  // Cancellation reason
+  string reason = 3;
+}
+
+// Response from agent cancellation
+message CancelAgentResponse {
+  // Whether cancellation was successful
+  bool success = 1;
+
+  // Error message if !success
+  string error = 2;
+
+  // Partial response text accumulated before cancellation
+  string partial_text = 3;
+
+  // Token usage up to cancellation point
+  AgentUsage usage = 4;
+}
