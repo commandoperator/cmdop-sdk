@@ -31,7 +31,7 @@ pip install cmdop
 ```python
 from cmdop import AsyncCMDOPClient
 
-async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
+async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     # Terminal
     await client.terminal.set_machine("my-server")
     output, code = await client.terminal.execute("uname -a")
@@ -64,13 +64,13 @@ async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
 from cmdop import CMDOPClient, AsyncCMDOPClient
 
 # Remote (via cloud relay) - works through any NAT
-client = CMDOPClient.remote(api_key="cmd_xxx")
+client = CMDOPClient.remote(api_key="cmdop_xxx")
 
 # Local (direct IPC to running agent)
 client = CMDOPClient.local()
 
 # Async
-async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
+async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     ...
 ```
 
@@ -81,7 +81,7 @@ async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
 Execute commands, stream output, SSH into machines.
 
 ```python
-async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
+async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     # Set target machine once
     await client.terminal.set_machine("my-server")
 
@@ -293,10 +293,10 @@ Download files from URLs via remote server.
 ```python
 from pathlib import Path
 
-async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
+async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     # Set target machine
     await client.download.set_machine("my-server")
-    client.download.configure(api_key="cmd_xxx")
+    client.download.configure(api_key="cmdop_xxx")
 
     result = await client.download.url(
         url="https://example.com/large-file.zip",
