@@ -42,7 +42,7 @@ class TerminalService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -75,8 +75,8 @@ class TerminalService(BaseService):
         Raises:
             CMDOPError: On creation failure
         """
-        from cmdop._generated.common_types_pb2 import SessionConfig, TerminalSize
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.common_types_pb2 import SessionConfig, TerminalSize
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             CreateSessionRequest as PbRequest,
         )
 
@@ -111,7 +111,7 @@ class TerminalService(BaseService):
             session_id: Target session UUID
             data: Input bytes or string to send
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendInputRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendInputRequest
 
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -128,7 +128,7 @@ class TerminalService(BaseService):
             cols: New width in columns
             rows: New height in rows
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendResizeRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendResizeRequest
 
         request = SendResizeRequest(session_id=session_id, cols=cols, rows=rows)
         self._call_sync(self._get_stub.SendResize, request)
@@ -141,7 +141,7 @@ class TerminalService(BaseService):
             session_id: Target session UUID
             signal: Signal to send
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendSignalRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendSignalRequest
 
         request = SendSignalRequest(
             session_id=session_id,
@@ -161,7 +161,7 @@ class TerminalService(BaseService):
             session_id: Session UUID to close
             force: Force kill if graceful close fails
         """
-        from cmdop._generated.rpc_messages.session_pb2 import CloseSessionRequest
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import CloseSessionRequest
 
         request = CloseSessionRequest(session_id=session_id)
         self._call_sync(self._get_stub.CloseSession, request)
@@ -183,7 +183,7 @@ class TerminalService(BaseService):
         Returns:
             History response with output data
         """
-        from cmdop._generated.rpc_messages.history_pb2 import GetHistoryRequest
+        from cmdop.grpc.generated.rpc_messages.history_pb2 import GetHistoryRequest
 
         request = GetHistoryRequest(
             session_id=session_id,

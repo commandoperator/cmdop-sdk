@@ -2,7 +2,18 @@ from __future__ import annotations
 
 import httpx
 
-from .models import *
+from .models import (
+    DeviceAuthorizeRequest,
+    DeviceAuthorizeResponse,
+    DeviceCodeRequestRequest,
+    DeviceCodeResponse,
+    PaginatedTokenListList,
+    TokenError,
+    TokenInfo,
+    TokenRequestRequest,
+    TokenResponse,
+    TokenRevokeRequest,
+)
 
 
 class SystemOauthAPI:
@@ -12,7 +23,10 @@ class SystemOauthAPI:
         """Initialize sub-client with shared httpx client."""
         self._client = client
 
-    async def system_oauth_authorize_create(self, data: DeviceAuthorizeRequest) -> DeviceAuthorizeResponse:
+    async def system_oauth_authorize_create(
+        self,
+        data: DeviceAuthorizeRequest,
+    ) -> DeviceAuthorizeResponse:
         """
         Authorize device
 
@@ -26,11 +40,17 @@ class SystemOauthAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return DeviceAuthorizeResponse.model_validate(response.json())
 
 
-    async def system_oauth_device_create(self, data: DeviceCodeRequestRequest) -> DeviceCodeResponse:
+    async def system_oauth_device_create(
+        self,
+        data: DeviceCodeRequestRequest,
+    ) -> DeviceCodeResponse:
         """
         Request device code
 
@@ -43,7 +63,10 @@ class SystemOauthAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return DeviceCodeResponse.model_validate(response.json())
 
 
@@ -60,7 +83,10 @@ class SystemOauthAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return None
 
 
@@ -77,7 +103,10 @@ class SystemOauthAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return TokenResponse.model_validate(response.json())
 
 
@@ -94,24 +123,42 @@ class SystemOauthAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return TokenInfo.model_validate(response.json())
 
 
-    async def system_oauth_tokens_list(self, ordering: str | None = None, page: int | None = None, page_size: int | None = None, search: str | None = None) -> list[PaginatedTokenListList]:
+    async def system_oauth_tokens_list(
+        self,
+        ordering: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        search: str | None = None,
+    ) -> list[PaginatedTokenListList]:
         """
         List user tokens
 
         List all CLI tokens for authenticated user.
         """
         url = "/api/system/oauth/tokens/"
-        response = await self._client.get(url, params={"ordering": ordering if ordering is not None else None, "page": page if page is not None else None, "page_size": page_size if page_size is not None else None, "search": search if search is not None else None})
+        _params = {
+            "ordering": ordering if ordering is not None else None,
+            "page": page if page is not None else None,
+            "page_size": page_size if page_size is not None else None,
+            "search": search if search is not None else None,
+        }
+        response = await self._client.get(url, params=_params)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return PaginatedTokenListList.model_validate(response.json())
 
 

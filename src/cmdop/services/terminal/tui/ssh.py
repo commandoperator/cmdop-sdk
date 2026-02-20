@@ -92,18 +92,41 @@ async def ssh_connect(
             # won't be able to forward output back to us.
             # =========================================================
             if session_id is None:
-                with console.status(f"[cyan]Finding session for [bold]{hostname}[/bold]...[/]"):
-                    session = await client.terminal.get_active_session(hostname=hostname)
+                from cmdop.exceptions import (
+                    CMDOPError,
+                    InvalidAPIKeyError,
+                    ConnectionTimeoutError,
+                    AgentOfflineError,
+                )
 
-                if session is None:
-                    console.print(
-                        f"\n[red]Error:[/] No active session found for '[bold]{hostname}[/bold]'\n\n"
-                        "[dim]Possible causes:[/]\n"
-                        "  • Agent not running on the machine\n"
-                        "  • Agent not connected to cloud relay\n"
-                        "  • Wrong hostname (check with: cmdop machines list)\n"
-                    )
-                    return 1
+                with console.status(f"[cyan]Finding session for [bold]{hostname}[/bold]...[/]"):
+                    try:
+                        session = await client.terminal.set_machine(hostname)
+                    except InvalidAPIKeyError:
+                        console.print(
+                            "\n[red]Error:[/] Invalid API key\n\n"
+                            "[dim]Check your API key in config.py or environment variables.[/]\n"
+                        )
+                        return 1
+                    except ConnectionTimeoutError:
+                        console.print(
+                            f"\n[red]Error:[/] Connection timeout for '[bold]{hostname}[/bold]'\n\n"
+                            "[dim]Possible causes:[/]\n"
+                            "  • Agent is offline\n"
+                            "  • Network connectivity issues\n"
+                            "  • Server is overloaded\n"
+                        )
+                        return 1
+                    except AgentOfflineError:
+                        console.print(
+                            f"\n[red]Error:[/] Agent offline for '[bold]{hostname}[/bold]'\n\n"
+                            "[dim]Start the agent on the target machine:[/]\n"
+                            "  • cmdop connect\n"
+                        )
+                        return 1
+                    except CMDOPError as e:
+                        console.print(f"\n[red]Error:[/] {e}\n")
+                        return 1
 
                 # CRITICAL: Use agent's real session_id
                 session_id = session.session_id

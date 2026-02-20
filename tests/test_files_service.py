@@ -164,7 +164,7 @@ class TestFilesServiceList:
         mock_stub.FileListDirectory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.list("/home/user")
 
@@ -202,7 +202,7 @@ class TestFilesServiceList:
         mock_stub.FileListDirectory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.list("/home/user", include_hidden=True)
 
@@ -226,7 +226,7 @@ class TestFilesServiceList:
         mock_stub.FileListDirectory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
             mock_request_instance = MagicMock()
             MockRequest.return_value = mock_request_instance
             result = service.list("/home/user", page_size=50, page_token="prev_token")
@@ -252,7 +252,7 @@ class TestFilesServiceRead:
         mock_stub.FileRead = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.read("/path/to/file.txt")
             MockRequest.assert_called_once_with(
@@ -278,7 +278,7 @@ class TestFilesServiceRead:
         mock_stub.FileRead = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.read("/path/to/binary.bin")
 
@@ -296,7 +296,7 @@ class TestFilesServiceWrite:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.write("/path/to/file.txt", b"content bytes")
             MockRequest.assert_called_once_with(
@@ -314,7 +314,7 @@ class TestFilesServiceWrite:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.write("/path/to/file.txt", "string content")
             MockRequest.assert_called_once_with(
@@ -332,7 +332,7 @@ class TestFilesServiceWrite:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.write("/new/path/file.txt", b"content", create_parents=True)
             MockRequest.assert_called_once_with(
@@ -354,7 +354,7 @@ class TestFilesServiceDelete:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.delete("/path/to/file.txt")
             MockRequest.assert_called_once_with(
@@ -371,7 +371,7 @@ class TestFilesServiceDelete:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.delete("/path/to/dir", recursive=True)
             MockRequest.assert_called_once_with(
@@ -392,7 +392,7 @@ class TestFilesServiceCopy:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileCopyRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileCopyRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.copy("/source/file.txt", "/dest/file.txt")
             MockRequest.assert_called_once_with(
@@ -413,7 +413,7 @@ class TestFilesServiceMove:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileMoveRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileMoveRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.move("/old/path/file.txt", "/new/path/file.txt")
             MockRequest.assert_called_once_with(
@@ -448,7 +448,7 @@ class TestFilesServiceInfo:
         mock_stub.FileGetInfo = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileGetInfoRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileGetInfoRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.info("/path/to/file.txt")
             MockRequest.assert_called_once_with(session_id="", path="/path/to/file.txt")
@@ -470,7 +470,7 @@ class TestFilesServiceMkdir:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.mkdir("/new/directory")
             MockRequest.assert_called_once_with(
@@ -487,7 +487,7 @@ class TestFilesServiceMkdir:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.mkdir("/existing/new_dir", create_parents=False)
             MockRequest.assert_called_once_with(
@@ -529,7 +529,7 @@ class TestAsyncFilesService:
         mock_stub.FileListDirectory = mock_file_list_directory
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.directory_pb2.FileListDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = await service.list("/home/user")
 
@@ -555,7 +555,7 @@ class TestAsyncFilesService:
         mock_stub.FileRead = mock_file_read
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileReadRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = await service.read("/file.txt")
 
@@ -574,7 +574,7 @@ class TestAsyncFilesService:
         mock_stub.FileWrite = mock_file_write
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileWriteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.write("/file.txt", "content")
             MockRequest.assert_called_once()
@@ -592,7 +592,7 @@ class TestAsyncFilesService:
         mock_stub.FileDelete = mock_file_delete
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileDeleteRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.delete("/file.txt")
             MockRequest.assert_called_once()
@@ -610,7 +610,7 @@ class TestAsyncFilesService:
         mock_stub.FileCopy = mock_file_copy
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileCopyRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileCopyRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.copy("/src", "/dst")
             MockRequest.assert_called_once()
@@ -628,7 +628,7 @@ class TestAsyncFilesService:
         mock_stub.FileMove = mock_file_move
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileMoveRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileMoveRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.move("/old", "/new")
             MockRequest.assert_called_once()
@@ -658,7 +658,7 @@ class TestAsyncFilesService:
         mock_stub.FileGetInfo = mock_file_get_info
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileGetInfoRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileGetInfoRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = await service.info("/file.txt")
 
@@ -677,7 +677,7 @@ class TestAsyncFilesService:
         mock_stub.FileCreateDirectory = mock_file_create_directory
         service._stub = mock_stub
 
-        with patch("cmdop._generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.file_rpc.file_crud_pb2.FileCreateDirectoryRpcRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.mkdir("/new/dir")
             MockRequest.assert_called_once()

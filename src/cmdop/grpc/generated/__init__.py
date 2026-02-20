@@ -4,13 +4,13 @@ CMDOP SDK Generated Protobuf/gRPC Types.
 Generated using grpcio for full metadata/timeout support.
 
 Usage:
-    from cmdop._generated import (
+    from cmdop.grpc.generated import (
         # gRPC stubs
         TerminalStreamingServiceStub,
         FileServiceStub,
     )
 
-    from cmdop._generated.rpc_messages.session_pb2 import (
+    from cmdop.grpc.generated.rpc_messages.session_pb2 import (
         CreateSessionRequest,
         CreateSessionResponse,
     )

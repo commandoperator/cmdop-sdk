@@ -57,7 +57,8 @@ class RemoteTransport(BaseTransport):
         self._insecure = insecure
 
         # Validate API key format
-        valid_prefixes = ("cmdop_live_", "cmdop_test_", "cmd_")
+        # cmdop_ is the standard prefix for all CLI/SDK keys
+        valid_prefixes = ("cmdop_",)
         if not api_key.startswith(valid_prefixes):
             raise ValueError(
                 f"API key must start with one of: {', '.join(valid_prefixes)}"

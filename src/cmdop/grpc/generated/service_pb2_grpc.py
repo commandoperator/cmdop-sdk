@@ -240,6 +240,11 @@ class TerminalStreamingServiceStub(object):
                 request_serializer=rpc__messages_dot_agent__pb2.RunAgentRequest.SerializeToString,
                 response_deserializer=rpc__messages_dot_agent__pb2.RunAgentResponse.FromString,
                 _registered_method=True)
+        self.RunAgentStream = channel.unary_stream(
+                '/terminal.TerminalStreamingService/RunAgentStream',
+                request_serializer=rpc__messages_dot_agent__pb2.RunAgentRequest.SerializeToString,
+                response_deserializer=rpc__messages_dot_agent__pb2.RunAgentStreamResponse.FromString,
+                _registered_method=True)
         self.CancelAgent = channel.unary_unary(
                 '/terminal.TerminalStreamingService/CancelAgent',
                 request_serializer=rpc__messages_dot_agent__pb2.CancelAgentRequest.SerializeToString,
@@ -635,6 +640,15 @@ class TerminalStreamingServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RunAgentStream(self, request, context):
+        """Run AI agent with streaming (v2.22.0) - for SDK streaming agent execution
+        SDK sends prompt, Django relays to agent with stream_events=true,
+        streams AgentStreamEvent back to SDK, ends with final result
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def CancelAgent(self, request, context):
         """Cancel running agent (v2.15.0) - for SDK agent cancellation
         SDK sends cancel request, Django relays to connected agent, returns confirmation
@@ -1013,6 +1027,11 @@ def add_TerminalStreamingServiceServicer_to_server(servicer, server):
                     servicer.RunAgent,
                     request_deserializer=rpc__messages_dot_agent__pb2.RunAgentRequest.FromString,
                     response_serializer=rpc__messages_dot_agent__pb2.RunAgentResponse.SerializeToString,
+            ),
+            'RunAgentStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.RunAgentStream,
+                    request_deserializer=rpc__messages_dot_agent__pb2.RunAgentRequest.FromString,
+                    response_serializer=rpc__messages_dot_agent__pb2.RunAgentStreamResponse.SerializeToString,
             ),
             'CancelAgent': grpc.unary_unary_rpc_method_handler(
                     servicer.CancelAgent,
@@ -2163,6 +2182,33 @@ class TerminalStreamingService(object):
             '/terminal.TerminalStreamingService/RunAgent',
             rpc__messages_dot_agent__pb2.RunAgentRequest.SerializeToString,
             rpc__messages_dot_agent__pb2.RunAgentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RunAgentStream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/terminal.TerminalStreamingService/RunAgentStream',
+            rpc__messages_dot_agent__pb2.RunAgentRequest.SerializeToString,
+            rpc__messages_dot_agent__pb2.RunAgentStreamResponse.FromString,
             options,
             channel_credentials,
             insecure,

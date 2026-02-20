@@ -87,10 +87,10 @@ class AsyncDownloadService(BaseService):
         """
         from datetime import datetime, timezone
 
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             GetSessionByHostnameRequest,
         )
-        from cmdop._generated.service_pb2_grpc import TerminalStreamingServiceStub
+        from cmdop.grpc.generated.service_pb2_grpc import TerminalStreamingServiceStub
         from cmdop.exceptions import CMDOPError
 
         stub = TerminalStreamingServiceStub(self._async_channel)

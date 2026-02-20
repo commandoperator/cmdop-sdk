@@ -74,3 +74,15 @@ class CancelAgentResponse(_message.Message):
     partial_text: str
     usage: _agent_messages_pb2.AgentUsage
     def __init__(self, success: bool = ..., error: _Optional[str] = ..., partial_text: _Optional[str] = ..., usage: _Optional[_Union[_agent_messages_pb2.AgentUsage, _Mapping]] = ...) -> None: ...
+
+class RunAgentStreamResponse(_message.Message):
+    __slots__ = ("request_id", "is_final", "event", "result")
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    IS_FINAL_FIELD_NUMBER: _ClassVar[int]
+    EVENT_FIELD_NUMBER: _ClassVar[int]
+    RESULT_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    is_final: bool
+    event: _agent_messages_pb2.AgentStreamEvent
+    result: RunAgentResponse
+    def __init__(self, request_id: _Optional[str] = ..., is_final: bool = ..., event: _Optional[_Union[_agent_messages_pb2.AgentStreamEvent, _Mapping]] = ..., result: _Optional[_Union[RunAgentResponse, _Mapping]] = ...) -> None: ...
