@@ -93,7 +93,7 @@ class TestTerminalServiceCreate:
         service._stub = mock_stub
 
         # Patch protobuf to avoid field validation issues
-        with patch("cmdop._generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.create()
 
@@ -119,7 +119,7 @@ class TestTerminalServiceCreate:
         mock_stub.CreateSession = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.create(
                 shell="/bin/zsh",
@@ -150,7 +150,7 @@ class TestTerminalServiceCreate:
         mock_stub.CreateSession = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.create()
 
@@ -171,7 +171,7 @@ class TestTerminalServiceSendInput:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.send_input("session-123", b"ls -la\n")
             MockRequest.assert_called_once_with(
@@ -189,7 +189,7 @@ class TestTerminalServiceSendInput:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.send_input("session-456", "echo hello\n")
             MockRequest.assert_called_once_with(
@@ -211,7 +211,7 @@ class TestTerminalServiceResize:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendResizeRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendResizeRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.resize("session-123", cols=120, rows=40)
             MockRequest.assert_called_once_with(
@@ -234,7 +234,7 @@ class TestTerminalServiceSendSignal:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.send_signal("session-123", SignalType.SIGINT)
             MockRequest.assert_called_once_with(
@@ -252,7 +252,7 @@ class TestTerminalServiceSendSignal:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.send_signal("session-123", SignalType.SIGTERM)
             MockRequest.assert_called_once_with(
@@ -270,7 +270,7 @@ class TestTerminalServiceSendSignal:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.send_signal("session-123", SignalType.SIGKILL)
             MockRequest.assert_called_once_with(
@@ -298,7 +298,7 @@ class TestTerminalServiceSendSignal:
         }
 
         for signal_type, expected_value in signal_map.items():
-            with patch("cmdop._generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
+            with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
                 MockRequest.return_value = MagicMock()
                 service.send_signal("session-123", signal_type)
                 MockRequest.assert_called_with(
@@ -320,7 +320,7 @@ class TestTerminalServiceClose:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.close("session-123")
             MockRequest.assert_called_once_with(session_id="session-123")
@@ -335,7 +335,7 @@ class TestTerminalServiceClose:
         mock_stub = MagicMock()
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             service.close("session-123", force=True)
             # Note: force param is not currently used in implementation
@@ -360,7 +360,7 @@ class TestTerminalServiceGetHistory:
         mock_stub.GetHistory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.get_history("session-123")
             MockRequest.assert_called_once_with(
@@ -389,7 +389,7 @@ class TestTerminalServiceGetHistory:
         mock_stub.GetHistory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.get_history("session-123", lines=500)
             MockRequest.assert_called_once_with(
@@ -413,7 +413,7 @@ class TestTerminalServiceGetHistory:
         mock_stub.GetHistory = MagicMock(return_value=mock_response)
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = service.get_history("session-123", lines=100)
 
@@ -451,7 +451,7 @@ class TestAsyncTerminalService:
         mock_stub.CreateSession = mock_create_session
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CreateSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = await service.create()
 
@@ -473,7 +473,7 @@ class TestAsyncTerminalService:
         mock_stub.SendInput = mock_send_input
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendInputRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.send_input("session-123", "test\n")
             MockRequest.assert_called_once()
@@ -493,7 +493,7 @@ class TestAsyncTerminalService:
         mock_stub.SendResize = mock_send_resize
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendResizeRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendResizeRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.resize("session-123", 100, 50)
             MockRequest.assert_called_once()
@@ -513,7 +513,7 @@ class TestAsyncTerminalService:
         mock_stub.SendSignal = mock_send_signal
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.terminal_pb2.SendSignalRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.send_signal("session-123", SignalType.SIGINT)
             MockRequest.assert_called_once()
@@ -533,7 +533,7 @@ class TestAsyncTerminalService:
         mock_stub.CloseSession = mock_close_session
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.session_pb2.CloseSessionRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             await service.close("session-123")
             MockRequest.assert_called_once()
@@ -557,7 +557,7 @@ class TestAsyncTerminalService:
         mock_stub.GetHistory = mock_get_history
         service._stub = mock_stub
 
-        with patch("cmdop._generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
+        with patch("cmdop.grpc.generated.rpc_messages.history_pb2.GetHistoryRequest") as MockRequest:
             MockRequest.return_value = MagicMock()
             result = await service.get_history("session-123")
 

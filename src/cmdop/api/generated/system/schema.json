@@ -1884,7 +1884,7 @@
                 "properties": {
                     "access_token": {
                         "type": "string",
-                        "description": "Access token (clit_...)"
+                        "description": "Access token (cmdop_...)"
                     },
                     "refresh_token": {
                         "type": "string",

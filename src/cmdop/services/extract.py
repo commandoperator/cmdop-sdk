@@ -92,7 +92,7 @@ class ExtractService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -129,7 +129,7 @@ class ExtractService(BaseService):
             >>> if result.success:
             ...     print(f"Database: {result.data.name}")
         """
-        from cmdop._generated.rpc_messages.extract_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.extract_pb2 import (
             ExtractRequest,
             ExtractOptions as PbExtractOptions,
         )
@@ -241,7 +241,7 @@ class AsyncExtractService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load async gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -265,7 +265,7 @@ class AsyncExtractService(BaseService):
         Returns:
             ExtractResult with typed data
         """
-        from cmdop._generated.rpc_messages.extract_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.extract_pb2 import (
             ExtractRequest,
             ExtractOptions as PbExtractOptions,
         )

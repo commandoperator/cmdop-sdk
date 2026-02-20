@@ -2,7 +2,22 @@ from __future__ import annotations
 
 import httpx
 
-from .models import *
+from .models import (
+    PaginatedWorkspaceInvitationList,
+    PaginatedWorkspaceMemberList,
+    PatchedWorkspaceMemberRequest,
+    PatchedWorkspaceRequest,
+    Workspace,
+    WorkspaceCreateRequest,
+    WorkspaceInvitation,
+    WorkspaceInvitationAcceptRequest,
+    WorkspaceInvitationCreateRequest,
+    WorkspaceInvitationPublic,
+    WorkspaceInvitationRequest,
+    WorkspaceMember,
+    WorkspaceMemberRequest,
+    WorkspaceRequest,
+)
 
 
 class SyncWorkspacesWorkspacesAPI:
@@ -12,24 +27,42 @@ class SyncWorkspacesWorkspacesAPI:
         """Initialize sync sub-client with shared httpx client."""
         self._client = client
 
-    def invitations_list(self, ordering: str | None = None, page: int | None = None, page_size: int | None = None, search: str | None = None) -> list[PaginatedWorkspaceInvitationList]:
+    def invitations_list(
+        self,
+        ordering: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        search: str | None = None,
+    ) -> list[PaginatedWorkspaceInvitationList]:
         """
         List invitations
 
         List all pending invitations for workspaces you manage
         """
         url = "/api/workspaces/invitations/"
-        response = self._client.get(url, params={"ordering": ordering if ordering is not None else None, "page": page if page is not None else None, "page_size": page_size if page_size is not None else None, "search": search if search is not None else None})
+        _params = {
+            "ordering": ordering if ordering is not None else None,
+            "page": page if page is not None else None,
+            "page_size": page_size if page_size is not None else None,
+            "search": search if search is not None else None,
+        }
+        response = self._client.get(url, params=_params)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return PaginatedWorkspaceInvitationList.model_validate(response.json())
 
 
-    def invitations_create(self, data: WorkspaceInvitationCreateRequest) -> WorkspaceInvitation:
+    def invitations_create(
+        self,
+        data: WorkspaceInvitationCreateRequest,
+    ) -> WorkspaceInvitation:
         """
         Create invitation
 
@@ -42,7 +75,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceInvitation.model_validate(response.json())
 
 
@@ -59,7 +95,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceInvitation.model_validate(response.json())
 
 
@@ -76,10 +115,17 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
-    def invitations_resend_create(self, id: str, data: WorkspaceInvitationRequest) -> WorkspaceInvitation:
+    def invitations_resend_create(
+        self,
+        id: str,
+        data: WorkspaceInvitationRequest,
+    ) -> WorkspaceInvitation:
         """
         Resend invitation
 
@@ -92,7 +138,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceInvitation.model_validate(response.json())
 
 
@@ -109,7 +158,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
     def invitations_decline_create(self, data: WorkspaceInvitationAcceptRequest) -> None:
@@ -125,7 +177,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
     def invitations_details_retrieve(self, token: str) -> WorkspaceInvitationPublic:
@@ -141,22 +196,42 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceInvitationPublic.model_validate(response.json())
 
 
-    def members_list(self, ordering: str | None = None, page: int | None = None, page_size: int | None = None, role: str | None = None, search: str | None = None) -> list[PaginatedWorkspaceMemberList]:
+    def members_list(
+        self,
+        ordering: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        role: str | None = None,
+        search: str | None = None,
+    ) -> list[PaginatedWorkspaceMemberList]:
         """
         List workspace members with optional search and role filters.
         """
         url = "/api/workspaces/members/"
-        response = self._client.get(url, params={"ordering": ordering if ordering is not None else None, "page": page if page is not None else None, "page_size": page_size if page_size is not None else None, "role": role if role is not None else None, "search": search if search is not None else None})
+        _params = {
+            "ordering": ordering if ordering is not None else None,
+            "page": page if page is not None else None,
+            "page_size": page_size if page_size is not None else None,
+            "role": role if role is not None else None,
+            "search": search if search is not None else None,
+        }
+        response = self._client.get(url, params=_params)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return PaginatedWorkspaceMemberList.model_validate(response.json())
 
 
@@ -172,7 +247,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceMember.model_validate(response.json())
 
 
@@ -188,7 +266,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceMember.model_validate(response.json())
 
 
@@ -204,23 +285,34 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceMember.model_validate(response.json())
 
 
-    def members_partial_update(self, id: str, data: PatchedWorkspaceMemberRequest | None = None) -> WorkspaceMember:
+    def members_partial_update(
+        self,
+        id: str,
+        data: PatchedWorkspaceMemberRequest | None = None,
+    ) -> WorkspaceMember:
         """
         ViewSet for WorkspaceMember operations. Manage workspace memberships and
         roles.
         """
         url = f"/api/workspaces/members/{id}/"
-        response = self._client.patch(url, json=data.model_dump(exclude_unset=True) if data is not None else None)
+        _json = data.model_dump(exclude_unset=True) if data else None
+        response = self._client.patch(url, json=_json)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceMember.model_validate(response.json())
 
 
@@ -236,10 +328,17 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
-    def members_update_role_create(self, id: str, data: WorkspaceMemberRequest) -> WorkspaceMember:
+    def members_update_role_create(
+        self,
+        id: str,
+        data: WorkspaceMemberRequest,
+    ) -> WorkspaceMember:
         """
         Update member role
 
@@ -252,11 +351,18 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return WorkspaceMember.model_validate(response.json())
 
 
-    def workspaces_list(self, ordering: str | None = None, search: str | None = None) -> list[Workspace]:
+    def workspaces_list(
+        self,
+        ordering: str | None = None,
+        search: str | None = None,
+    ) -> list[Workspace]:
         """
         ViewSet for Workspace operations. Provides CRUD operations for
         workspaces with team/personal modes.
@@ -268,7 +374,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return [Workspace.model_validate(item) for item in response.json()]
 
 
@@ -285,7 +394,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return Workspace.model_validate(response.json())
 
 
@@ -301,7 +413,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return Workspace.model_validate(response.json())
 
 
@@ -317,23 +432,34 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return Workspace.model_validate(response.json())
 
 
-    def workspaces_partial_update(self, id: str, data: PatchedWorkspaceRequest | None = None) -> Workspace:
+    def workspaces_partial_update(
+        self,
+        id: str,
+        data: PatchedWorkspaceRequest | None = None,
+    ) -> Workspace:
         """
         ViewSet for Workspace operations. Provides CRUD operations for
         workspaces with team/personal modes.
         """
         url = f"/api/workspaces/workspaces/{id}/"
-        response = self._client.patch(url, json=data.model_dump(exclude_unset=True) if data is not None else None)
+        _json = data.model_dump(exclude_unset=True) if data else None
+        response = self._client.patch(url, json=_json)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return Workspace.model_validate(response.json())
 
 
@@ -349,7 +475,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
     def workspaces_members_retrieve(self, id: str) -> None:
@@ -365,7 +494,10 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
     def workspaces_stats_retrieve(self, id: str) -> None:
@@ -381,6 +513,9 @@ class SyncWorkspacesWorkspacesAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 

@@ -56,6 +56,7 @@ from rpc_messages.agent_pb2 import RunAgentRequest as RunAgentRequest
 from rpc_messages.agent_pb2 import RunAgentResponse as RunAgentResponse
 from rpc_messages.agent_pb2 import CancelAgentRequest as CancelAgentRequest
 from rpc_messages.agent_pb2 import CancelAgentResponse as CancelAgentResponse
+from rpc_messages.agent_pb2 import RunAgentStreamResponse as RunAgentStreamResponse
 from rpc_messages.browser_pb2 import BrowserCreateSessionRequest as BrowserCreateSessionRequest
 from rpc_messages.browser_pb2 import BrowserCreateSessionResponse as BrowserCreateSessionResponse
 from rpc_messages.browser_pb2 import BrowserCloseSessionRequest as BrowserCloseSessionRequest

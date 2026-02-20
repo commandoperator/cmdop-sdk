@@ -82,7 +82,7 @@ class AsyncTerminalService(BaseService):
             >>> # Exact match to avoid ambiguity
             >>> await client.terminal.set_machine("prod-server-1", partial_match=False)
         """
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             GetSessionByHostnameRequest,
         )
         from cmdop.exceptions import CMDOPError
@@ -204,7 +204,7 @@ class AsyncTerminalService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load async gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -225,8 +225,8 @@ class AsyncTerminalService(BaseService):
         mode: SessionMode = SessionMode.EXCLUSIVE,
     ) -> SessionInfo:
         """Create a new terminal session."""
-        from cmdop._generated.common_types_pb2 import SessionConfig, TerminalSize
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.common_types_pb2 import SessionConfig, TerminalSize
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             CreateSessionRequest as PbRequest,
         )
 
@@ -268,7 +268,7 @@ class AsyncTerminalService(BaseService):
         Raises:
             CMDOPError: If no session found and session_id not provided.
         """
-        from cmdop._generated.rpc_messages.session_pb2 import CloseSessionRequest
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import CloseSessionRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -305,7 +305,7 @@ class AsyncTerminalService(BaseService):
             >>> await client.terminal.send_input("ls\\n")
             >>> await client.terminal.send_input("ls\\n", session_id="...")
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendInputRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendInputRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -336,7 +336,7 @@ class AsyncTerminalService(BaseService):
         Raises:
             CMDOPError: If no session found and session_id not provided.
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendResizeRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendResizeRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -362,7 +362,7 @@ class AsyncTerminalService(BaseService):
         Raises:
             CMDOPError: If no session found and session_id not provided.
         """
-        from cmdop._generated.rpc_messages.terminal_pb2 import SendSignalRequest
+        from cmdop.grpc.generated.rpc_messages.terminal_pb2 import SendSignalRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -396,7 +396,7 @@ class AsyncTerminalService(BaseService):
         Raises:
             CMDOPError: If no session found and session_id not provided.
         """
-        from cmdop._generated.rpc_messages.history_pb2 import GetHistoryRequest
+        from cmdop.grpc.generated.rpc_messages.history_pb2 import GetHistoryRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -443,7 +443,7 @@ class AsyncTerminalService(BaseService):
         Raises:
             CMDOPError: If no session found and session_id not provided.
         """
-        from cmdop._generated.rpc_messages.history_pb2 import GetOutputRequest
+        from cmdop.grpc.generated.rpc_messages.history_pb2 import GetOutputRequest
 
         resolved_id = await self._resolve_session_id(session_id)
         if resolved_id is None:
@@ -768,7 +768,7 @@ class AsyncTerminalService(BaseService):
             >>> for s in response.sessions:
             ...     print(f"{s.machine_hostname}: {s.status}")
         """
-        from cmdop._generated.rpc_messages.session_pb2 import ListSessionsRequest
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import ListSessionsRequest
 
         request = ListSessionsRequest(
             hostname_filter=hostname or "",

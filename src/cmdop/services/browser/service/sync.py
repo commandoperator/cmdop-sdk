@@ -31,7 +31,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     @property
     def _get_stub(self) -> Any:
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import TerminalStreamingServiceStub
+            from cmdop.grpc.generated.service_pb2_grpc import TerminalStreamingServiceStub
             self._stub = TerminalStreamingServiceStub(self._channel)
         return self._stub
 
@@ -48,7 +48,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         block_images: bool = False,
         block_media: bool = False,
     ) -> "BrowserSession":
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserCreateSessionRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserCreateSessionRequest
         from cmdop.services.browser.session import BrowserSession
 
         request = BrowserCreateSessionRequest(
@@ -69,7 +69,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         return BrowserSession(self, response.browser_session_id)
 
     def close_session(self, session_id: str) -> None:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserCloseSessionRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserCloseSessionRequest
 
         request = BrowserCloseSessionRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserCloseSession, request)
@@ -86,7 +86,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         timeout_ms: int = 30000,
         wait_until: WaitUntil = WaitUntil.LOAD,
     ) -> str:
-        from cmdop._generated.rpc_messages.browser_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import (
             BrowserNavigateRequest,
             WaitUntil as PbWaitUntil,
         )
@@ -115,7 +115,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     def click(
         self, session_id: str, selector: str, timeout_ms: int = 5000, move_cursor: bool = False
     ) -> None:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserClickRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserClickRequest
 
         request = BrowserClickRequest(
             browser_session_id=session_id,
@@ -136,7 +136,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         human_like: bool = False,
         clear_first: bool = True,
     ) -> None:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserTypeRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserTypeRequest
 
         request = BrowserTypeRequest(
             browser_session_id=session_id,
@@ -151,7 +151,7 @@ class BrowserService(BaseService, BaseServiceMixin):
             raise_browser_error(response.error, "type", selector=selector)
 
     def wait_for(self, session_id: str, selector: str, timeout_ms: int = 30000) -> bool:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserWaitRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserWaitRequest
 
         request = BrowserWaitRequest(
             browser_session_id=session_id, selector=selector, timeout_ms=timeout_ms
@@ -168,7 +168,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     def extract(
         self, session_id: str, selector: str, attr: str | None = None, limit: int = 100
     ) -> list[str]:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserExtractRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserExtractRequest
 
         request = BrowserExtractRequest(
             browser_session_id=session_id,
@@ -186,7 +186,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     def extract_regex(
         self, session_id: str, pattern: str, from_html: bool = False, limit: int = 100
     ) -> list[str]:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserExtractRegexRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserExtractRegexRequest
 
         request = BrowserExtractRegexRequest(
             browser_session_id=session_id,
@@ -202,7 +202,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         return list(response.matches)
 
     def get_html(self, session_id: str, selector: str | None = None) -> str:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserGetHTMLRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserGetHTMLRequest
 
         request = BrowserGetHTMLRequest(
             browser_session_id=session_id, selector=selector or ""
@@ -215,7 +215,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         return response.html
 
     def get_text(self, session_id: str, selector: str | None = None) -> str:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserGetTextRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserGetTextRequest
 
         request = BrowserGetTextRequest(
             browser_session_id=session_id, selector=selector or ""
@@ -230,7 +230,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     # === JavaScript ===
 
     def execute_script(self, session_id: str, script: str) -> str:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserExecuteScriptRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserExecuteScriptRequest
 
         request = BrowserExecuteScriptRequest(
             browser_session_id=session_id, script=script
@@ -245,7 +245,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     # === State & Cookies ===
 
     def screenshot(self, session_id: str, full_page: bool = False) -> bytes:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserScreenshotRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserScreenshotRequest
 
         request = BrowserScreenshotRequest(
             browser_session_id=session_id, full_page=full_page
@@ -258,7 +258,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         return response.data
 
     def get_state(self, session_id: str) -> BrowserState:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserGetStateRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserGetStateRequest
 
         request = BrowserGetStateRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserGetState, request)
@@ -269,7 +269,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         return BrowserState(url=response.url, title=response.title)
 
     def set_cookies(self, session_id: str, cookies: list[BrowserCookie | dict]) -> None:
-        from cmdop._generated.rpc_messages.browser_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import (
             BrowserCookie as PbCookie,
             BrowserSetCookiesRequest,
         )
@@ -284,7 +284,7 @@ class BrowserService(BaseService, BaseServiceMixin):
             raise RuntimeError(f"SetCookies failed: {response.error}")
 
     def get_cookies(self, session_id: str, domain: str = "") -> list[BrowserCookie]:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserGetCookiesRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserGetCookiesRequest
 
         request = BrowserGetCookiesRequest(
             browser_session_id=session_id, domain=domain
@@ -310,7 +310,7 @@ class BrowserService(BaseService, BaseServiceMixin):
             y: Target Y coordinate
             steps: Number of intermediate steps (1 = instant, >1 = smooth)
         """
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserMouseMoveRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserMouseMoveRequest
 
         request = BrowserMouseMoveRequest(
             browser_session_id=session_id, x=x, y=y, steps=steps
@@ -329,7 +329,7 @@ class BrowserService(BaseService, BaseServiceMixin):
             selector: CSS selector
             timeout_ms: Timeout in milliseconds
         """
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserHoverRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserHoverRequest
 
         request = BrowserHoverRequest(
             browser_session_id=session_id, selector=selector, timeout_ms=timeout_ms
@@ -360,7 +360,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         Returns:
             dict with scroll_x, scroll_y, scrolled_by, at_bottom
         """
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserScrollRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserScrollRequest
 
         request = BrowserScrollRequest(
             browser_session_id=session_id,
@@ -385,7 +385,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def get_page_info(self, session_id: str) -> PageInfo:
         """Get comprehensive page information (v2.18.0)."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserGetPageInfoRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserGetPageInfoRequest
 
         request = BrowserGetPageInfoRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserGetPageInfo, request)
@@ -419,7 +419,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     def validate_selectors(
         self, session_id: str, item: str, fields: dict[str, str]
     ) -> dict:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserValidateSelectorsRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserValidateSelectorsRequest
 
         request = BrowserValidateSelectorsRequest(
             browser_session_id=session_id,
@@ -441,7 +441,7 @@ class BrowserService(BaseService, BaseServiceMixin):
     def extract_data(
         self, session_id: str, item: str, fields_json: str, limit: int = 100
     ) -> dict:
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserExtractDataRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserExtractDataRequest
 
         request = BrowserExtractDataRequest(
             browser_session_id=session_id,
@@ -465,7 +465,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         self, session_id: str, max_exchanges: int = 1000, max_response_size: int = 10_000_000
     ) -> None:
         """Enable network capture."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkEnableRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkEnableRequest
 
         request = BrowserNetworkEnableRequest(
             browser_session_id=session_id,
@@ -479,7 +479,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def network_disable(self, session_id: str) -> None:
         """Disable network capture."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkDisableRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkDisableRequest
 
         request = BrowserNetworkDisableRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserNetworkDisable, request)
@@ -497,7 +497,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         limit: int = 0,
     ) -> dict:
         """Get captured exchanges."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkGetExchangesRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkGetExchangesRequest
 
         request = BrowserNetworkGetExchangesRequest(
             browser_session_id=session_id,
@@ -519,7 +519,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def network_get_exchange(self, session_id: str, exchange_id: str) -> dict:
         """Get specific exchange by ID."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkGetExchangeRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkGetExchangeRequest
 
         request = BrowserNetworkGetExchangeRequest(
             browser_session_id=session_id, exchange_id=exchange_id
@@ -533,7 +533,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def network_get_last(self, session_id: str, url_pattern: str = "") -> dict:
         """Get most recent exchange matching URL pattern."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkGetLastRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkGetLastRequest
 
         request = BrowserNetworkGetLastRequest(
             browser_session_id=session_id, url_pattern=url_pattern
@@ -547,7 +547,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def network_clear(self, session_id: str) -> None:
         """Clear all captured exchanges."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkClearRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkClearRequest
 
         request = BrowserNetworkClearRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserNetworkClear, request)
@@ -557,7 +557,7 @@ class BrowserService(BaseService, BaseServiceMixin):
 
     def network_stats(self, session_id: str) -> dict:
         """Get capture statistics."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkStatsRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkStatsRequest
 
         request = BrowserNetworkStatsRequest(browser_session_id=session_id)
         response = self._call_sync(self._get_stub.BrowserNetworkStats, request)
@@ -582,7 +582,7 @@ class BrowserService(BaseService, BaseServiceMixin):
         resource_types: list[str] | None = None,
     ) -> dict:
         """Export captured exchanges to HAR format."""
-        from cmdop._generated.rpc_messages.browser_pb2 import BrowserNetworkExportHARRequest
+        from cmdop.grpc.generated.rpc_messages.browser_pb2 import BrowserNetworkExportHARRequest
 
         request = BrowserNetworkExportHARRequest(
             browser_session_id=session_id,

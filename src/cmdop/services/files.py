@@ -93,7 +93,7 @@ class FilesService(BaseService):
             >>> client.files.set_machine("my-server")
             >>> files = client.files.list("/tmp")
         """
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             GetSessionByHostnameRequest,
         )
         from cmdop.exceptions import CMDOPError
@@ -181,7 +181,7 @@ class FilesService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -209,7 +209,7 @@ class FilesService(BaseService):
         Returns:
             Directory listing response
         """
-        from cmdop._generated.file_rpc.directory_pb2 import (
+        from cmdop.grpc.generated.file_rpc.directory_pb2 import (
             FileListDirectoryRpcRequest,
         )
 
@@ -265,7 +265,7 @@ class FilesService(BaseService):
         Returns:
             File contents as bytes
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileReadRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileReadRpcRequest
 
         request = FileReadRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -299,7 +299,7 @@ class FilesService(BaseService):
             overwrite: Overwrite existing file
             session_id: Session ID (uses stored value if not provided)
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileWriteRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileWriteRpcRequest
 
         if isinstance(content, str):
             content = content.encode("utf-8")
@@ -327,7 +327,7 @@ class FilesService(BaseService):
             recursive: Delete directory recursively
             session_id: Session ID (uses stored value if not provided)
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileDeleteRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileDeleteRpcRequest
 
         request = FileDeleteRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -351,7 +351,7 @@ class FilesService(BaseService):
             destination: Destination path
             session_id: Session ID (uses stored value if not provided)
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileCopyRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileCopyRpcRequest
 
         request = FileCopyRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -375,7 +375,7 @@ class FilesService(BaseService):
             destination: Destination path
             session_id: Session ID (uses stored value if not provided)
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileMoveRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileMoveRpcRequest
 
         request = FileMoveRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -396,7 +396,7 @@ class FilesService(BaseService):
         Returns:
             Detailed file information
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileGetInfoRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileGetInfoRpcRequest
 
         request = FileGetInfoRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -427,7 +427,7 @@ class FilesService(BaseService):
             create_parents: Create parent directories
             session_id: Session ID (uses stored value if not provided)
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import (
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import (
             FileCreateDirectoryRpcRequest,
         )
 
@@ -486,7 +486,7 @@ class AsyncFilesService(BaseService):
             >>> await client.files.set_machine("my-server")
             >>> files = await client.files.list("/tmp")
         """
-        from cmdop._generated.rpc_messages.session_pb2 import (
+        from cmdop.grpc.generated.rpc_messages.session_pb2 import (
             GetSessionByHostnameRequest,
         )
         from cmdop.exceptions import CMDOPError
@@ -572,7 +572,7 @@ class AsyncFilesService(BaseService):
     def _get_stub(self) -> Any:
         """Lazy-load async gRPC stub."""
         if self._stub is None:
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -588,7 +588,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> ListDirectoryResponse:
         """List directory contents."""
-        from cmdop._generated.file_rpc.directory_pb2 import (
+        from cmdop.grpc.generated.file_rpc.directory_pb2 import (
             FileListDirectoryRpcRequest,
         )
 
@@ -644,7 +644,7 @@ class AsyncFilesService(BaseService):
         Returns:
             File contents as bytes
         """
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileReadRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileReadRpcRequest
 
         request = FileReadRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -669,7 +669,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> None:
         """Write file contents."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileWriteRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileWriteRpcRequest
 
         if isinstance(content, str):
             content = content.encode("utf-8")
@@ -689,7 +689,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> None:
         """Delete file or directory."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileDeleteRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileDeleteRpcRequest
 
         request = FileDeleteRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -705,7 +705,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> None:
         """Copy file or directory."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileCopyRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileCopyRpcRequest
 
         request = FileCopyRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -721,7 +721,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> None:
         """Move/rename file or directory."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileMoveRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileMoveRpcRequest
 
         request = FileMoveRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -732,7 +732,7 @@ class AsyncFilesService(BaseService):
 
     async def info(self, path: str, session_id: str | None = None) -> FileInfo:
         """Get file information."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import FileGetInfoRpcRequest
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import FileGetInfoRpcRequest
 
         request = FileGetInfoRpcRequest(
             session_id=self._get_session_id(session_id),
@@ -755,7 +755,7 @@ class AsyncFilesService(BaseService):
         session_id: str | None = None,
     ) -> None:
         """Create directory."""
-        from cmdop._generated.file_rpc.file_crud_pb2 import (
+        from cmdop.grpc.generated.file_rpc.file_crud_pb2 import (
             FileCreateDirectoryRpcRequest,
         )
 

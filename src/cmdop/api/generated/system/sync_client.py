@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
+from .helpers import APILogger, LoggerConfig
 from .system__api__oauth.sync_client import SyncSystemOauthAPI
 from .system__api__system.sync_client import SyncSystemSystemAPI
-from .logger import APILogger, LoggerConfig
-from .retry import RetryConfig, RetryAsyncClient
 
 
 class SyncAPIClient:
@@ -23,7 +22,7 @@ class SyncAPIClient:
     def __init__(
         self,
         base_url: str,
-        logger_config: Optional[LoggerConfig] = None,
+        logger_config: LoggerConfig | None = None,
         **kwargs: Any,
     ):
         """
@@ -41,7 +40,7 @@ class SyncAPIClient:
         )
 
         # Initialize logger
-        self.logger: Optional[APILogger] = None
+        self.logger: APILogger | None = None
         if logger_config is not None:
             self.logger = APILogger(logger_config)
 
@@ -49,7 +48,7 @@ class SyncAPIClient:
         self.system_oauth = SyncSystemOauthAPI(self._client)
         self.system_system = SyncSystemSystemAPI(self._client)
 
-    def __enter__(self) -> 'SyncAPIClient':
+    def __enter__(self) -> SyncAPIClient:
         return self
 
     def __exit__(self, *args: Any) -> None:

@@ -48,8 +48,9 @@ async with AsyncCMDOPClient.remote(api_key="cmd_xxx") as client:
         memory: float
         issues: list[str]
 
-    result = await client.agent.run("Check server health", output_schema=Health)
-    health: Health = result.output  # Typed!
+    await client.agent.set_machine("my-server")
+    result = await client.agent.run("Check server health", output_model=Health)
+    health: Health = result.data  # Typed!
 
     # Browser automation on remote machine
     with client.browser.create_session() as b:
@@ -162,13 +163,14 @@ class ServerHealth(BaseModel):
     disk_free_gb: float
     issues: list[str] = Field(description="List of detected issues")
 
+await client.agent.set_machine("my-server")
 result = await client.agent.run(
     prompt="Check server health and report any issues",
-    output_schema=ServerHealth
+    output_model=ServerHealth,
 )
 
 # Typed response - not just text!
-health: ServerHealth = result.output
+health: ServerHealth = result.data
 if health.cpu_percent > 90:
     alert(f"{health.hostname} CPU critical!")
 ```

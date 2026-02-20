@@ -10,10 +10,11 @@
 //   4. Input: Browser → Django → Agent (stdin)
 //   5. Output: Agent → Django → Browser (stdout/stderr)
 //
-// Version: 2.21.0
-// Date: 2026-02-16
+// Version: 2.22.0
+// Date: 2026-02-18
 //
 // Changelog:
+// - v2.22.0: Added RunAgentStream RPC for SDK streaming agent execution
 // - v2.21.0: Added GetSessionByHostname RPC for SDK set_machine()
 // - v2.19.0: Added BrowserNetwork* RPCs for network capture
 // - v2.18.0: Added BrowserMouseMove, BrowserHover, BrowserScroll RPCs
@@ -108,6 +109,11 @@ service TerminalStreamingService {
   // Run AI agent (v2.13.0) - for SDK agent execution
   // SDK sends prompt, Django relays to connected agent, returns result
   rpc RunAgent(RunAgentRequest) returns (RunAgentResponse);
+
+  // Run AI agent with streaming (v2.22.0) - for SDK streaming agent execution
+  // SDK sends prompt, Django relays to agent with stream_events=true,
+  // streams AgentStreamEvent back to SDK, ends with final result
+  rpc RunAgentStream(RunAgentRequest) returns (stream RunAgentStreamResponse);
 
   // Cancel running agent (v2.15.0) - for SDK agent cancellation
   // SDK sends cancel request, Django relays to connected agent, returns confirmation

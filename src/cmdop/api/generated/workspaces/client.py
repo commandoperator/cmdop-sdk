@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
+from .helpers import APILogger, LoggerConfig, RetryAsyncClient, RetryConfig
 from .workspaces__api__workspaces import WorkspacesWorkspacesAPI
-from .logger import APILogger, LoggerConfig
-from .retry import RetryConfig, RetryAsyncClient
 
 
 class APIClient:
@@ -19,16 +18,16 @@ class APIClient:
         ...     post = await client.posts.create(data=new_post)
         >>>
         >>> # With retry configuration
-        >>> retry_config = RetryConfig(max_attempts=5, min_wait=2.0)
-        >>> async with APIClient(base_url='https://api.example.com', retry_config=retry_config) as client:
-        ...     users = await client.users.list()
+        >>> retry = RetryConfig(max_attempts=5, min_wait=2.0)
+        >>> async with APIClient('https://api.example.com', retry_config=retry) as c:
+        ...     users = await c.users.list()
     """
 
     def __init__(
         self,
         base_url: str,
-        logger_config: Optional[LoggerConfig] = None,
-        retry_config: Optional[RetryConfig] = None,
+        logger_config: LoggerConfig | None = None,
+        retry_config: RetryConfig | None = None,
         **kwargs: Any,
     ):
         """
@@ -56,14 +55,14 @@ class APIClient:
             )
 
         # Initialize logger
-        self.logger: Optional[APILogger] = None
+        self.logger: APILogger | None = None
         if logger_config is not None:
             self.logger = APILogger(logger_config)
 
         # Initialize sub-clients
         self.workspaces_workspaces = WorkspacesWorkspacesAPI(self._client)
 
-    async def __aenter__(self) -> 'APIClient':
+    async def __aenter__(self) -> APIClient:
         await self._client.__aenter__()
         return self
 

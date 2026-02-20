@@ -6,7 +6,6 @@ Provides models for AI agent execution and streaming events.
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import Enum
 from typing import Any, Generic, TypeVar
 
@@ -54,6 +53,37 @@ class AgentEventType(str, Enum):
 
     HANDOFF = "handoff"
     """Agent handed off to another agent."""
+
+    CANCELLED = "cancelled"
+    """Agent run was cancelled."""
+
+    # Browser-specific events
+    BROWSER_NAVIGATE = "browser_navigate"
+    """Browser navigated to URL."""
+
+    BROWSER_CLICK = "browser_click"
+    """Element clicked in browser."""
+
+    BROWSER_TYPE = "browser_type"
+    """Text typed in browser."""
+
+    BROWSER_STATE = "browser_state"
+    """Browser page state captured."""
+
+    BROWSER_SCREENSHOT = "browser_screenshot"
+    """Browser screenshot taken."""
+
+    BROWSER_ERROR = "browser_error"
+    """Browser error occurred."""
+
+    BROWSER_DETECTION = "browser_detection"
+    """Bot detection suspected."""
+
+    BROWSER_ESCALATION = "browser_escalation"
+    """Stealth escalation triggered."""
+
+    BROWSER_SESSION = "browser_session"
+    """Browser session start/end."""
 
 
 class AgentUsage(BaseModel):
@@ -137,17 +167,19 @@ class AgentStreamEvent(BaseModel):
     type: AgentEventType
     """Type of event."""
 
-    payload: str = ""
-    """JSON-encoded payload data."""
+    payload: Any = None
+    """Event payload data (parsed from JSON)."""
 
     timestamp: int = 0
     """Unix timestamp in milliseconds."""
 
     @property
     def payload_data(self) -> dict[str, Any]:
-        """Parse payload as JSON."""
+        """Get payload as dict (for backwards compatibility)."""
         import json
 
+        if isinstance(self.payload, dict):
+            return self.payload
         if not self.payload:
             return {}
         try:

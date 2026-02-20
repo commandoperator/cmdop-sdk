@@ -247,7 +247,7 @@ class TerminalStream:
 
         try:
             # Get gRPC stub
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -388,7 +388,7 @@ class TerminalStream:
         # Send detach notification to server
         if self.is_connected:
             try:
-                from cmdop._generated.agent_messages_pb2 import AgentMessage, StatusUpdate
+                from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, StatusUpdate
 
                 msg = AgentMessage(
                     session_id=self._session_id,
@@ -479,7 +479,7 @@ class TerminalStream:
 
         try:
             # Get gRPC stub
-            from cmdop._generated.service_pb2_grpc import (
+            from cmdop.grpc.generated.service_pb2_grpc import (
                 TerminalStreamingServiceStub,
             )
 
@@ -522,8 +522,8 @@ class TerminalStream:
 
     async def _send_attach(self) -> None:
         """Send attach message to reconnect to existing session."""
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, RegisterRequest
-        from cmdop._generated.common_types_pb2 import TerminalSize
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, RegisterRequest
+        from cmdop.grpc.generated.common_types_pb2 import TerminalSize
 
         import platform
         import os
@@ -566,7 +566,7 @@ class TerminalStream:
         if isinstance(data, str):
             data = data.encode("utf-8")
 
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, TerminalOutput
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, TerminalOutput
 
         # Note: For SDK sending TO agent, we use AgentMessage
         # with TerminalOutput containing the input data
@@ -593,7 +593,7 @@ class TerminalStream:
         if not self.is_connected:
             raise RuntimeError("Stream not connected")
 
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, StatusUpdate
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, StatusUpdate
 
         # Send resize via status update
         msg = AgentMessage(
@@ -624,7 +624,7 @@ class TerminalStream:
         if not self.is_connected:
             raise RuntimeError("Stream not connected")
 
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, StatusUpdate
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, StatusUpdate
 
         # Send signal via status update with signal info
         msg = AgentMessage(
@@ -649,7 +649,7 @@ class TerminalStream:
         if not self.is_connected:
             raise RuntimeError("Stream not connected")
 
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, StatusUpdate
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, StatusUpdate
 
         # Request history via status update
         msg = AgentMessage(
@@ -838,8 +838,8 @@ class TerminalStream:
 
     async def _send_register(self) -> None:
         """Send registration message."""
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, RegisterRequest
-        from cmdop._generated.common_types_pb2 import TerminalSize
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, RegisterRequest
+        from cmdop.grpc.generated.common_types_pb2 import TerminalSize
 
         import platform
         import os
@@ -863,7 +863,7 @@ class TerminalStream:
 
     def _create_heartbeat(self) -> Any:
         """Create heartbeat message."""
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, HeartbeatUpdate
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, HeartbeatUpdate
 
         return AgentMessage(
             session_id=self._session_id,

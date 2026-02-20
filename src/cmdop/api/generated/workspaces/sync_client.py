@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
+from .helpers import APILogger, LoggerConfig
 from .workspaces__api__workspaces.sync_client import SyncWorkspacesWorkspacesAPI
-from .logger import APILogger, LoggerConfig
-from .retry import RetryConfig, RetryAsyncClient
 
 
 class SyncAPIClient:
@@ -22,7 +21,7 @@ class SyncAPIClient:
     def __init__(
         self,
         base_url: str,
-        logger_config: Optional[LoggerConfig] = None,
+        logger_config: LoggerConfig | None = None,
         **kwargs: Any,
     ):
         """
@@ -40,14 +39,14 @@ class SyncAPIClient:
         )
 
         # Initialize logger
-        self.logger: Optional[APILogger] = None
+        self.logger: APILogger | None = None
         if logger_config is not None:
             self.logger = APILogger(logger_config)
 
         # Initialize sub-clients
         self.workspaces_workspaces = SyncWorkspacesWorkspacesAPI(self._client)
 
-    def __enter__(self) -> 'SyncAPIClient':
+    def __enter__(self) -> SyncAPIClient:
         return self
 
     def __exit__(self, *args: Any) -> None:

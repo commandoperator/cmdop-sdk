@@ -60,7 +60,7 @@ class TestTerminalStreamConnect:
         stream = TerminalStream(transport)
 
         # Mock the stub and stream at the module level import
-        with patch("cmdop._generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
+        with patch("cmdop.grpc.generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
             mock_grpc_stream = AsyncMock()
             mock_stub.return_value.ConnectTerminal = MagicMock(return_value=mock_grpc_stream)
 
@@ -513,7 +513,7 @@ class TestTerminalStreamAttach:
 
         stream = TerminalStream(transport)
 
-        with patch("cmdop._generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
+        with patch("cmdop.grpc.generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
             mock_grpc_stream = AsyncMock()
             mock_stub.return_value.ConnectTerminal = MagicMock(return_value=mock_grpc_stream)
 
@@ -539,7 +539,7 @@ class TestTerminalStreamAttach:
 
         stream = TerminalStream(transport)
 
-        with patch("cmdop._generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
+        with patch("cmdop.grpc.generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
             mock_grpc_stream = AsyncMock()
             mock_stub.return_value.ConnectTerminal = MagicMock(return_value=mock_grpc_stream)
 
@@ -568,7 +568,7 @@ class TestTerminalStreamMessageGenerator:
         stream._shutdown = asyncio.Event()
 
         # Queue a message
-        from cmdop._generated.agent_messages_pb2 import AgentMessage, TerminalOutput
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, TerminalOutput
 
         msg = AgentMessage(
             session_id="test-session",
@@ -731,7 +731,7 @@ class TestTerminalStreamEdgeCases:
         stream._state = StreamState.CLOSED
         stream._session_ready.set()  # Old state
 
-        with patch("cmdop._generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
+        with patch("cmdop.grpc.generated.service_pb2_grpc.TerminalStreamingServiceStub") as mock_stub:
             mock_grpc_stream = AsyncMock()
             mock_stub.return_value.ConnectTerminal = MagicMock(return_value=mock_grpc_stream)
 

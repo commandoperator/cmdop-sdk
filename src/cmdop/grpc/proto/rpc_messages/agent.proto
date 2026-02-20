@@ -1,16 +1,23 @@
 // RPC Messages: Agent Execution
 //
-// Messages for SDK → Agent communication via RunAgent unary RPC.
+// Messages for SDK → Agent communication via RunAgent RPC.
 // SDK sends prompt, Django relays to connected agent, returns result.
 //
-// Flow:
+// Flow (unary):
 //   1. SDK calls RunAgent(RunAgentRequest)
 //   2. Django sends AgentRunCommand to connected agent via streaming
 //   3. Agent executes AI task and sends AgentResult back
 //   4. Django returns RunAgentResponse to SDK
 //
-// Version: 1.0.0
-// Date: 2026-01-01
+// Flow (streaming):
+//   1. SDK calls RunAgentStream(RunAgentRequest)
+//   2. Django sends AgentRunCommand with stream_events=true
+//   3. Agent streams AgentStreamEvent (tokens, tool calls, etc.)
+//   4. Django streams RunAgentStreamResponse to SDK
+//   5. Final message contains is_final=true with complete result
+//
+// Version: 2.0.0
+// Date: 2026-02-18
 
 syntax = "proto3";
 
@@ -112,4 +119,24 @@ message CancelAgentResponse {
 
   // Token usage up to cancellation point
   AgentUsage usage = 4;
+}
+
+// ============================================================================
+// RUN AGENT STREAM (v2.22.0)
+// ============================================================================
+
+// Streaming response from agent execution
+// Each message is either an event or the final result
+message RunAgentStreamResponse {
+  // Request ID for correlation
+  string request_id = 1;
+
+  // True if this is the final message with complete result
+  bool is_final = 2;
+
+  // Event data (when is_final=false)
+  AgentStreamEvent event = 3;
+
+  // Final result (when is_final=true)
+  RunAgentResponse result = 4;
 }

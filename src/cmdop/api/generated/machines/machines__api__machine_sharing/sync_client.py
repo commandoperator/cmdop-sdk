@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import httpx
 
-from .models import *
+from .models import (
+    PaginatedSharedMachineListList,
+    SharedMachine,
+    SharedMachineCreateRequest,
+)
 
 
 class SyncMachinesMachineSharingAPI:
@@ -12,7 +16,11 @@ class SyncMachinesMachineSharingAPI:
         """Initialize sync sub-client with shared httpx client."""
         self._client = client
 
-    def machines_machines_share_create(self, id: str, data: SharedMachineCreateRequest) -> SharedMachine:
+    def machines_machines_share_create(
+        self,
+        id: str,
+        data: SharedMachineCreateRequest,
+    ) -> SharedMachine:
         """
         Create share link for machine
 
@@ -26,24 +34,43 @@ class SyncMachinesMachineSharingAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return SharedMachine.model_validate(response.json())
 
 
-    def machines_machines_shares_list(self, id: str, ordering: str | None = None, page: int | None = None, page_size: int | None = None, search: str | None = None) -> list[PaginatedSharedMachineListList]:
+    def machines_machines_shares_list(
+        self,
+        id: str,
+        ordering: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+        search: str | None = None,
+    ) -> list[PaginatedSharedMachineListList]:
         """
         List active shares for machine
 
         Get all active share links for this machine
         """
         url = f"/api/machines/machines/{id}/shares/"
-        response = self._client.get(url, params={"ordering": ordering if ordering is not None else None, "page": page if page is not None else None, "page_size": page_size if page_size is not None else None, "search": search if search is not None else None})
+        _params = {
+            "ordering": ordering if ordering is not None else None,
+            "page": page if page is not None else None,
+            "page_size": page_size if page_size is not None else None,
+            "search": search if search is not None else None,
+        }
+        response = self._client.get(url, params=_params)
         if not response.is_success:
             try:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
         return PaginatedSharedMachineListList.model_validate(response.json())
 
 
@@ -61,6 +88,9 @@ class SyncMachinesMachineSharingAPI:
                 error_body = response.json()
             except Exception:
                 error_body = response.text
-            raise httpx.HTTPStatusError(f"{response.status_code}: {error_body}", request=response.request, response=response)
+            msg = f"{response.status_code}: {error_body}"
+            raise httpx.HTTPStatusError(
+                msg, request=response.request, response=response
+            )
 
 
