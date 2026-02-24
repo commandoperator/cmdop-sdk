@@ -1,5 +1,7 @@
 # CMDOP
 
+![CMDOP Architecture](https://cmdop.com/images/architecture/vs-personal-agent.png)
+
 **Your OS. Online.**
 
 Full access to your machines from anywhere. Not files — the whole system.
@@ -378,6 +380,8 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 
 ## Links
 
-- [Documentation](https://cmdop.com/docs/)
+- [Examples](examples/)
+- [Documentation](https://cmdop.com/docs/sdk/cmdop/)
+- [Bot Documentation](https://cmdop.com/docs/sdk/bots/)
 - [Agent Download](https://cmdop.com/download)
 - [GitHub](https://github.com/commandoperator/cmdop-sdk)

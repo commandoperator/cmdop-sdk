@@ -1,6 +1,6 @@
 [project]
 name = "cmdop"
-version = "0.1.42"
+version = "0.1.43"
 description = "Python SDK for CMDOP agent interaction"
 readme = "README.md"
 license = { text = "MIT" }
@@ -64,7 +64,7 @@ cmdop = "cmdop.cli:main"
 
 [project.urls]
 Homepage = "https://cmdop.com"
-Documentation = "https://cmdop.com/docs/"
+Documentation = "https://cmdop.com/docs/sdk/cmdop/"
 Repository = "https://github.com/commandoperator/cmdop-sdk"
 Issues = "https://github.com/commandoperator/cmdop-sdk/issues"
 
