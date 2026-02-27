@@ -41,10 +41,12 @@ class SyncWorkspacesWorkspacesAPI:
         """
         url = "/api/workspaces/invitations/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+            }.items() if v is not None
         }
         response = self._client.get(url, params=_params)
         if not response.is_success:
@@ -69,7 +71,7 @@ class SyncWorkspacesWorkspacesAPI:
         Invite a user to a workspace by email
         """
         url = "/api/workspaces/invitations/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -132,7 +134,7 @@ class SyncWorkspacesWorkspacesAPI:
         Resend invitation email and regenerate token
         """
         url = f"/api/workspaces/invitations/{id}/resend/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -152,7 +154,7 @@ class SyncWorkspacesWorkspacesAPI:
         Accept a workspace invitation
         """
         url = "/api/workspaces/invitations/accept/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -171,7 +173,7 @@ class SyncWorkspacesWorkspacesAPI:
         Decline a workspace invitation (no auth required)
         """
         url = "/api/workspaces/invitations/decline/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -216,11 +218,13 @@ class SyncWorkspacesWorkspacesAPI:
         """
         url = "/api/workspaces/members/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "role": role if role is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "role": role,
+                "search": search,
+            }.items() if v is not None
         }
         response = self._client.get(url, params=_params)
         if not response.is_success:
@@ -241,7 +245,7 @@ class SyncWorkspacesWorkspacesAPI:
         roles.
         """
         url = "/api/workspaces/members/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -279,7 +283,7 @@ class SyncWorkspacesWorkspacesAPI:
         roles.
         """
         url = f"/api/workspaces/members/{id}/"
-        response = self._client.put(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.put(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -302,7 +306,7 @@ class SyncWorkspacesWorkspacesAPI:
         roles.
         """
         url = f"/api/workspaces/members/{id}/"
-        _json = data.model_dump(exclude_unset=True) if data else None
+        _json = data.model_dump(mode="json", exclude_unset=True, exclude_none=True) if data else None
         response = self._client.patch(url, json=_json)
         if not response.is_success:
             try:
@@ -345,7 +349,7 @@ class SyncWorkspacesWorkspacesAPI:
         Update workspace member role.
         """
         url = f"/api/workspaces/members/{id}/update-role/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -368,7 +372,13 @@ class SyncWorkspacesWorkspacesAPI:
         workspaces with team/personal modes.
         """
         url = "/api/workspaces/workspaces/"
-        response = self._client.get(url, params={"ordering": ordering if ordering is not None else None, "search": search if search is not None else None})
+        _params = {
+            k: v for k, v in {
+                "ordering": ordering,
+                "search": search,
+            }.items() if v is not None
+        }
+        response = self._client.get(url, params=_params)
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -388,7 +398,7 @@ class SyncWorkspacesWorkspacesAPI:
         Create workspace and return full workspace data.
         """
         url = "/api/workspaces/workspaces/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -426,7 +436,7 @@ class SyncWorkspacesWorkspacesAPI:
         workspaces with team/personal modes.
         """
         url = f"/api/workspaces/workspaces/{id}/"
-        response = self._client.put(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.put(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -449,7 +459,7 @@ class SyncWorkspacesWorkspacesAPI:
         workspaces with team/personal modes.
         """
         url = f"/api/workspaces/workspaces/{id}/"
-        _json = data.model_dump(exclude_unset=True) if data else None
+        _json = data.model_dump(mode="json", exclude_unset=True, exclude_none=True) if data else None
         response = self._client.patch(url, json=_json)
         if not response.is_success:
             try:

@@ -36,10 +36,12 @@ class MachinesMachinesAPI:
         """
         url = "/api/machines/logs/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+            }.items() if v is not None
         }
         response = await self._client.get(url, params=_params)
         if not response.is_success:
@@ -60,7 +62,7 @@ class MachinesMachinesAPI:
         are created by agents.
         """
         url = "/api/machines/logs/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -105,10 +107,12 @@ class MachinesMachinesAPI:
         """
         url = "/api/machines/machines/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+            }.items() if v is not None
         }
         response = await self._client.get(url, params=_params)
         if not response.is_success:
@@ -129,7 +133,7 @@ class MachinesMachinesAPI:
         machines with monitoring capabilities.
         """
         url = "/api/machines/machines/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -167,7 +171,7 @@ class MachinesMachinesAPI:
         machines with monitoring capabilities.
         """
         url = f"/api/machines/machines/{id}/"
-        response = await self._client.put(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.put(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -190,7 +194,7 @@ class MachinesMachinesAPI:
         machines with monitoring capabilities.
         """
         url = f"/api/machines/machines/{id}/"
-        _json = data.model_dump(exclude_unset=True) if data else None
+        _json = data.model_dump(mode="json", exclude_unset=True, exclude_none=True) if data else None
         response = await self._client.patch(url, json=_json)
         if not response.is_success:
             try:
@@ -240,12 +244,14 @@ class MachinesMachinesAPI:
         """
         url = f"/api/machines/machines/{id}/logs/"
         _params = {
-            "level": level if level is not None else None,
-            "limit": limit if limit is not None else None,
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "level": level,
+                "limit": limit,
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+            }.items() if v is not None
         }
         response = await self._client.get(url, params=_params)
         if not response.is_success:
@@ -267,7 +273,7 @@ class MachinesMachinesAPI:
         Regenerate machine agent token.
         """
         url = f"/api/machines/machines/{id}/regenerate-token/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -311,7 +317,7 @@ class MachinesMachinesAPI:
         Update machine metrics (called by agent).
         """
         url = f"/api/machines/machines/{id}/update-metrics/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()

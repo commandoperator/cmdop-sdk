@@ -15,6 +15,7 @@ class SyncAPIClient:
 
     Usage:
         >>> with SyncAPIClient(base_url='https://api.example.com') as client:
+        ...     client.set_token('your-jwt-token')
         ...     users = client.users.list()
         ...     post = client.posts.create(data=new_post)
     """
@@ -38,6 +39,7 @@ class SyncAPIClient:
             base_url=self.base_url,
             **kwargs,
         )
+        self._token: str | None = None
 
         # Initialize logger
         self.logger: APILogger | None = None
@@ -47,6 +49,25 @@ class SyncAPIClient:
         # Initialize sub-clients
         self.machines_machine_sharing = SyncMachinesMachineSharingAPI(self._client)
         self.machines_machines = SyncMachinesMachinesAPI(self._client)
+
+    def set_token(self, token: str) -> None:
+        """
+        Set JWT authentication token.
+
+        Args:
+            token: JWT access token
+        """
+        self._token = token
+        self._client.headers["Authorization"] = f"Bearer {token}"
+
+    def clear_token(self) -> None:
+        """Clear authentication token."""
+        self._token = None
+        self._client.headers.pop("Authorization", None)
+
+    def is_authenticated(self) -> bool:
+        """Check if token is set."""
+        return self._token is not None
 
     def __enter__(self) -> SyncAPIClient:
         return self
