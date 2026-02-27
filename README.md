@@ -381,7 +381,7 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 ## Links
 
 - [Examples](examples/)
-- [Documentation](https://cmdop.com/docs/sdk/cmdop/)
-- [Bot Documentation](https://cmdop.com/docs/sdk/bots/)
+- [Documentation](https://cmdop.com/docs/sdk/python)
+- [Bot Documentation](https://cmdop.com/docs/sdk/python/bot)
 - [Agent Download](https://cmdop.com/download)
 - [GitHub](https://github.com/commandoperator/cmdop-sdk)

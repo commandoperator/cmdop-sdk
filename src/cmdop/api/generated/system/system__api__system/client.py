@@ -38,13 +38,15 @@ class SystemSystemAPI:
         """
         url = "/api/system/alerts/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "read": read if read is not None else None,
-            "search": search if search is not None else None,
-            "type": type if type is not None else None,
-            "workspace": workspace if workspace is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "read": read,
+                "search": search,
+                "type": type,
+                "workspace": workspace,
+            }.items() if v is not None
         }
         response = await self._client.get(url, params=_params)
         if not response.is_success:
@@ -64,7 +66,7 @@ class SystemSystemAPI:
         ViewSet for Alert operations. System notifications for important events.
         """
         url = "/api/system/alerts/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -100,7 +102,7 @@ class SystemSystemAPI:
         ViewSet for Alert operations. System notifications for important events.
         """
         url = f"/api/system/alerts/{id}/"
-        response = await self._client.put(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.put(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -122,7 +124,7 @@ class SystemSystemAPI:
         ViewSet for Alert operations. System notifications for important events.
         """
         url = f"/api/system/alerts/{id}/"
-        _json = data.model_dump(exclude_unset=True) if data else None
+        _json = data.model_dump(mode="json", exclude_unset=True, exclude_none=True) if data else None
         response = await self._client.patch(url, json=_json)
         if not response.is_success:
             try:
@@ -203,11 +205,13 @@ class SystemSystemAPI:
         """
         url = "/api/system/api-keys/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
-            "workspace": workspace if workspace is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+                "workspace": workspace,
+            }.items() if v is not None
         }
         response = await self._client.get(url, params=_params)
         if not response.is_success:
@@ -227,7 +231,7 @@ class SystemSystemAPI:
         Create new API key (raw key shown only once).
         """
         url = "/api/system/api-keys/"
-        response = await self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = await self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()

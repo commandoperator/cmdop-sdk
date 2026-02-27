@@ -28,7 +28,7 @@ class SyncMachinesMachineSharingAPI:
         workspace owner or admin can create shares.
         """
         url = f"/api/machines/machines/{id}/share/"
-        response = self._client.post(url, json=data.model_dump(exclude_unset=True))
+        response = self._client.post(url, json=data.model_dump(mode="json", exclude_unset=True, exclude_none=True))
         if not response.is_success:
             try:
                 error_body = response.json()
@@ -56,10 +56,12 @@ class SyncMachinesMachineSharingAPI:
         """
         url = f"/api/machines/machines/{id}/shares/"
         _params = {
-            "ordering": ordering if ordering is not None else None,
-            "page": page if page is not None else None,
-            "page_size": page_size if page_size is not None else None,
-            "search": search if search is not None else None,
+            k: v for k, v in {
+                "ordering": ordering,
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+            }.items() if v is not None
         }
         response = self._client.get(url, params=_params)
         if not response.is_success:
