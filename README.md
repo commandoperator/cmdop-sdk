@@ -399,25 +399,15 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 
 ```
 ┌─────────────┐    gRPC/HTTP2    ┌─────────────┐    gRPC    ┌─────────┐
-│   Python    │◀────────────────▶│   Django    │◀──────────▶│  Agent  │
+│   Python    │◀────────────────▶│   Cloud     │◀──────────▶│  Agent  │
 │     SDK     │   Bidirectional  │   Relay     │  Outbound  │  (Go)   │
 └─────────────┘                  └─────────────┘            └─────────┘
-      │                                │                         │
-      ▼                                ▼                         ▼
-┌─────────────┐                 ┌─────────────┐           ┌───────────┐
-│  Terminal   │                 │  Centrifugo │           │   Shell   │
-│  Files      │                 │  WebSocket  │           │   Files   │
-│  Browser    │                 │  Real-time  │           │   Browser │
-│  Agent      │                 │             │           │   Skills  │
-│  Skills     │                 │             │           │           │
-└─────────────┘                 └─────────────┘           └───────────┘
 ```
 
 **Key points:**
 - Agent makes outbound connection (no port forwarding)
 - SDK connects via gRPC (works through any firewall)
 - All services multiplexed over single connection
-- Self-hosted relay option (Django)
 
 ---
 
