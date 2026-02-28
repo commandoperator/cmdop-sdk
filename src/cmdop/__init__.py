@@ -94,6 +94,10 @@ from cmdop.models import (
     SessionMode,
     SessionState,
     SignalType,
+    SkillDetail,
+    SkillInfo,
+    SkillRunOptions,
+    SkillRunResult,
     TokenUsage,
 )
 from cmdop.transport import (
@@ -134,7 +138,7 @@ from cmdop.logging import (
     get_log_dir,
 )
 
-__version__ = "2026.02.27"
+__version__ = "2026.02.28"
 
 __all__ = [
     # Version
@@ -198,6 +202,11 @@ __all__ = [
     "AgentStreamEvent",
     "AgentResult",
     "AgentRunRequest",
+    # Skill models
+    "SkillInfo",
+    "SkillDetail",
+    "SkillRunOptions",
+    "SkillRunResult",
     # Exceptions
     "CMDOPError",
     "ConnectionError",

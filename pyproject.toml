@@ -1,6 +1,6 @@
 [project]
 name = "cmdop"
-version = "2026.02.27"
+version = "2026.02.28"
 description = "Python SDK for CMDOP agent interaction"
 readme = "README.md"
 license = { text = "MIT" }

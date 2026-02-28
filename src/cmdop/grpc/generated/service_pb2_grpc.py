@@ -20,6 +20,7 @@ from .rpc_messages import history_pb2 as rpc__messages_dot_history__pb2
 from .rpc_messages import lifecycle_pb2 as rpc__messages_dot_lifecycle__pb2
 from .rpc_messages import push_pb2 as rpc__messages_dot_push__pb2
 from .rpc_messages import session_pb2 as rpc__messages_dot_session__pb2
+from .rpc_messages import skills_pb2 as rpc__messages_dot_skills__pb2
 from .rpc_messages import terminal_pb2 as rpc__messages_dot_terminal__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
@@ -249,6 +250,21 @@ class TerminalStreamingServiceStub(object):
                 '/terminal.TerminalStreamingService/CancelAgent',
                 request_serializer=rpc__messages_dot_agent__pb2.CancelAgentRequest.SerializeToString,
                 response_deserializer=rpc__messages_dot_agent__pb2.CancelAgentResponse.FromString,
+                _registered_method=True)
+        self.SkillList = channel.unary_unary(
+                '/terminal.TerminalStreamingService/SkillList',
+                request_serializer=rpc__messages_dot_skills__pb2.SkillListRequest.SerializeToString,
+                response_deserializer=rpc__messages_dot_skills__pb2.SkillListResponse.FromString,
+                _registered_method=True)
+        self.SkillShow = channel.unary_unary(
+                '/terminal.TerminalStreamingService/SkillShow',
+                request_serializer=rpc__messages_dot_skills__pb2.SkillShowRequest.SerializeToString,
+                response_deserializer=rpc__messages_dot_skills__pb2.SkillShowResponse.FromString,
+                _registered_method=True)
+        self.SkillRun = channel.unary_unary(
+                '/terminal.TerminalStreamingService/SkillRun',
+                request_serializer=rpc__messages_dot_skills__pb2.SkillRunRequest.SerializeToString,
+                response_deserializer=rpc__messages_dot_skills__pb2.SkillRunResponse.FromString,
                 _registered_method=True)
         self.BrowserCreateSession = channel.unary_unary(
                 '/terminal.TerminalStreamingService/BrowserCreateSession',
@@ -657,6 +673,32 @@ class TerminalStreamingServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SkillList(self, request, context):
+        """============================================================================
+        SKILLS (v2.23.0)
+        Remote skill management and execution - SDK can list, inspect, and run skills
+        ============================================================================
+
+        List installed skills on connected machine
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SkillShow(self, request, context):
+        """Get skill details (manifest, content, source path)
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SkillRun(self, request, context):
+        """Execute a skill with a prompt
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def BrowserCreateSession(self, request, context):
         """============================================================================
         BROWSER DIRECT CONTROL (v2.16.0)
@@ -1037,6 +1079,21 @@ def add_TerminalStreamingServiceServicer_to_server(servicer, server):
                     servicer.CancelAgent,
                     request_deserializer=rpc__messages_dot_agent__pb2.CancelAgentRequest.FromString,
                     response_serializer=rpc__messages_dot_agent__pb2.CancelAgentResponse.SerializeToString,
+            ),
+            'SkillList': grpc.unary_unary_rpc_method_handler(
+                    servicer.SkillList,
+                    request_deserializer=rpc__messages_dot_skills__pb2.SkillListRequest.FromString,
+                    response_serializer=rpc__messages_dot_skills__pb2.SkillListResponse.SerializeToString,
+            ),
+            'SkillShow': grpc.unary_unary_rpc_method_handler(
+                    servicer.SkillShow,
+                    request_deserializer=rpc__messages_dot_skills__pb2.SkillShowRequest.FromString,
+                    response_serializer=rpc__messages_dot_skills__pb2.SkillShowResponse.SerializeToString,
+            ),
+            'SkillRun': grpc.unary_unary_rpc_method_handler(
+                    servicer.SkillRun,
+                    request_deserializer=rpc__messages_dot_skills__pb2.SkillRunRequest.FromString,
+                    response_serializer=rpc__messages_dot_skills__pb2.SkillRunResponse.SerializeToString,
             ),
             'BrowserCreateSession': grpc.unary_unary_rpc_method_handler(
                     servicer.BrowserCreateSession,
@@ -2236,6 +2293,87 @@ class TerminalStreamingService(object):
             '/terminal.TerminalStreamingService/CancelAgent',
             rpc__messages_dot_agent__pb2.CancelAgentRequest.SerializeToString,
             rpc__messages_dot_agent__pb2.CancelAgentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SkillList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/terminal.TerminalStreamingService/SkillList',
+            rpc__messages_dot_skills__pb2.SkillListRequest.SerializeToString,
+            rpc__messages_dot_skills__pb2.SkillListResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SkillShow(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/terminal.TerminalStreamingService/SkillShow',
+            rpc__messages_dot_skills__pb2.SkillShowRequest.SerializeToString,
+            rpc__messages_dot_skills__pb2.SkillShowResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SkillRun(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/terminal.TerminalStreamingService/SkillRun',
+            rpc__messages_dot_skills__pb2.SkillRunRequest.SerializeToString,
+            rpc__messages_dot_skills__pb2.SkillRunResponse.FromString,
             options,
             channel_credentials,
             insecure,

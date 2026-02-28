@@ -110,7 +110,18 @@ class InvalidAPIKeyError(AuthenticationError):
     """API key is invalid or expired."""
 
     def __init__(self, message: str = "Invalid API key") -> None:
-        super().__init__(message)
+        hint = (
+            f"{message}\n\n"
+            "Possible causes:\n"
+            "  • API key is expired or revoked\n"
+            "  • Key must start with 'cmdop_' prefix\n"
+            "  • Wrong environment (dev key on prod server, or vice versa)\n"
+            "  • Agent is not connected to the relay server\n\n"
+            "To fix:\n"
+            "  • Generate a new key at https://my.cmdop.com/dashboard\n"
+            "  • Check CMDOP_API_KEY env variable or config profile\n"
+        )
+        super().__init__(hint)
 
 
 class PermissionDeniedError(AuthenticationError):
@@ -163,6 +174,24 @@ class FeatureNotAvailableError(AgentError):
         self.feature = feature
         self.mode = mode
         super().__init__(f"Feature '{feature}' is not available in {mode} mode")
+
+
+class MethodNotFoundError(CMDOPError):
+    """gRPC method not implemented on the server."""
+
+    def __init__(self, message: str = "Method not found") -> None:
+        hint = (
+            f"{message}\n\n"
+            "The server does not support this RPC method.\n\n"
+            "Possible causes:\n"
+            "  • Server is running an older version without this RPC\n"
+            "  • Server needs to be restarted after proto update\n"
+            "  • Wrong connection profile for the target server\n\n"
+            "To fix:\n"
+            "  • Restart the gRPC server (e.g. `make grpc`)\n"
+            "  • Verify proto definitions are up to date on the server\n"
+        )
+        super().__init__(hint)
 
 
 # =============================================================================
@@ -343,6 +372,8 @@ def from_grpc_error(error: RpcError) -> CMDOPError:
         return RateLimitError()
     if code == StatusCode.CANCELLED:
         return SessionInterruptedError(details or "unknown")
+    if code == StatusCode.UNIMPLEMENTED:
+        return MethodNotFoundError(details or "Method not found")
 
     # Generic error - keep it simple
     return CMDOPError(details or f"gRPC error: {code.name}")

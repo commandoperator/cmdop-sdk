@@ -1,0 +1,154 @@
+// RPC Messages: Skills
+//
+// Messages for SDK -> Agent skill management and execution.
+// SDK can list, inspect, and run skills installed on a connected machine.
+//
+// Flow:
+//   1. SDK calls SkillList to discover available skills
+//   2. SDK calls SkillShow to get skill details
+//   3. SDK calls SkillRun to execute a skill with a prompt
+//
+// Version: 1.0.0
+// Date: 2026-02-28
+
+syntax = "proto3";
+
+package terminal;
+
+option go_package = "terminal/proto";
+
+import "agent_messages.proto";    // For AgentToolResult, AgentUsage
+
+// ============================================================================
+// SKILL INFO
+// ============================================================================
+
+// SkillInfo describes an installed skill.
+message SkillInfo {
+  // Skill name (lowercase-with-hyphens, e.g. "code-review")
+  string name = 1;
+
+  // Human-readable description
+  string description = 2;
+
+  // Skill author
+  string author = 3;
+
+  // Semantic version (e.g. "1.0.0")
+  string version = 4;
+
+  // LLM model override (e.g. "@smart+agents", "claude-opus-4-6")
+  string model = 5;
+
+  // Where the skill was loaded from: "builtin", "global", or "workspace"
+  string origin = 6;
+
+  // Required system binaries (e.g. ["git", "kubectl"])
+  repeated string required_bins = 7;
+
+  // Required environment variables (e.g. ["GITHUB_TOKEN"])
+  repeated string required_env = 8;
+}
+
+// ============================================================================
+// SKILL LIST
+// ============================================================================
+
+// Request to list all installed skills on the connected machine.
+message SkillListRequest {
+  // Session ID with connected agent (required for remote, optional for local)
+  string session_id = 1;
+}
+
+// Response with list of installed skills.
+message SkillListResponse {
+  // All installed skills (builtin + global + workspace)
+  repeated SkillInfo skills = 1;
+}
+
+// ============================================================================
+// SKILL SHOW
+// ============================================================================
+
+// Request to get details of a specific skill.
+message SkillShowRequest {
+  // Session ID with connected agent (required for remote, optional for local)
+  string session_id = 1;
+
+  // Skill name to look up (required)
+  string skill_name = 2;
+}
+
+// Response with skill details.
+message SkillShowResponse {
+  // Whether the skill was found
+  bool found = 1;
+
+  // Skill metadata (only set if found=true)
+  SkillInfo info = 2;
+
+  // System prompt body (markdown content)
+  string content = 3;
+
+  // Source file path on the machine
+  string source = 4;
+
+  // Error message if lookup failed
+  string error = 5;
+}
+
+// ============================================================================
+// SKILL RUN (v2.23.0)
+// ============================================================================
+
+// Request to execute a skill with a prompt.
+message SkillRunRequest {
+  // Session ID with connected agent (required for remote, optional for local)
+  string session_id = 1;
+
+  // Unique request ID for correlation (optional, generated if empty)
+  string request_id = 2;
+
+  // Skill name to run (required)
+  string skill_name = 3;
+
+  // User prompt/question for the skill (required)
+  string prompt = 4;
+
+  // Additional configuration options (e.g. model override)
+  map<string, string> options = 5;
+
+  // Maximum execution time in seconds (default: 300, max: 600)
+  int32 timeout_seconds = 6;
+
+  // Optional: JSON Schema for structured output
+  // If provided, skill will return output_json instead of text
+  string output_schema = 7;
+}
+
+// Response from skill execution.
+message SkillRunResponse {
+  // Request ID for correlation (matches SkillRunRequest.request_id)
+  string request_id = 1;
+
+  // Whether execution succeeded
+  bool success = 2;
+
+  // Skill's response text
+  string text = 3;
+
+  // Error message if !success
+  string error = 4;
+
+  // Tool execution results (if skill used tools)
+  repeated AgentToolResult tool_results = 5;
+
+  // Token usage statistics
+  AgentUsage usage = 6;
+
+  // Execution duration in milliseconds
+  int64 duration_ms = 7;
+
+  // Structured output JSON (if output_schema was provided in request)
+  string output_json = 8;
+}

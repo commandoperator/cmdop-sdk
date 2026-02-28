@@ -21,6 +21,7 @@ Your Code ──── Cloud Relay ──── Agent (on server)
 | Screen sharing is laggy | gRPC streaming, real-time |
 | File sync is just files | Full OS access: terminal + files + browser |
 | AI returns text | Structured output with Pydantic |
+| No reusable workflows | Skills: predefined AI tasks with tools |
 
 ## Install
 
@@ -53,6 +54,11 @@ async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     await client.agent.set_machine("my-server")
     result = await client.agent.run("Check server health", output_model=Health)
     health: Health = result.data  # Typed!
+
+    # Skills — run predefined AI workflows
+    await client.skills.set_machine("my-server")
+    skills = await client.skills.list()
+    result = await client.skills.run("code-review", "Review the auth module")
 
     # Browser automation on remote machine
     with client.browser.create_session() as b:
@@ -175,6 +181,61 @@ result = await client.agent.run(
 health: ServerHealth = result.data
 if health.cpu_percent > 90:
     alert(f"{health.hostname} CPU critical!")
+```
+
+---
+
+## Skills
+
+Run predefined AI workflows on remote machines. Skills are reusable prompt templates with tool access.
+
+```python
+await client.skills.set_machine("my-server")
+
+# List available skills
+skills = await client.skills.list()
+for skill in skills:
+    print(f"{skill.name}: {skill.description} ({skill.origin})")
+
+# Inspect a skill
+detail = await client.skills.show("code-review")
+if detail.found:
+    print(detail.content)   # System prompt markdown
+    print(detail.source)    # File path on machine
+
+# Run a skill
+result = await client.skills.run("code-review", "Review the auth module")
+print(result.text)
+print(f"Took {result.duration_seconds}s, {result.usage.total_tokens} tokens")
+```
+
+**Structured output:**
+```python
+from pydantic import BaseModel
+
+class Review(BaseModel):
+    score: int
+    summary: str
+    issues: list[str]
+
+result = await client.skills.run(
+    "code-review",
+    "Review the auth module",
+    output_model=Review,
+)
+review: Review = result.data
+print(f"Score: {review.score}/10")
+```
+
+**Custom options:**
+```python
+from cmdop import SkillRunOptions
+
+result = await client.skills.run(
+    "summarize",
+    "Summarize the project README",
+    options=SkillRunOptions(model="openai/gpt-4o", timeout_seconds=120),
+)
 ```
 
 ---
@@ -347,7 +408,8 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 │  Terminal   │                 │  Centrifugo │           │   Shell   │
 │  Files      │                 │  WebSocket  │           │   Files   │
 │  Browser    │                 │  Real-time  │           │   Browser │
-│  Agent      │                 │             │           │           │
+│  Agent      │                 │             │           │   Skills  │
+│  Skills     │                 │             │           │           │
 └─────────────┘                 └─────────────┘           └───────────┘
 ```
 
@@ -367,6 +429,7 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 | File operations | Built-in | SFTP | No | SCP |
 | Browser automation | Built-in | No | No | No |
 | AI agent | Built-in | No | No | No |
+| Reusable AI skills | Built-in | No | No | No |
 | NAT traversal | Outbound | WireGuard | Outbound | Port forward |
 | Client install | None | VPN client | None | SSH client |
 | Structured output | Pydantic | No | No | No |
@@ -383,5 +446,6 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 - [Examples](examples/)
 - [Documentation](https://cmdop.com/docs/sdk/python)
 - [Bot Documentation](https://cmdop.com/docs/sdk/python/bot)
+- [Skills Catalog](https://cmdop.com/skills/)
 - [Agent Download](https://cmdop.com/download)
 - [GitHub](https://github.com/commandoperator/cmdop-sdk)

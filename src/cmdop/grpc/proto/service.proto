@@ -10,10 +10,11 @@
 //   4. Input: Browser → Django → Agent (stdin)
 //   5. Output: Agent → Django → Browser (stdout/stderr)
 //
-// Version: 2.22.0
-// Date: 2026-02-18
+// Version: 2.23.0
+// Date: 2026-02-28
 //
 // Changelog:
+// - v2.23.0: Added SkillList, SkillShow, SkillRun RPCs for remote skill management and execution
 // - v2.22.0: Added RunAgentStream RPC for SDK streaming agent execution
 // - v2.21.0: Added GetSessionByHostname RPC for SDK set_machine()
 // - v2.19.0: Added BrowserNetwork* RPCs for network capture
@@ -118,6 +119,20 @@ service TerminalStreamingService {
   // Cancel running agent (v2.15.0) - for SDK agent cancellation
   // SDK sends cancel request, Django relays to connected agent, returns confirmation
   rpc CancelAgent(CancelAgentRequest) returns (CancelAgentResponse);
+
+  // ============================================================================
+  // SKILLS (v2.23.0)
+  // Remote skill management and execution - SDK can list, inspect, and run skills
+  // ============================================================================
+
+  // List installed skills on connected machine
+  rpc SkillList(SkillListRequest) returns (SkillListResponse);
+
+  // Get skill details (manifest, content, source path)
+  rpc SkillShow(SkillShowRequest) returns (SkillShowResponse);
+
+  // Execute a skill with a prompt
+  rpc SkillRun(SkillRunRequest) returns (SkillRunResponse);
 
   // ============================================================================
   // BROWSER DIRECT CONTROL (v2.16.0)
