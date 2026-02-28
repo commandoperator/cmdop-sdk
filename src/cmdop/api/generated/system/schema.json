@@ -1216,6 +1216,10 @@
                         "format": "uuid",
                         "readOnly": true
                     },
+                    "workspace_name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
                     "name": {
                         "type": "string",
                         "readOnly": true,
@@ -1256,7 +1260,8 @@
                     "key_prefix",
                     "last_used",
                     "name",
-                    "workspace"
+                    "workspace",
+                    "workspace_name"
                 ]
             },
             "ApiKeyCreateRequest": {

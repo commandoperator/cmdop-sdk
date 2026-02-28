@@ -29,3 +29,4 @@ import public "rpc_messages/push.proto";
 import public "rpc_messages/extract.proto";
 import public "rpc_messages/agent.proto";
 import public "rpc_messages/browser.proto";
+import public "rpc_messages/skills.proto";

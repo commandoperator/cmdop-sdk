@@ -8,6 +8,7 @@ from rpc_messages import push_pb2 as _push_pb2
 from rpc_messages import extract_pb2 as _extract_pb2
 from rpc_messages import agent_pb2 as _agent_pb2
 from rpc_messages import browser_pb2 as _browser_pb2
+from rpc_messages import skills_pb2 as _skills_pb2
 from google.protobuf import descriptor as _descriptor
 from typing import ClassVar as _ClassVar
 from rpc_messages.session_pb2 import CreateSessionRequest as CreateSessionRequest
@@ -121,6 +122,13 @@ from rpc_messages.browser_pb2 import NetworkResponse as NetworkResponse
 from rpc_messages.browser_pb2 import NetworkTiming as NetworkTiming
 from rpc_messages.browser_pb2 import NetworkExchange as NetworkExchange
 from rpc_messages.browser_pb2 import WaitUntil as WaitUntil
+from rpc_messages.skills_pb2 import SkillInfo as SkillInfo
+from rpc_messages.skills_pb2 import SkillListRequest as SkillListRequest
+from rpc_messages.skills_pb2 import SkillListResponse as SkillListResponse
+from rpc_messages.skills_pb2 import SkillShowRequest as SkillShowRequest
+from rpc_messages.skills_pb2 import SkillShowResponse as SkillShowResponse
+from rpc_messages.skills_pb2 import SkillRunRequest as SkillRunRequest
+from rpc_messages.skills_pb2 import SkillRunResponse as SkillRunResponse
 
 DESCRIPTOR: _descriptor.FileDescriptor
 EXTRACT_ERROR_NONE: _extract_pb2.ExtractErrorCode

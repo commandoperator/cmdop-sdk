@@ -22,6 +22,7 @@ pip install cmdop
 | [file_operations.py](file_operations.py) | Read, write, and list files on remote machines |
 | [fleet_status.py](fleet_status.py) | Check status of all connected machines |
 | [agent_structured.py](agent_structured.py) | AI agent with Pydantic structured output |
+| [skills.py](skills.py) | List, inspect, and run AI skills |
 | [browser_automation.py](browser_automation.py) | Browser automation on remote machines |
 
 ## Configuration

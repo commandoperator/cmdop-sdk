@@ -14,6 +14,7 @@ from cmdop.services.browser import AsyncBrowserService, BrowserService
 from cmdop.services.download import AsyncDownloadService, DownloadService
 from cmdop.services.extract import AsyncExtractService, ExtractService
 from cmdop.services.files import AsyncFilesService, FilesService
+from cmdop.services.skills import AsyncSkillsService, SkillsService
 from cmdop.services.terminal import AsyncTerminalService, TerminalService
 from cmdop.transport.local import LocalTransport
 from cmdop.transport.remote import RemoteTransport
@@ -59,6 +60,7 @@ class CMDOPClient:
         self._agent: AgentService | None = None
         self._browser: BrowserService | None = None
         self._download: DownloadService | None = None
+        self._skills: SkillsService | None = None
 
     @classmethod
     def remote(
@@ -255,6 +257,22 @@ class CMDOPClient:
         return self._download
 
     @property
+    def skills(self) -> SkillsService:
+        """
+        Skills service for listing, inspecting, and running skills.
+
+        Provides: list, show, run
+
+        Example:
+            >>> skills = client.skills.list()
+            >>> result = client.skills.run("code-review", "Review this PR")
+            >>> print(result.text)
+        """
+        if self._skills is None:
+            self._skills = SkillsService(self._transport)
+        return self._skills
+
+    @property
     def is_connected(self) -> bool:
         """Check if client is connected."""
         return self._transport.is_connected
@@ -348,6 +366,7 @@ class AsyncCMDOPClient:
         self._agent: AsyncAgentService | None = None
         self._browser: AsyncBrowserService | None = None
         self._download: AsyncDownloadService | None = None
+        self._skills: AsyncSkillsService | None = None
 
     @classmethod
     def remote(
@@ -484,6 +503,20 @@ class AsyncCMDOPClient:
         if self._download is None:
             self._download = AsyncDownloadService(self._transport)
         return self._download
+
+    @property
+    def skills(self) -> AsyncSkillsService:
+        """
+        Async skills service for listing, inspecting, and running skills.
+
+        Example:
+            >>> skills = await client.skills.list()
+            >>> result = await client.skills.run("code-review", "Review this PR")
+            >>> print(result.text)
+        """
+        if self._skills is None:
+            self._skills = AsyncSkillsService(self._transport)
+        return self._skills
 
     @property
     def is_connected(self) -> bool:

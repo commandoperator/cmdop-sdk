@@ -32,6 +32,7 @@ from .rpc_messages import push_pb2 as rpc__messages_dot_push__pb2
 from .rpc_messages import extract_pb2 as rpc__messages_dot_extract__pb2
 from .rpc_messages import agent_pb2 as rpc__messages_dot_agent__pb2
 from .rpc_messages import browser_pb2 as rpc__messages_dot_browser__pb2
+from .rpc_messages import skills_pb2 as rpc__messages_dot_skills__pb2
 
 from .rpc_messages.session_pb2 import *
 from .rpc_messages.terminal_pb2 import *
@@ -43,8 +44,9 @@ from .rpc_messages.push_pb2 import *
 from .rpc_messages.extract_pb2 import *
 from .rpc_messages.agent_pb2 import *
 from .rpc_messages.browser_pb2 import *
+from .rpc_messages.skills_pb2 import *
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12rpc_messages.proto\x12\x08terminal\x1a\x1arpc_messages/session.proto\x1a\x1brpc_messages/terminal.proto\x1a\x1arpc_messages/history.proto\x1a\x19rpc_messages/device.proto\x1a\x1crpc_messages/lifecycle.proto\x1a\x19rpc_messages/health.proto\x1a\x17rpc_messages/push.proto\x1a\x1arpc_messages/extract.proto\x1a\x18rpc_messages/agent.proto\x1a\x1arpc_messages/browser.protoB\x10Z\x0eterminal/protoP\x00P\x01P\x02P\x03P\x04P\x05P\x06P\x07P\x08P\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x12rpc_messages.proto\x12\x08terminal\x1a\x1arpc_messages/session.proto\x1a\x1brpc_messages/terminal.proto\x1a\x1arpc_messages/history.proto\x1a\x19rpc_messages/device.proto\x1a\x1crpc_messages/lifecycle.proto\x1a\x19rpc_messages/health.proto\x1a\x17rpc_messages/push.proto\x1a\x1arpc_messages/extract.proto\x1a\x18rpc_messages/agent.proto\x1a\x1arpc_messages/browser.proto\x1a\x19rpc_messages/skills.protoB\x10Z\x0eterminal/protoP\x00P\x01P\x02P\x03P\x04P\x05P\x06P\x07P\x08P\tP\nb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)

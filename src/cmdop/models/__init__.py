@@ -16,6 +16,12 @@ from cmdop.models.agent import (
     AgentType,
     AgentUsage,
 )
+from cmdop.models.skills import (
+    SkillDetail,
+    SkillInfo,
+    SkillRunOptions,
+    SkillRunResult,
+)
 from cmdop.models.config import (
     ConnectionConfig,
     KeepaliveConfig,
@@ -81,4 +87,9 @@ __all__ = [
     "AgentStreamEvent",
     "AgentResult",
     "AgentRunRequest",
+    # Skills
+    "SkillInfo",
+    "SkillDetail",
+    "SkillRunOptions",
+    "SkillRunResult",
 ]
