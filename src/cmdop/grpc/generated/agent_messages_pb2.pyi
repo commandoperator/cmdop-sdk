@@ -69,7 +69,7 @@ AGENT_EVENT_BROWSER_ESCALATION: AgentEventType
 AGENT_EVENT_BROWSER_SESSION: AgentEventType
 
 class AgentMessage(_message.Message):
-    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "history", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "browser_result")
+    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "history", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "browser_result", "skill_list_result", "skill_show_result", "skill_run_result")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
@@ -90,6 +90,9 @@ class AgentMessage(_message.Message):
     AGENT_RESULT_FIELD_NUMBER: _ClassVar[int]
     AGENT_EVENT_FIELD_NUMBER: _ClassVar[int]
     BROWSER_RESULT_FIELD_NUMBER: _ClassVar[int]
+    SKILL_LIST_RESULT_FIELD_NUMBER: _ClassVar[int]
+    SKILL_SHOW_RESULT_FIELD_NUMBER: _ClassVar[int]
+    SKILL_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
     session_id: str
     message_id: str
     timestamp: _timestamp_pb2.Timestamp
@@ -110,7 +113,10 @@ class AgentMessage(_message.Message):
     agent_result: AgentResult
     agent_event: AgentStreamEvent
     browser_result: BrowserCommandResult
-    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., history: _Optional[_Union[HistoryResult, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., browser_result: _Optional[_Union[BrowserCommandResult, _Mapping]] = ...) -> None: ...
+    skill_list_result: SkillListResult
+    skill_show_result: SkillShowResult
+    skill_run_result: SkillRunResult
+    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., history: _Optional[_Union[HistoryResult, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., browser_result: _Optional[_Union[BrowserCommandResult, _Mapping]] = ..., skill_list_result: _Optional[_Union[SkillListResult, _Mapping]] = ..., skill_show_result: _Optional[_Union[SkillShowResult, _Mapping]] = ..., skill_run_result: _Optional[_Union[SkillRunResult, _Mapping]] = ...) -> None: ...
 
 class BrowserCommandResult(_message.Message):
     __slots__ = ("request_id", "success", "result_json", "error", "duration_ms")
@@ -445,3 +451,67 @@ class BrowserSessionEvent(_message.Message):
     is_start: bool
     url: str
     def __init__(self, session_id: _Optional[str] = ..., profile_id: _Optional[str] = ..., session_type: _Optional[str] = ..., is_start: bool = ..., url: _Optional[str] = ...) -> None: ...
+
+class SkillInfoItem(_message.Message):
+    __slots__ = ("name", "description", "author", "version", "model", "origin", "required_bins", "required_env")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    ORIGIN_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_BINS_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_ENV_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    description: str
+    author: str
+    version: str
+    model: str
+    origin: str
+    required_bins: _containers.RepeatedScalarFieldContainer[str]
+    required_env: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., author: _Optional[str] = ..., version: _Optional[str] = ..., model: _Optional[str] = ..., origin: _Optional[str] = ..., required_bins: _Optional[_Iterable[str]] = ..., required_env: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class SkillListResult(_message.Message):
+    __slots__ = ("request_id", "skills")
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SKILLS_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    skills: _containers.RepeatedCompositeFieldContainer[SkillInfoItem]
+    def __init__(self, request_id: _Optional[str] = ..., skills: _Optional[_Iterable[_Union[SkillInfoItem, _Mapping]]] = ...) -> None: ...
+
+class SkillShowResult(_message.Message):
+    __slots__ = ("request_id", "found", "info", "content", "source", "error")
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    FOUND_FIELD_NUMBER: _ClassVar[int]
+    INFO_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    found: bool
+    info: SkillInfoItem
+    content: str
+    source: str
+    error: str
+    def __init__(self, request_id: _Optional[str] = ..., found: bool = ..., info: _Optional[_Union[SkillInfoItem, _Mapping]] = ..., content: _Optional[str] = ..., source: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
+
+class SkillRunResult(_message.Message):
+    __slots__ = ("request_id", "success", "text", "error", "tool_results", "usage", "duration_ms", "output_json")
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    TOOL_RESULTS_FIELD_NUMBER: _ClassVar[int]
+    USAGE_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_JSON_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    success: bool
+    text: str
+    error: str
+    tool_results: _containers.RepeatedCompositeFieldContainer[AgentToolResult]
+    usage: AgentUsage
+    duration_ms: int
+    output_json: str
+    def __init__(self, request_id: _Optional[str] = ..., success: bool = ..., text: _Optional[str] = ..., error: _Optional[str] = ..., tool_results: _Optional[_Iterable[_Union[AgentToolResult, _Mapping]]] = ..., usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., duration_ms: _Optional[int] = ..., output_json: _Optional[str] = ...) -> None: ...

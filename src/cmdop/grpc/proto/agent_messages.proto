@@ -61,6 +61,11 @@ message AgentMessage {
     // Browser Direct Control result (v2.16.0)
     // Response to BrowserCommand from control_messages.proto
     BrowserCommandResult browser_result = 100;      // Browser command result
+
+    // Skills relay results (v2.24.0)
+    SkillListResult skill_list_result = 110;         // Skill list result
+    SkillShowResult skill_show_result = 111;         // Skill show result
+    SkillRunResult skill_run_result = 112;            // Skill run result
   }
 }
 
@@ -330,4 +335,49 @@ message BrowserSessionEvent {
   string session_type = 3;            // ephemeral, persistent, long_lived
   bool is_start = 4;                  // True=start, False=end
   string url = 5;                     // Current/final URL
+}
+
+// ============================================================================
+// SKILL RELAY RESULTS (v2.24.0)
+// ============================================================================
+
+// Lightweight skill info for streaming messages.
+// Avoids circular import with rpc_messages/skills.proto which imports agent_messages.proto.
+message SkillInfoItem {
+  string name = 1;                    // Skill name (e.g. "code-review")
+  string description = 2;             // Human-readable description
+  string author = 3;                  // Skill author
+  string version = 4;                 // Semantic version
+  string model = 5;                   // LLM model override
+  string origin = 6;                  // Where loaded from: builtin, global, workspace
+  repeated string required_bins = 7;  // Required system binaries
+  repeated string required_env = 8;   // Required environment variables
+}
+
+// Result of SkillListCommand
+message SkillListResult {
+  string request_id = 1;                    // Correlates with SkillListCommand.request_id
+  repeated SkillInfoItem skills = 2;        // All installed skills
+}
+
+// Result of SkillShowCommand
+message SkillShowResult {
+  string request_id = 1;              // Correlates with SkillShowCommand.request_id
+  bool found = 2;                     // Whether the skill was found
+  SkillInfoItem info = 3;             // Skill metadata (only set if found=true)
+  string content = 4;                 // System prompt body (markdown)
+  string source = 5;                  // Source file path on the machine
+  string error = 6;                   // Error message if lookup failed
+}
+
+// Result of SkillRunCommand
+message SkillRunResult {
+  string request_id = 1;                          // Correlates with SkillRunCommand.request_id
+  bool success = 2;                                // Whether execution succeeded
+  string text = 3;                                 // Skill's response text
+  string error = 4;                                // Error message if !success
+  repeated AgentToolResult tool_results = 5;       // Tool execution results
+  AgentUsage usage = 6;                            // Token usage stats
+  int64 duration_ms = 7;                           // Execution duration in ms
+  string output_json = 8;                          // Structured output JSON (if schema provided)
 }

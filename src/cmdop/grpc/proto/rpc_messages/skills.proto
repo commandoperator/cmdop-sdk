@@ -64,6 +64,9 @@ message SkillListRequest {
 message SkillListResponse {
   // All installed skills (builtin + global + workspace)
   repeated SkillInfo skills = 1;
+
+  // Error message if listing failed (e.g. no active session)
+  string error = 2;
 }
 
 // ============================================================================

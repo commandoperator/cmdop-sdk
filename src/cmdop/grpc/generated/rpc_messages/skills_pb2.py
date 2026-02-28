@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from .. import agent_messages_pb2 as agent__messages__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19rpc_messages/skills.proto\x12\x08terminal\x1a\x14\x61gent_messages.proto\"\x9b\x01\n\tSkillInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\r\n\x05model\x18\x05 \x01(\t\x12\x0e\n\x06origin\x18\x06 \x01(\t\x12\x15\n\rrequired_bins\x18\x07 \x03(\t\x12\x14\n\x0crequired_env\x18\x08 \x03(\t\"&\n\x10SkillListRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\"8\n\x11SkillListResponse\x12#\n\x06skills\x18\x01 \x03(\x0b\x32\x13.terminal.SkillInfo\":\n\x10SkillShowRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\nskill_name\x18\x02 \x01(\t\"u\n\x11SkillShowResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12!\n\x04info\x18\x02 \x01(\x0b\x32\x13.terminal.SkillInfo\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12\x0e\n\x06source\x18\x04 \x01(\t\x12\r\n\x05\x65rror\x18\x05 \x01(\t\"\xf6\x01\n\x0fSkillRunRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\nrequest_id\x18\x02 \x01(\t\x12\x12\n\nskill_name\x18\x03 \x01(\t\x12\x0e\n\x06prompt\x18\x04 \x01(\t\x12\x37\n\x07options\x18\x05 \x03(\x0b\x32&.terminal.SkillRunRequest.OptionsEntry\x12\x17\n\x0ftimeout_seconds\x18\x06 \x01(\x05\x12\x15\n\routput_schema\x18\x07 \x01(\t\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xd4\x01\n\x10SkillRunResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x0c\n\x04text\x18\x03 \x01(\t\x12\r\n\x05\x65rror\x18\x04 \x01(\t\x12/\n\x0ctool_results\x18\x05 \x03(\x0b\x32\x19.terminal.AgentToolResult\x12#\n\x05usage\x18\x06 \x01(\x0b\x32\x14.terminal.AgentUsage\x12\x13\n\x0b\x64uration_ms\x18\x07 \x01(\x03\x12\x13\n\x0boutput_json\x18\x08 \x01(\tB\x10Z\x0eterminal/protob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19rpc_messages/skills.proto\x12\x08terminal\x1a\x14\x61gent_messages.proto\"\x9b\x01\n\tSkillInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x0e\n\x06\x61uthor\x18\x03 \x01(\t\x12\x0f\n\x07version\x18\x04 \x01(\t\x12\r\n\x05model\x18\x05 \x01(\t\x12\x0e\n\x06origin\x18\x06 \x01(\t\x12\x15\n\rrequired_bins\x18\x07 \x03(\t\x12\x14\n\x0crequired_env\x18\x08 \x03(\t\"&\n\x10SkillListRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\"G\n\x11SkillListResponse\x12#\n\x06skills\x18\x01 \x03(\x0b\x32\x13.terminal.SkillInfo\x12\r\n\x05\x65rror\x18\x02 \x01(\t\":\n\x10SkillShowRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\nskill_name\x18\x02 \x01(\t\"u\n\x11SkillShowResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12!\n\x04info\x18\x02 \x01(\x0b\x32\x13.terminal.SkillInfo\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12\x0e\n\x06source\x18\x04 \x01(\t\x12\r\n\x05\x65rror\x18\x05 \x01(\t\"\xf6\x01\n\x0fSkillRunRequest\x12\x12\n\nsession_id\x18\x01 \x01(\t\x12\x12\n\nrequest_id\x18\x02 \x01(\t\x12\x12\n\nskill_name\x18\x03 \x01(\t\x12\x0e\n\x06prompt\x18\x04 \x01(\t\x12\x37\n\x07options\x18\x05 \x03(\x0b\x32&.terminal.SkillRunRequest.OptionsEntry\x12\x17\n\x0ftimeout_seconds\x18\x06 \x01(\x05\x12\x15\n\routput_schema\x18\x07 \x01(\t\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xd4\x01\n\x10SkillRunResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x0c\n\x04text\x18\x03 \x01(\t\x12\r\n\x05\x65rror\x18\x04 \x01(\t\x12/\n\x0ctool_results\x18\x05 \x03(\x0b\x32\x19.terminal.AgentToolResult\x12#\n\x05usage\x18\x06 \x01(\x0b\x32\x14.terminal.AgentUsage\x12\x13\n\x0b\x64uration_ms\x18\x07 \x01(\x03\x12\x13\n\x0boutput_json\x18\x08 \x01(\tB\x10Z\x0eterminal/protob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -40,15 +40,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_SKILLLISTREQUEST']._serialized_start=219
   _globals['_SKILLLISTREQUEST']._serialized_end=257
   _globals['_SKILLLISTRESPONSE']._serialized_start=259
-  _globals['_SKILLLISTRESPONSE']._serialized_end=315
-  _globals['_SKILLSHOWREQUEST']._serialized_start=317
-  _globals['_SKILLSHOWREQUEST']._serialized_end=375
-  _globals['_SKILLSHOWRESPONSE']._serialized_start=377
-  _globals['_SKILLSHOWRESPONSE']._serialized_end=494
-  _globals['_SKILLRUNREQUEST']._serialized_start=497
-  _globals['_SKILLRUNREQUEST']._serialized_end=743
-  _globals['_SKILLRUNREQUEST_OPTIONSENTRY']._serialized_start=697
-  _globals['_SKILLRUNREQUEST_OPTIONSENTRY']._serialized_end=743
-  _globals['_SKILLRUNRESPONSE']._serialized_start=746
-  _globals['_SKILLRUNRESPONSE']._serialized_end=958
+  _globals['_SKILLLISTRESPONSE']._serialized_end=330
+  _globals['_SKILLSHOWREQUEST']._serialized_start=332
+  _globals['_SKILLSHOWREQUEST']._serialized_end=390
+  _globals['_SKILLSHOWRESPONSE']._serialized_start=392
+  _globals['_SKILLSHOWRESPONSE']._serialized_end=509
+  _globals['_SKILLRUNREQUEST']._serialized_start=512
+  _globals['_SKILLRUNREQUEST']._serialized_end=758
+  _globals['_SKILLRUNREQUEST_OPTIONSENTRY']._serialized_start=712
+  _globals['_SKILLRUNREQUEST_OPTIONSENTRY']._serialized_end=758
+  _globals['_SKILLRUNRESPONSE']._serialized_start=761
+  _globals['_SKILLRUNRESPONSE']._serialized_end=973
 # @@protoc_insertion_point(module_scope)

@@ -90,7 +90,7 @@ AGENT_TYPE_SCRAPER: AgentType
 AGENT_TYPE_FORM_FILLER: AgentType
 
 class ControlMessage(_message.Message):
-    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "get_history", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "browser")
+    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "get_history", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "browser", "skill_list", "skill_show", "skill_run")
     COMMAND_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     INPUT_FIELD_NUMBER: _ClassVar[int]
@@ -112,6 +112,9 @@ class ControlMessage(_message.Message):
     AGENT_RUN_FIELD_NUMBER: _ClassVar[int]
     AGENT_CANCEL_FIELD_NUMBER: _ClassVar[int]
     BROWSER_FIELD_NUMBER: _ClassVar[int]
+    SKILL_LIST_FIELD_NUMBER: _ClassVar[int]
+    SKILL_SHOW_FIELD_NUMBER: _ClassVar[int]
+    SKILL_RUN_FIELD_NUMBER: _ClassVar[int]
     command_id: str
     timestamp: _timestamp_pb2.Timestamp
     input: TerminalInput
@@ -133,7 +136,10 @@ class ControlMessage(_message.Message):
     agent_run: AgentRunCommand
     agent_cancel: AgentCancelCommand
     browser: BrowserCommand
-    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., get_history: _Optional[_Union[GetHistoryCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., browser: _Optional[_Union[BrowserCommand, _Mapping]] = ...) -> None: ...
+    skill_list: SkillListCommand
+    skill_show: SkillShowCommand
+    skill_run: SkillRunCommand
+    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., get_history: _Optional[_Union[GetHistoryCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., browser: _Optional[_Union[BrowserCommand, _Mapping]] = ..., skill_list: _Optional[_Union[SkillListCommand, _Mapping]] = ..., skill_show: _Optional[_Union[SkillShowCommand, _Mapping]] = ..., skill_run: _Optional[_Union[SkillRunCommand, _Mapping]] = ...) -> None: ...
 
 class BrowserCommand(_message.Message):
     __slots__ = ("request_id", "type", "payload_json")
@@ -308,3 +314,40 @@ class AgentCancelCommand(_message.Message):
     request_id: str
     reason: str
     def __init__(self, request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SkillListCommand(_message.Message):
+    __slots__ = ("request_id",)
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    def __init__(self, request_id: _Optional[str] = ...) -> None: ...
+
+class SkillShowCommand(_message.Message):
+    __slots__ = ("request_id", "skill_name")
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SKILL_NAME_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    skill_name: str
+    def __init__(self, request_id: _Optional[str] = ..., skill_name: _Optional[str] = ...) -> None: ...
+
+class SkillRunCommand(_message.Message):
+    __slots__ = ("request_id", "skill_name", "prompt", "options", "timeout_seconds", "output_schema")
+    class OptionsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SKILL_NAME_FIELD_NUMBER: _ClassVar[int]
+    PROMPT_FIELD_NUMBER: _ClassVar[int]
+    OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_SCHEMA_FIELD_NUMBER: _ClassVar[int]
+    request_id: str
+    skill_name: str
+    prompt: str
+    options: _containers.ScalarMap[str, str]
+    timeout_seconds: int
+    output_schema: str
+    def __init__(self, request_id: _Optional[str] = ..., skill_name: _Optional[str] = ..., prompt: _Optional[str] = ..., options: _Optional[_Mapping[str, str]] = ..., timeout_seconds: _Optional[int] = ..., output_schema: _Optional[str] = ...) -> None: ...
