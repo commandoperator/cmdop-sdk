@@ -66,6 +66,12 @@ message ControlMessage {
     // Browser Direct Control (v2.16.0)
     // SDK → Django → Agent browser automation without LLM
     BrowserCommand browser = 120;                         // Browser control command
+
+    // Skills relay (v2.24.0)
+    // SDK → Django → Agent skill management and execution
+    SkillListCommand skill_list = 130;                    // List installed skills
+    SkillShowCommand skill_show = 131;                    // Get skill details
+    SkillRunCommand skill_run = 132;                      // Execute a skill
   }
 }
 
@@ -252,4 +258,29 @@ message BrowserAgentOptions {
 message AgentCancelCommand {
   string request_id = 1;      // Request ID to cancel (from AgentRunCommand)
   string reason = 2;          // Cancellation reason: "user", "timeout", "error"
+}
+
+// ============================================================================
+// SKILL RELAY COMMANDS (v2.24.0)
+// ============================================================================
+
+// List all installed skills on the agent machine
+message SkillListCommand {
+  string request_id = 1;      // Unique request ID for correlation
+}
+
+// Get details of a specific skill
+message SkillShowCommand {
+  string request_id = 1;      // Unique request ID for correlation
+  string skill_name = 2;      // Skill name to look up
+}
+
+// Execute a skill with a prompt
+message SkillRunCommand {
+  string request_id = 1;                // Unique request ID for correlation
+  string skill_name = 2;                // Skill name to execute
+  string prompt = 3;                    // User prompt for the skill
+  map<string, string> options = 4;      // Additional options (e.g. model override)
+  int32 timeout_seconds = 5;            // Max execution time in seconds
+  string output_schema = 6;             // Optional JSON Schema for structured output
 }

@@ -139,16 +139,24 @@ class AsyncSkillsService(BaseService):
         Returns:
             List of SkillInfo objects.
 
+        Raises:
+            CMDOPError: If no active session or other error.
+
         Example:
             >>> skills = await client.skills.list()
             >>> for skill in skills:
             ...     print(f"{skill.name}: {skill.description}")
         """
+        from cmdop.exceptions import CMDOPError
         from cmdop.grpc.generated.rpc_messages.skills_pb2 import SkillListRequest
 
         sid = session_id or self._session_id or "local"
         request = SkillListRequest(session_id=sid)
         response = await self._call_async(self._get_stub.SkillList, request)
+
+        if response.error:
+            raise CMDOPError(response.error)
+
         return [parse_skill_info(s) for s in response.skills]
 
     async def show(self, skill_name: str, session_id: str | None = None) -> SkillDetail:

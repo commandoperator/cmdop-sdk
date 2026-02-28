@@ -34,10 +34,12 @@ class SkillListRequest(_message.Message):
     def __init__(self, session_id: _Optional[str] = ...) -> None: ...
 
 class SkillListResponse(_message.Message):
-    __slots__ = ("skills",)
+    __slots__ = ("skills", "error")
     SKILLS_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
     skills: _containers.RepeatedCompositeFieldContainer[SkillInfo]
-    def __init__(self, skills: _Optional[_Iterable[_Union[SkillInfo, _Mapping]]] = ...) -> None: ...
+    error: str
+    def __init__(self, skills: _Optional[_Iterable[_Union[SkillInfo, _Mapping]]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class SkillShowRequest(_message.Message):
     __slots__ = ("session_id", "skill_name")
