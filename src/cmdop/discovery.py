@@ -1,19 +1,20 @@
 """
 Remote agent discovery via REST API.
 
-Lists agents available for an API key from the cloud management API.
+Uses the generated machines API client (CMDOPAPI).
 For local agent discovery, see transport/discovery.py.
 """
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any
 
-import httpx
-
+from cmdop.api.client import CMDOPAPI
 from cmdop.config import get_settings
 
 
@@ -70,22 +71,24 @@ class RemoteAgentInfo:
         """Create from API response dictionary."""
         last_seen = None
         if data.get("last_seen"):
-            try:
+            with contextlib.suppress(ValueError, TypeError):
                 last_seen = datetime.fromisoformat(
                     data["last_seen"].replace("Z", "+00:00")
                 )
-            except (ValueError, TypeError):
-                pass
+
+        status_str = data.get("status", "offline")
+        if data.get("is_online"):
+            status_str = "online"
 
         return cls(
-            agent_id=data["agent_id"],
+            agent_id=data.get("id", data.get("agent_id", "")),
             name=data.get("name", data.get("hostname", "Unknown")),
             hostname=data.get("hostname", ""),
-            platform=data.get("platform", ""),
-            version=data.get("version", ""),
-            status=AgentStatus(data.get("status", "offline")),
+            platform=data.get("os", data.get("platform", "")),
+            version=data.get("agent_version", data.get("version", "")),
+            status=AgentStatus(status_str),
             last_seen=last_seen,
-            workspace_id=data.get("workspace_id"),
+            workspace_id=data.get("workspace", data.get("workspace_id")),
             labels=data.get("labels"),
         )
 
@@ -94,8 +97,7 @@ class AgentDiscovery:
     """
     Remote agent discovery client.
 
-    Lists agents available for an API key via REST API.
-    Uses httpx for async HTTP requests with stamina retry.
+    Lists agents available for an API key via the machines REST API.
 
     Usage:
         >>> discovery = AgentDiscovery(api_key="cmdop_live_xxx")
@@ -105,74 +107,43 @@ class AgentDiscovery:
     """
 
     def __init__(self, api_key: str) -> None:
-        """
-        Initialize agent discovery.
-
-        Args:
-            api_key: CMDOP API key for authentication.
-        """
         self._api_key = api_key
         self._settings = get_settings()
 
-    @property
-    def _base_url(self) -> str:
-        """Get API base URL."""
-        return self._settings.api_base_url
-
-    @property
-    def _headers(self) -> dict[str, str]:
-        """Get request headers with auth."""
-        return {
-            "Authorization": f"Bearer {self._api_key}",
-            "Accept": "application/json",
-            "User-Agent": "cmdop-sdk-python/0.1.0",
-        }
+    def _create_api(self) -> CMDOPAPI:
+        """Create API client with the stored key."""
+        return CMDOPAPI(
+            api_key=self._api_key,
+            base_url=self._settings.api_base_url,
+        )
 
     async def list_agents(self) -> list[RemoteAgentInfo]:
         """
         List all agents available for API key.
-
-        Returns:
-            List of RemoteAgentInfo objects.
+        Fetches all pages of machines from the workspace.
 
         Raises:
-            httpx.HTTPError: On network or API errors.
-            AuthenticationError: On invalid API key.
+            InvalidAPIKeyError: On invalid API key.
+            PermissionDeniedError: On insufficient permissions.
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self._base_url}/api/v1/sdk/agents/",
-                headers=self._headers,
-                timeout=self._settings.request_timeout,
-            )
+        async with self._create_api() as api:
+            all_agents: list[RemoteAgentInfo] = []
+            page = 1
 
-            if response.status_code == 401:
-                from cmdop.exceptions import InvalidAPIKeyError
+            while True:
+                result = await api.machines.list(page=page, page_size=100)
+                for m in result.results:
+                    data = m.model_dump()
+                    all_agents.append(RemoteAgentInfo.from_dict(data))
 
-                raise InvalidAPIKeyError("Invalid or expired API key")
+                if not result.has_next:
+                    break
+                page += 1
 
-            if response.status_code == 403:
-                from cmdop.exceptions import PermissionDeniedError
-
-                raise PermissionDeniedError("API key lacks agent access")
-
-            response.raise_for_status()
-            data = response.json()
-
-            agents = [
-                RemoteAgentInfo.from_dict(agent)
-                for agent in data.get("agents", data.get("results", []))
-            ]
-
-            return agents
+            return all_agents
 
     async def get_online_agents(self) -> list[RemoteAgentInfo]:
-        """
-        List only online agents.
-
-        Returns:
-            List of online RemoteAgentInfo objects.
-        """
+        """List only online agents."""
         agents = await self.list_agents()
         return [a for a in agents if a.is_online]
 
@@ -180,31 +151,16 @@ class AgentDiscovery:
         """
         Get specific agent by ID.
 
-        Args:
-            agent_id: Agent UUID.
-
         Returns:
             RemoteAgentInfo if found, None otherwise.
         """
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self._base_url}/api/v1/sdk/agents/{agent_id}/",
-                headers=self._headers,
-                timeout=self._settings.request_timeout,
-            )
-
-            if response.status_code == 404:
+        async with self._create_api() as api:
+            try:
+                machine = await api.machines.get(agent_id)
+                data = machine.model_dump()
+                return RemoteAgentInfo.from_dict(data)
+            except Exception:
                 return None
-
-            if response.status_code == 401:
-                from cmdop.exceptions import InvalidAPIKeyError
-
-                raise InvalidAPIKeyError("Invalid or expired API key")
-
-            response.raise_for_status()
-            data = response.json()
-
-            return RemoteAgentInfo.from_dict(data)
 
     async def wait_for_agent(
         self,
@@ -215,19 +171,9 @@ class AgentDiscovery:
         """
         Wait for agent to come online.
 
-        Args:
-            agent_id: Agent UUID to wait for.
-            timeout: Maximum time to wait in seconds.
-            poll_interval: Time between checks in seconds.
-
-        Returns:
-            RemoteAgentInfo when agent is online.
-
         Raises:
             TimeoutError: If agent doesn't come online within timeout.
         """
-        import asyncio
-
         deadline = asyncio.get_event_loop().time() + timeout
 
         while asyncio.get_event_loop().time() < deadline:
@@ -245,12 +191,6 @@ async def list_agents(api_key: str) -> list[RemoteAgentInfo]:
     """
     Convenience function to list agents.
 
-    Args:
-        api_key: CMDOP API key.
-
-    Returns:
-        List of available agents.
-
     Example:
         >>> from cmdop import list_agents
         >>> agents = await list_agents("cmdop_live_xxx")
@@ -264,12 +204,6 @@ async def list_agents(api_key: str) -> list[RemoteAgentInfo]:
 async def get_online_agents(api_key: str) -> list[RemoteAgentInfo]:
     """
     Convenience function to list online agents.
-
-    Args:
-        api_key: CMDOP API key.
-
-    Returns:
-        List of online agents.
     """
     discovery = AgentDiscovery(api_key)
     return await discovery.get_online_agents()

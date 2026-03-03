@@ -83,6 +83,7 @@ class RemoteTransport(BaseTransport):
         """Get authentication metadata for requests."""
         metadata = [("authorization", f"Bearer {self._api_key}")]
         if self._agent_id:
+            # Header name must match Node SDK (x-cmdop-agent-id) — server routes by it
             metadata.append(("x-cmdop-agent-id", self._agent_id))
         return metadata
 

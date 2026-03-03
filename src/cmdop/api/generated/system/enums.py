@@ -57,7 +57,7 @@ class TokenRequestRequestGrantType(StrEnum):
     * `refresh_token` - Refresh Token
     """
 
-    URN:IETF:PARAMS:OAUTH:GRANT_TYPE:DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
+    URN_IETF_PARAMS_OAUTH_GRANT_TYPE_DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
     REFRESH_TOKEN = "refresh_token"
 
 

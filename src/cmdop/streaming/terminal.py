@@ -528,7 +528,8 @@ class TerminalStream:
         import platform
         import os
 
-        # Attach uses register with attach flag in version string
+        # "-attach" suffix tells Django to add as SDK subscriber (see sdk_bridge.py).
+        # Node SDK uses "sdk-node-0.1.0-attach" — server checks for "attach" in version.
         register = RegisterRequest(
             version="sdk-python-0.1.0-attach",
             hostname=platform.node(),

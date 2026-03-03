@@ -580,6 +580,7 @@ class TestAsyncSkillsService:
 
         mock_response = MagicMock()
         mock_response.skills = [pb_skill1, pb_skill2]
+        mock_response.error = ""
 
         mock_stub = MagicMock()
         mock_stub.SkillList = AsyncMock(return_value=mock_response)
@@ -608,6 +609,7 @@ class TestAsyncSkillsService:
 
         mock_response = MagicMock()
         mock_response.skills = []
+        mock_response.error = ""
 
         mock_stub = MagicMock()
         mock_stub.SkillList = AsyncMock(return_value=mock_response)
@@ -634,6 +636,7 @@ class TestAsyncSkillsService:
 
         mock_response = MagicMock()
         mock_response.skills = []
+        mock_response.error = ""
 
         mock_stub = MagicMock()
         mock_stub.SkillList = AsyncMock(return_value=mock_response)
@@ -892,6 +895,7 @@ class TestAsyncSkillsService:
 
         mock_response = MagicMock()
         mock_response.skills = []
+        mock_response.error = ""
 
         mock_stub = MagicMock()
         mock_stub.SkillList = AsyncMock(return_value=mock_response)

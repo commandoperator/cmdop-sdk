@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.3",
+    "openapi": "3.1.0",
     "info": {
         "title": "Cmdop API",
         "version": "1.0.0",
@@ -1040,14 +1040,18 @@
                         "type": "string"
                     },
                     "machine": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "title": "Related machine"
                     },
                     "machine_name": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Get machine name.",
                         "readOnly": true
                     },
@@ -1102,9 +1106,11 @@
                         "type": "string"
                     },
                     "machine": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "title": "Related machine"
                     }
                 },
@@ -1144,9 +1150,11 @@
                         "minLength": 1
                     },
                     "machine": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "title": "Related machine"
                     }
                 },
@@ -1186,9 +1194,11 @@
                         "minLength": 1
                     },
                     "machine": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "title": "Related machine"
                     },
                     "read": {
@@ -1232,15 +1242,19 @@
                         "description": "First 12 characters for display"
                     },
                     "last_used": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "readOnly": true,
-                        "nullable": true
+                        "readOnly": true
                     },
                     "created_by": {
-                        "type": "integer",
-                        "readOnly": true,
-                        "nullable": true
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "readOnly": true
                     },
                     "created_by_email": {
                         "type": "string",
@@ -1315,9 +1329,11 @@
                         "readOnly": true
                     },
                     "created_by": {
-                        "type": "integer",
-                        "readOnly": true,
-                        "nullable": true
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "readOnly": true
                     },
                     "created_by_email": {
                         "type": "string",
@@ -1360,9 +1376,11 @@
                         "description": "User decision: approve or deny\n\n* `approve` - approve\n* `deny` - deny"
                     },
                     "workspace_id": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "description": "Workspace ID to grant access to (required for approve)"
                     }
                 },
@@ -1674,9 +1692,11 @@
                         "minLength": 1
                     },
                     "machine": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "uuid",
-                        "nullable": true,
                         "title": "Related machine"
                     },
                     "read": {
@@ -1768,9 +1788,11 @@
                         "format": "date-time"
                     },
                     "last_used_at": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "nullable": true,
                         "description": "Last time access token was used"
                     },
                     "is_expired": {
@@ -1832,15 +1854,19 @@
                         "readOnly": true
                     },
                     "last_used_at": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "nullable": true,
                         "description": "Last time access token was used"
                     },
                     "revoked_at": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
                     },
                     "is_active": {
                         "type": "string",
