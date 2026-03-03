@@ -1,5 +1,5 @@
 {
-    "openapi": "3.0.3",
+    "openapi": "3.1.0",
     "info": {
         "title": "Cmdop API",
         "version": "1.0.0",
@@ -210,7 +210,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -255,7 +255,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -294,7 +294,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -351,7 +351,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -407,7 +407,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -444,7 +444,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -529,7 +529,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -589,7 +589,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -653,7 +653,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -735,7 +735,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -775,7 +775,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -808,7 +808,7 @@
                 ],
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -872,7 +872,7 @@
                 },
                 "security": [
                     {
-                        "jwtAuthWithLastLogin": []
+                        "jwtAuth": []
                     }
                 ],
                 "responses": {
@@ -988,8 +988,10 @@
                         "maxLength": 20
                     },
                     "device_id": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
                         "maxLength": 255
                     },
@@ -1004,8 +1006,10 @@
                         "description": "Whether device has shell access (false for mobile)"
                     },
                     "public_ip": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "title": "Public IP address"
                     },
                     "local_ips": {
@@ -1022,10 +1026,12 @@
                         "maxLength": 255
                     },
                     "uid": {
-                        "type": "integer",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "maximum": 2147483647,
                         "minimum": 0,
-                        "nullable": true,
                         "title": "User ID",
                         "description": "Unix user ID"
                     },
@@ -1110,10 +1116,12 @@
                         "maxLength": 20
                     },
                     "last_seen": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "readOnly": true,
-                        "nullable": true
+                        "readOnly": true
                     },
                     "created_at": {
                         "type": "string",
@@ -1121,12 +1129,14 @@
                         "readOnly": true
                     },
                     "active_terminal_session": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/ActiveTerminalSession"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
                         "readOnly": true
                     }
                 },
@@ -1374,8 +1384,10 @@
                         "maxLength": 20
                     },
                     "device_id": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
                         "maxLength": 255
                     },
@@ -1390,8 +1402,10 @@
                         "description": "Whether device has shell access (false for mobile)"
                     },
                     "public_ip": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "minLength": 1,
                         "title": "Public IP address"
                     },
@@ -1401,10 +1415,12 @@
                         "maxLength": 255
                     },
                     "uid": {
-                        "type": "integer",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "maximum": 2147483647,
                         "minimum": 0,
-                        "nullable": true,
                         "title": "User ID",
                         "description": "Unix user ID"
                     },
@@ -1748,8 +1764,10 @@
                         "maxLength": 20
                     },
                     "device_id": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "description": "Unique device identifier (UDID for iOS, Android ID for Android)",
                         "maxLength": 255
                     },
@@ -1764,8 +1782,10 @@
                         "description": "Whether device has shell access (false for mobile)"
                     },
                     "public_ip": {
-                        "type": "string",
-                        "nullable": true,
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "minLength": 1,
                         "title": "Public IP address"
                     },
@@ -1775,10 +1795,12 @@
                         "maxLength": 255
                     },
                     "uid": {
-                        "type": "integer",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "maximum": 2147483647,
                         "minimum": 0,
-                        "nullable": true,
                         "title": "User ID",
                         "description": "Unix user ID"
                     },
@@ -1914,9 +1936,11 @@
                         "readOnly": true
                     },
                     "expires_at": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "nullable": true,
                         "description": "When this share expires (null = never)"
                     },
                     "views_count": {
@@ -1924,10 +1948,12 @@
                         "readOnly": true
                     },
                     "last_viewed_at": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "readOnly": true,
-                        "nullable": true
+                        "readOnly": true
                     },
                     "is_active": {
                         "type": "boolean",
@@ -1978,10 +2004,12 @@
                 "description": "Serializer for creating a new share.",
                 "properties": {
                     "expires_in_hours": {
-                        "type": "integer",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
                         "maximum": 720,
                         "minimum": 1,
-                        "nullable": true,
                         "description": "Hours until share expires (null = never)"
                     }
                 }
@@ -2017,9 +2045,11 @@
                         "readOnly": true
                     },
                     "expires_at": {
-                        "type": "string",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
                         "format": "date-time",
-                        "nullable": true,
                         "description": "When this share expires (null = never)"
                     },
                     "views_count": {
@@ -2058,6 +2088,11 @@
             }
         },
         "securitySchemes": {
+            "jwtAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            },
             "jwtAuthWithLastLogin": {
                 "type": "http",
                 "scheme": "bearer",
