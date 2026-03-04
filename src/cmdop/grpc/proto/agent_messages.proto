@@ -39,9 +39,6 @@ message AgentMessage {
     // Acknowledgements
     CommandAck ack = 40;                     // Command acknowledgement
 
-    // History response
-    HistoryResult history = 50;              // Shell history result
-
     // File operation result
     FileOperationResult file_operation_result = 60; // File manager result
 
@@ -58,29 +55,11 @@ message AgentMessage {
     AgentResult agent_result = 90;                  // Final agent response
     AgentStreamEvent agent_event = 91;              // Streaming event (token, tool)
 
-    // Browser Direct Control result (v2.16.0)
-    // Response to BrowserCommand from control_messages.proto
-    BrowserCommandResult browser_result = 100;      // Browser command result
-
     // Skills relay results (v2.24.0)
     SkillListResult skill_list_result = 110;         // Skill list result
     SkillShowResult skill_show_result = 111;         // Skill show result
     SkillRunResult skill_run_result = 112;            // Skill run result
   }
-}
-
-// ============================================================================
-// BROWSER DIRECT CONTROL RESULTS (v2.16.0)
-// ============================================================================
-
-// Result of BrowserCommand execution
-// Sent from Agent to Django as response to BrowserCommand
-message BrowserCommandResult {
-  string request_id = 1;              // Correlates with BrowserCommand.request_id
-  bool success = 2;                   // Whether command succeeded
-  string result_json = 3;             // JSON-encoded result (BrowserNavigateResponse, etc.)
-  string error = 4;                   // Error message if !success
-  int64 duration_ms = 5;              // Command execution time
 }
 
 // Registration request from Agent
@@ -156,15 +135,6 @@ message CommandAck {
   string command_id = 1;                     // ID of acknowledged command
   bool success = 2;                          // Successful?
   string message = 3;                        // Optional message
-}
-
-// History result from agent (shell history file content)
-message HistoryResult {
-  string command_id = 1;                     // Correlates with GetHistoryCommand
-  repeated string commands = 2;              // List of commands from history
-  int32 total = 3;                           // Total count in history file
-  string source = 4;                         // Source: "bash_history", "zsh_history", etc.
-  string error = 5;                          // Error message if failed
 }
 
 // ============================================================================
@@ -247,94 +217,6 @@ enum AgentEventType {
   AGENT_EVENT_ERROR = 4;          // Error occurred
   AGENT_EVENT_HANDOFF = 5;        // Handoff to another agent
   AGENT_EVENT_CANCELLED = 6;      // Agent run cancelled (v2.15.0)
-
-  // Browser-specific events (v2.13.0)
-  AGENT_EVENT_BROWSER_NAVIGATE = 10;   // Browser navigated to URL
-  AGENT_EVENT_BROWSER_CLICK = 11;      // Element clicked
-  AGENT_EVENT_BROWSER_TYPE = 12;       // Text typed
-  AGENT_EVENT_BROWSER_STATE = 13;      // Page state captured
-  AGENT_EVENT_BROWSER_SCREENSHOT = 14; // Screenshot taken
-  AGENT_EVENT_BROWSER_ERROR = 15;      // Browser error occurred
-  AGENT_EVENT_BROWSER_DETECTION = 16;  // Bot detection suspected
-  AGENT_EVENT_BROWSER_ESCALATION = 17; // Stealth escalation triggered
-  AGENT_EVENT_BROWSER_SESSION = 18;    // Session start/end
-}
-
-// ============================================================================
-// BROWSER AGENT MESSAGES (v2.13.0)
-// ============================================================================
-
-// Browser page state (sent with AGENT_EVENT_BROWSER_STATE)
-message BrowserPageState {
-  string url = 1;                     // Current URL
-  string title = 2;                   // Page title
-  string content = 3;                 // Semantic markdown content
-  int32 token_count = 4;              // Token count of content
-  int32 element_count = 5;            // Number of interactive elements
-  bool is_diff = 6;                   // True if content is differential
-  int32 changes_count = 7;            // Number of changes (if is_diff)
-  repeated BrowserLink links = 8;     // Reified links map
-}
-
-// Link reference for URL reification
-message BrowserLink {
-  int32 index = 1;                    // Link index [1], [2], etc.
-  string url = 2;                     // Full URL
-  string text = 3;                    // Link text
-}
-
-// Browser navigation result (sent with AGENT_EVENT_BROWSER_NAVIGATE)
-message BrowserNavigateResult {
-  string url = 1;                     // Target URL
-  string from_url = 2;                // Previous URL
-  int64 duration_ms = 3;              // Navigation time
-  bool success = 4;                   // Success status
-  int32 status_code = 5;              // HTTP status code
-  string title = 6;                   // Page title
-}
-
-// Browser action result (click, type, etc.)
-message BrowserActionResult {
-  string action = 1;                  // Action type: click, type, scroll
-  string selector = 2;                // Target selector
-  string text = 3;                    // Text typed or element text
-  int64 duration_ms = 4;              // Action time
-  bool success = 5;                   // Success status
-  string error = 6;                   // Error if !success
-}
-
-// Browser screenshot result
-message BrowserScreenshotResult {
-  bool fullpage = 1;                  // Full page or viewport
-  string selector = 2;                // Element selector if element shot
-  string format = 3;                  // Image format: png, jpeg
-  int32 size_bytes = 4;               // Image size
-  bytes data = 5;                     // Image data (base64 in JSON)
-}
-
-// Browser detection event (bot detection)
-message BrowserDetectionEvent {
-  string type = 1;                    // Detection type: captcha, block, rate_limit, challenge
-  string url = 2;                     // URL where detected
-  double confidence = 3;              // Detection confidence 0-1
-  string details = 4;                 // Additional details
-}
-
-// Browser escalation event (stealth escalation)
-message BrowserEscalationEvent {
-  string from_level = 1;              // Previous level
-  string to_level = 2;                // New level
-  string reason = 3;                  // Escalation reason
-  bool success = 4;                   // Escalation success
-}
-
-// Browser session event
-message BrowserSessionEvent {
-  string session_id = 1;              // Session UUID
-  string profile_id = 2;              // Browser profile ID
-  string session_type = 3;            // ephemeral, persistent, long_lived
-  bool is_start = 4;                  // True=start, False=end
-  string url = 5;                     // Current/final URL
 }
 
 // ============================================================================

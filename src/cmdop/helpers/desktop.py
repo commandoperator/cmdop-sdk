@@ -173,7 +173,7 @@ def ensure_desktop_running(
     """
     Ensure CMDOP Desktop is running, starting it if needed.
 
-    This is the main function to use before browser operations.
+    Ensure CMDOP Desktop is running before connecting.
     Handles stale discovery files automatically.
 
     Args:
@@ -190,7 +190,6 @@ def ensure_desktop_running(
     Example:
         >>> from cmdop.helpers import ensure_desktop_running
         >>> ensure_desktop_running()  # Starts CMDOP if needed
-        >>> # Now safe to use browser
         >>> client = CMDOPClient.local()
     """
     result = discover_agent(verify_alive=True)
@@ -246,7 +245,7 @@ def handle_cmdop_error(
     Example:
         >>> try:
         ...     client = CMDOPClient.local()
-        ...     session = client.browser.create_session()
+        ...     session = client.terminal.create()
         ... except (StalePortFileError, AgentNotRunningError) as e:
         ...     if handle_cmdop_error(e):
         ...         # Retry the operation
@@ -301,13 +300,12 @@ def with_auto_restart(
         Result of the function
 
     Example:
-        >>> def parse_page():
+        >>> def run_command():
         ...     client = CMDOPClient.local()
-        ...     with client.browser.create_session() as session:
-        ...         session.navigate("https://example.com")
-        ...         return session.get_text("body")
+        ...     session = client.terminal.create()
+        ...     return session
         ...
-        >>> result = with_auto_restart(parse_page)
+        >>> result = with_auto_restart(run_command)
     """
     last_error: Exception | None = None
 

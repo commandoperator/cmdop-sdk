@@ -9,7 +9,6 @@ converts between Pydantic models and protobuf messages.
 from cmdop.services.agent import AgentService, AsyncAgentService
 from cmdop.services.base import BaseService
 from cmdop.services.skills import AsyncSkillsService, SkillsService
-from cmdop.services.browser import AsyncBrowserService, BrowserService
 from cmdop.services.download import AsyncDownloadService, DownloadService
 from cmdop.services.extract import AsyncExtractService, ExtractService
 from cmdop.services.files import AsyncFilesService, FilesService
@@ -25,8 +24,6 @@ __all__ = [
     "AsyncExtractService",
     "AgentService",
     "AsyncAgentService",
-    "BrowserService",
-    "AsyncBrowserService",
     "DownloadService",
     "AsyncDownloadService",
     "SkillsService",

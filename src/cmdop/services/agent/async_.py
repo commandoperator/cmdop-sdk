@@ -286,16 +286,6 @@ def _parse_stream_event(event) -> AgentStreamEvent:
         4: AgentEventType.ERROR,
         5: AgentEventType.HANDOFF,
         6: AgentEventType.CANCELLED,
-        # Browser events
-        10: AgentEventType.BROWSER_NAVIGATE,
-        11: AgentEventType.BROWSER_CLICK,
-        12: AgentEventType.BROWSER_TYPE,
-        13: AgentEventType.BROWSER_STATE,
-        14: AgentEventType.BROWSER_SCREENSHOT,
-        15: AgentEventType.BROWSER_ERROR,
-        16: AgentEventType.BROWSER_DETECTION,
-        17: AgentEventType.BROWSER_ESCALATION,
-        18: AgentEventType.BROWSER_SESSION,
     }
     event_type = event_type_map.get(event.type, AgentEventType.TOKEN)
 

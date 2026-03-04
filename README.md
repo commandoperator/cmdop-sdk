@@ -19,7 +19,7 @@ Your Code ──── Cloud Relay ──── Agent (on server)
 | VPN requires client install | SDK works without VPN |
 | SSH needs port forwarding | Agent uses outbound connection |
 | Screen sharing is laggy | gRPC streaming, real-time |
-| File sync is just files | Full OS access: terminal + files + browser |
+| File sync is just files | Full OS access: terminal + files |
 | AI returns text | Structured output with Pydantic |
 | No reusable workflows | Skills: predefined AI tasks with tools |
 
@@ -60,10 +60,6 @@ async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
     skills = await client.skills.list()
     result = await client.skills.run("code-review", "Review the auth module")
 
-    # Browser automation on remote machine
-    with client.browser.create_session() as b:
-        b.navigate("https://internal-app.local")
-        b.click("button.submit")
 ```
 
 ## Connection
@@ -240,115 +236,6 @@ result = await client.skills.run(
 
 ---
 
-## Browser
-
-Automate browsers on remote machines. Bypass CORS, inherit cookies.
-
-```python
-from cmdop.services.browser.models import WaitUntil
-
-with client.browser.create_session(headless=False) as s:
-    s.navigate("https://shop.com", wait_until=WaitUntil.NETWORKIDLE)
-
-    # Interact
-    s.click("button.buy", move_cursor=True)
-    s.type("input[name=q]", "search term")
-    s.wait_for(".results")
-
-    # Extract
-    title = s.execute_script("return document.title")
-    screenshot = s.screenshot()
-    cookies = s.get_cookies()
-```
-
-**`create_session` parameters:**
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `headless` | `False` | Run browser without UI |
-| `provider` | `"camoufox"` | Browser provider |
-| `profile_id` | `None` | Profile for session persistence |
-| `block_images` | `False` | Disable loading images |
-| `block_media` | `False` | Disable loading audio/video |
-
-### Browser Capabilities
-
-**Scrolling:**
-```python
-s.scroll.js("down", 500)           # JS scroll
-s.scroll.to_bottom()               # Page bottom
-s.scroll.to_element(".item")       # Scroll into view
-s.scroll.infinite(extract_fn, limit=100)  # Infinite scroll with extraction
-```
-
-**Input:**
-```python
-s.input.click_js(".btn")           # JS click (reliable)
-s.input.click_all("See more")      # Click all matching
-s.input.key("Escape")              # Press key
-s.input.hover(".tooltip")          # Hover
-s.input.mouse_move(500, 300)       # Move cursor
-```
-
-**DOM:**
-```python
-s.dom.html(".container")           # Get HTML
-s.dom.text(".title")               # Get text
-s.dom.extract(".items", "href")    # Get attribute list
-s.dom.select("#country", "US")     # Dropdown select
-s.dom.close_modal()                # Close dialogs
-```
-
-**Fetch (bypass CORS):**
-```python
-data = s.fetch.json("/api/items")         # Fetch JSON
-results = s.fetch.all(["/api/a", "/api/b"])  # Parallel
-```
-
-**Network capture:**
-```python
-s.network.enable(max_exchanges=1000)
-s.navigate(url)
-
-api = s.network.last("/api/data")
-data = api.json_body()
-
-posts = s.network.filter(
-    url_pattern="/api/posts",
-    methods=["GET", "POST"],
-    status_codes=[200],
-)
-
-s.network.export_har()  # Export to HAR
-```
-
----
-
-## NetworkAnalyzer
-
-Discover API endpoints by capturing traffic.
-
-```python
-from cmdop.helpers import NetworkAnalyzer
-
-with client.browser.create_session(headless=False) as b:
-    analyzer = NetworkAnalyzer(b)
-
-    snapshot = analyzer.capture(
-        "https://example.com/products",
-        wait_seconds=30,
-        countdown_message="Click pagination!",
-    )
-
-    if snapshot.api_requests:
-        best = snapshot.best_api()
-        print(best.url)
-        print(best.item_count)
-        print(best.to_curl())      # curl command
-        print(best.to_httpx())     # Python code
-```
-
----
-
 ## Download
 
 Download files from URLs via remote server.
@@ -417,7 +304,6 @@ products = Product.from_list(raw["items"])  # Auto dedupe + filter
 |---------|-------|-----------|-------|-----|
 | Terminal streaming | gRPC | VPN + SSH | No | Yes |
 | File operations | Built-in | SFTP | No | SCP |
-| Browser automation | Built-in | No | No | No |
 | AI agent | Built-in | No | No | No |
 | Reusable AI skills | Built-in | No | No | No |
 | NAT traversal | Outbound | WireGuard | Outbound | Port forward |

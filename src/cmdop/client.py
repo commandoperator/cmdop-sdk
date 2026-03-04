@@ -10,7 +10,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from cmdop.services.agent import AgentService, AsyncAgentService
-from cmdop.services.browser import AsyncBrowserService, BrowserService
 from cmdop.services.download import AsyncDownloadService, DownloadService
 from cmdop.services.extract import AsyncExtractService, ExtractService
 from cmdop.services.files import AsyncFilesService, FilesService
@@ -58,7 +57,6 @@ class CMDOPClient:
         self._files: FilesService | None = None
         self._extract: ExtractService | None = None
         self._agent: AgentService | None = None
-        self._browser: BrowserService | None = None
         self._download: DownloadService | None = None
         self._skills: SkillsService | None = None
 
@@ -216,27 +214,6 @@ class CMDOPClient:
         return self._agent
 
     @property
-    def browser(self) -> BrowserService:
-        """
-        Browser service for direct programmatic control.
-
-        Provides: create_session, navigate, click, type, extract, etc.
-
-        NOTE: This is direct control without LLM - use CSS selectors,
-        regex patterns, and JavaScript for data extraction.
-
-        Example:
-            >>> with client.browser.create_session() as session:
-            ...     session.navigate("https://google.com")
-            ...     session.type("input[name='q']", "Python")
-            ...     session.click("input[name='btnK']")
-            ...     results = session.extract(".result-title")
-        """
-        if self._browser is None:
-            self._browser = BrowserService(self._transport)
-        return self._browser
-
-    @property
     def download(self) -> DownloadService:
         """
         Download service for remote file downloads.
@@ -364,7 +341,6 @@ class AsyncCMDOPClient:
         self._files: AsyncFilesService | None = None
         self._extract: AsyncExtractService | None = None
         self._agent: AsyncAgentService | None = None
-        self._browser: AsyncBrowserService | None = None
         self._download: AsyncDownloadService | None = None
         self._skills: AsyncSkillsService | None = None
 
@@ -477,17 +453,6 @@ class AsyncCMDOPClient:
         if self._agent is None:
             self._agent = AsyncAgentService(self._transport)
         return self._agent
-
-    @property
-    def browser(self) -> AsyncBrowserService:
-        """
-        Async browser service (stub - not implemented).
-
-        Use sync CMDOPClient.browser instead.
-        """
-        if self._browser is None:
-            self._browser = AsyncBrowserService(self._transport)
-        return self._browser
 
     @property
     def download(self) -> AsyncDownloadService:

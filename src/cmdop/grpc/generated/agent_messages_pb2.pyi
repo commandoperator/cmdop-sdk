@@ -38,15 +38,6 @@ class AgentEventType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     AGENT_EVENT_ERROR: _ClassVar[AgentEventType]
     AGENT_EVENT_HANDOFF: _ClassVar[AgentEventType]
     AGENT_EVENT_CANCELLED: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_NAVIGATE: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_CLICK: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_TYPE: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_STATE: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_SCREENSHOT: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_ERROR: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_DETECTION: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_ESCALATION: _ClassVar[AgentEventType]
-    AGENT_EVENT_BROWSER_SESSION: _ClassVar[AgentEventType]
 PERMISSION_GRANTED: PermissionAccessStatus
 PERMISSION_DENIED: PermissionAccessStatus
 PERMISSION_PENDING: PermissionAccessStatus
@@ -58,18 +49,9 @@ AGENT_EVENT_THINKING: AgentEventType
 AGENT_EVENT_ERROR: AgentEventType
 AGENT_EVENT_HANDOFF: AgentEventType
 AGENT_EVENT_CANCELLED: AgentEventType
-AGENT_EVENT_BROWSER_NAVIGATE: AgentEventType
-AGENT_EVENT_BROWSER_CLICK: AgentEventType
-AGENT_EVENT_BROWSER_TYPE: AgentEventType
-AGENT_EVENT_BROWSER_STATE: AgentEventType
-AGENT_EVENT_BROWSER_SCREENSHOT: AgentEventType
-AGENT_EVENT_BROWSER_ERROR: AgentEventType
-AGENT_EVENT_BROWSER_DETECTION: AgentEventType
-AGENT_EVENT_BROWSER_ESCALATION: AgentEventType
-AGENT_EVENT_BROWSER_SESSION: AgentEventType
 
 class AgentMessage(_message.Message):
-    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "history", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "browser_result", "skill_list_result", "skill_show_result", "skill_run_result")
+    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "skill_list_result", "skill_show_result", "skill_run_result")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
@@ -80,7 +62,6 @@ class AgentMessage(_message.Message):
     STATUS_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
     ACK_FIELD_NUMBER: _ClassVar[int]
-    HISTORY_FIELD_NUMBER: _ClassVar[int]
     FILE_OPERATION_RESULT_FIELD_NUMBER: _ClassVar[int]
     TUNNEL_CREATED_FIELD_NUMBER: _ClassVar[int]
     TUNNEL_DATA_FIELD_NUMBER: _ClassVar[int]
@@ -89,7 +70,6 @@ class AgentMessage(_message.Message):
     PERMISSION_STATUS_FIELD_NUMBER: _ClassVar[int]
     AGENT_RESULT_FIELD_NUMBER: _ClassVar[int]
     AGENT_EVENT_FIELD_NUMBER: _ClassVar[int]
-    BROWSER_RESULT_FIELD_NUMBER: _ClassVar[int]
     SKILL_LIST_RESULT_FIELD_NUMBER: _ClassVar[int]
     SKILL_SHOW_RESULT_FIELD_NUMBER: _ClassVar[int]
     SKILL_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
@@ -103,7 +83,6 @@ class AgentMessage(_message.Message):
     status: StatusUpdate
     error: ErrorReport
     ack: CommandAck
-    history: HistoryResult
     file_operation_result: _requests_pb2.FileOperationResult
     tunnel_created: _tunnel_pb2.TunnelCreated
     tunnel_data: _tunnel_pb2.TunnelData
@@ -112,25 +91,10 @@ class AgentMessage(_message.Message):
     permission_status: PermissionStatus
     agent_result: AgentResult
     agent_event: AgentStreamEvent
-    browser_result: BrowserCommandResult
     skill_list_result: SkillListResult
     skill_show_result: SkillShowResult
     skill_run_result: SkillRunResult
-    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., history: _Optional[_Union[HistoryResult, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., browser_result: _Optional[_Union[BrowserCommandResult, _Mapping]] = ..., skill_list_result: _Optional[_Union[SkillListResult, _Mapping]] = ..., skill_show_result: _Optional[_Union[SkillShowResult, _Mapping]] = ..., skill_run_result: _Optional[_Union[SkillRunResult, _Mapping]] = ...) -> None: ...
-
-class BrowserCommandResult(_message.Message):
-    __slots__ = ("request_id", "success", "result_json", "error", "duration_ms")
-    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    RESULT_JSON_FIELD_NUMBER: _ClassVar[int]
-    ERROR_FIELD_NUMBER: _ClassVar[int]
-    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
-    request_id: str
-    success: bool
-    result_json: str
-    error: str
-    duration_ms: int
-    def __init__(self, request_id: _Optional[str] = ..., success: bool = ..., result_json: _Optional[str] = ..., error: _Optional[str] = ..., duration_ms: _Optional[int] = ...) -> None: ...
+    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., skill_list_result: _Optional[_Union[SkillListResult, _Mapping]] = ..., skill_show_result: _Optional[_Union[SkillShowResult, _Mapping]] = ..., skill_run_result: _Optional[_Union[SkillRunResult, _Mapping]] = ...) -> None: ...
 
 class RegisterRequest(_message.Message):
     __slots__ = ("version", "hostname", "platform", "supported_shells", "initial_size", "architecture", "device_id", "device_type", "has_shell", "device_model", "public_ip", "local_ips", "username", "uid", "is_root", "home_dir", "os_version", "kernel_version", "cpu_model", "cpu_count", "total_ram", "uptime_seconds")
@@ -244,20 +208,6 @@ class CommandAck(_message.Message):
     message: str
     def __init__(self, command_id: _Optional[str] = ..., success: bool = ..., message: _Optional[str] = ...) -> None: ...
 
-class HistoryResult(_message.Message):
-    __slots__ = ("command_id", "commands", "total", "source", "error")
-    COMMAND_ID_FIELD_NUMBER: _ClassVar[int]
-    COMMANDS_FIELD_NUMBER: _ClassVar[int]
-    TOTAL_FIELD_NUMBER: _ClassVar[int]
-    SOURCE_FIELD_NUMBER: _ClassVar[int]
-    ERROR_FIELD_NUMBER: _ClassVar[int]
-    command_id: str
-    commands: _containers.RepeatedScalarFieldContainer[str]
-    total: int
-    source: str
-    error: str
-    def __init__(self, command_id: _Optional[str] = ..., commands: _Optional[_Iterable[str]] = ..., total: _Optional[int] = ..., source: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
-
 class PermissionStatus(_message.Message):
     __slots__ = ("directories", "platform", "checked_at")
     DIRECTORIES_FIELD_NUMBER: _ClassVar[int]
@@ -337,120 +287,6 @@ class AgentStreamEvent(_message.Message):
     payload: str
     timestamp: int
     def __init__(self, request_id: _Optional[str] = ..., type: _Optional[_Union[AgentEventType, str]] = ..., payload: _Optional[str] = ..., timestamp: _Optional[int] = ...) -> None: ...
-
-class BrowserPageState(_message.Message):
-    __slots__ = ("url", "title", "content", "token_count", "element_count", "is_diff", "changes_count", "links")
-    URL_FIELD_NUMBER: _ClassVar[int]
-    TITLE_FIELD_NUMBER: _ClassVar[int]
-    CONTENT_FIELD_NUMBER: _ClassVar[int]
-    TOKEN_COUNT_FIELD_NUMBER: _ClassVar[int]
-    ELEMENT_COUNT_FIELD_NUMBER: _ClassVar[int]
-    IS_DIFF_FIELD_NUMBER: _ClassVar[int]
-    CHANGES_COUNT_FIELD_NUMBER: _ClassVar[int]
-    LINKS_FIELD_NUMBER: _ClassVar[int]
-    url: str
-    title: str
-    content: str
-    token_count: int
-    element_count: int
-    is_diff: bool
-    changes_count: int
-    links: _containers.RepeatedCompositeFieldContainer[BrowserLink]
-    def __init__(self, url: _Optional[str] = ..., title: _Optional[str] = ..., content: _Optional[str] = ..., token_count: _Optional[int] = ..., element_count: _Optional[int] = ..., is_diff: bool = ..., changes_count: _Optional[int] = ..., links: _Optional[_Iterable[_Union[BrowserLink, _Mapping]]] = ...) -> None: ...
-
-class BrowserLink(_message.Message):
-    __slots__ = ("index", "url", "text")
-    INDEX_FIELD_NUMBER: _ClassVar[int]
-    URL_FIELD_NUMBER: _ClassVar[int]
-    TEXT_FIELD_NUMBER: _ClassVar[int]
-    index: int
-    url: str
-    text: str
-    def __init__(self, index: _Optional[int] = ..., url: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
-
-class BrowserNavigateResult(_message.Message):
-    __slots__ = ("url", "from_url", "duration_ms", "success", "status_code", "title")
-    URL_FIELD_NUMBER: _ClassVar[int]
-    FROM_URL_FIELD_NUMBER: _ClassVar[int]
-    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    STATUS_CODE_FIELD_NUMBER: _ClassVar[int]
-    TITLE_FIELD_NUMBER: _ClassVar[int]
-    url: str
-    from_url: str
-    duration_ms: int
-    success: bool
-    status_code: int
-    title: str
-    def __init__(self, url: _Optional[str] = ..., from_url: _Optional[str] = ..., duration_ms: _Optional[int] = ..., success: bool = ..., status_code: _Optional[int] = ..., title: _Optional[str] = ...) -> None: ...
-
-class BrowserActionResult(_message.Message):
-    __slots__ = ("action", "selector", "text", "duration_ms", "success", "error")
-    ACTION_FIELD_NUMBER: _ClassVar[int]
-    SELECTOR_FIELD_NUMBER: _ClassVar[int]
-    TEXT_FIELD_NUMBER: _ClassVar[int]
-    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    ERROR_FIELD_NUMBER: _ClassVar[int]
-    action: str
-    selector: str
-    text: str
-    duration_ms: int
-    success: bool
-    error: str
-    def __init__(self, action: _Optional[str] = ..., selector: _Optional[str] = ..., text: _Optional[str] = ..., duration_ms: _Optional[int] = ..., success: bool = ..., error: _Optional[str] = ...) -> None: ...
-
-class BrowserScreenshotResult(_message.Message):
-    __slots__ = ("fullpage", "selector", "format", "size_bytes", "data")
-    FULLPAGE_FIELD_NUMBER: _ClassVar[int]
-    SELECTOR_FIELD_NUMBER: _ClassVar[int]
-    FORMAT_FIELD_NUMBER: _ClassVar[int]
-    SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
-    DATA_FIELD_NUMBER: _ClassVar[int]
-    fullpage: bool
-    selector: str
-    format: str
-    size_bytes: int
-    data: bytes
-    def __init__(self, fullpage: bool = ..., selector: _Optional[str] = ..., format: _Optional[str] = ..., size_bytes: _Optional[int] = ..., data: _Optional[bytes] = ...) -> None: ...
-
-class BrowserDetectionEvent(_message.Message):
-    __slots__ = ("type", "url", "confidence", "details")
-    TYPE_FIELD_NUMBER: _ClassVar[int]
-    URL_FIELD_NUMBER: _ClassVar[int]
-    CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
-    DETAILS_FIELD_NUMBER: _ClassVar[int]
-    type: str
-    url: str
-    confidence: float
-    details: str
-    def __init__(self, type: _Optional[str] = ..., url: _Optional[str] = ..., confidence: _Optional[float] = ..., details: _Optional[str] = ...) -> None: ...
-
-class BrowserEscalationEvent(_message.Message):
-    __slots__ = ("from_level", "to_level", "reason", "success")
-    FROM_LEVEL_FIELD_NUMBER: _ClassVar[int]
-    TO_LEVEL_FIELD_NUMBER: _ClassVar[int]
-    REASON_FIELD_NUMBER: _ClassVar[int]
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    from_level: str
-    to_level: str
-    reason: str
-    success: bool
-    def __init__(self, from_level: _Optional[str] = ..., to_level: _Optional[str] = ..., reason: _Optional[str] = ..., success: bool = ...) -> None: ...
-
-class BrowserSessionEvent(_message.Message):
-    __slots__ = ("session_id", "profile_id", "session_type", "is_start", "url")
-    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
-    PROFILE_ID_FIELD_NUMBER: _ClassVar[int]
-    SESSION_TYPE_FIELD_NUMBER: _ClassVar[int]
-    IS_START_FIELD_NUMBER: _ClassVar[int]
-    URL_FIELD_NUMBER: _ClassVar[int]
-    session_id: str
-    profile_id: str
-    session_type: str
-    is_start: bool
-    url: str
-    def __init__(self, session_id: _Optional[str] = ..., profile_id: _Optional[str] = ..., session_type: _Optional[str] = ..., is_start: bool = ..., url: _Optional[str] = ...) -> None: ...
 
 class SkillInfoItem(_message.Message):
     __slots__ = ("name", "description", "author", "version", "model", "origin", "required_bins", "required_env")
