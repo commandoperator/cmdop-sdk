@@ -10,7 +10,6 @@ from rpc_messages import health_pb2 as _health_pb2
 from rpc_messages import push_pb2 as _push_pb2
 from rpc_messages import extract_pb2 as _extract_pb2
 from rpc_messages import agent_pb2 as _agent_pb2
-from rpc_messages import browser_pb2 as _browser_pb2
 from rpc_messages import skills_pb2 as _skills_pb2
 import file_rpc_pb2 as _file_rpc_pb2
 from file_rpc import directory_pb2 as _directory_pb2

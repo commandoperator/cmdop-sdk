@@ -57,33 +57,6 @@ class AgentEventType(str, Enum):
     CANCELLED = "cancelled"
     """Agent run was cancelled."""
 
-    # Browser-specific events
-    BROWSER_NAVIGATE = "browser_navigate"
-    """Browser navigated to URL."""
-
-    BROWSER_CLICK = "browser_click"
-    """Element clicked in browser."""
-
-    BROWSER_TYPE = "browser_type"
-    """Text typed in browser."""
-
-    BROWSER_STATE = "browser_state"
-    """Browser page state captured."""
-
-    BROWSER_SCREENSHOT = "browser_screenshot"
-    """Browser screenshot taken."""
-
-    BROWSER_ERROR = "browser_error"
-    """Browser error occurred."""
-
-    BROWSER_DETECTION = "browser_detection"
-    """Bot detection suspected."""
-
-    BROWSER_ESCALATION = "browser_escalation"
-    """Stealth escalation triggered."""
-
-    BROWSER_SESSION = "browser_session"
-    """Browser session start/end."""
 
 
 class AgentUsage(BaseModel):

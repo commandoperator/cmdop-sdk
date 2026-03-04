@@ -42,10 +42,6 @@ from cmdop.exceptions import (
     AgentNotRunningError,
     AgentOfflineError,
     AuthenticationError,
-    BrowserElementNotFoundError,
-    BrowserError,
-    BrowserNavigationError,
-    BrowserSessionClosedError,
     CMDOPError,
     ConnectionError,
     ConnectionLostError,
@@ -121,9 +117,6 @@ from cmdop.discovery import (
     list_agents,
 )
 from cmdop.helpers import (
-    NetworkAnalyzer,
-    NetworkSnapshot,
-    RequestSnapshot,
     # Desktop management
     ensure_desktop_running,
     start_desktop,
@@ -138,7 +131,7 @@ from cmdop.logging import (
     get_log_dir,
 )
 
-__version__ = "2026.3.3.1"
+__version__ = "2026.3.5"
 
 __all__ = [
     # Version
@@ -231,15 +224,6 @@ __all__ = [
     "FilePermissionError",
     "FileTooLargeError",
     "RateLimitError",
-    # Browser exceptions
-    "BrowserError",
-    "BrowserSessionClosedError",
-    "BrowserNavigationError",
-    "BrowserElementNotFoundError",
-    # Helpers
-    "NetworkAnalyzer",
-    "NetworkSnapshot",
-    "RequestSnapshot",
     # Desktop management
     "ensure_desktop_running",
     "start_desktop",

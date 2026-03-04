@@ -39,9 +39,6 @@ message ControlMessage {
     PingCommand ping = 40;                   // Ping for latency check
     ConfigUpdateCommand config_update = 41;  // Update session config
 
-    // History request (agent reads shell history file)
-    GetHistoryCommand get_history = 50;      // Request shell history
-
     // File operations (routed through streaming)
     FileOperationRequest file_operation = 60; // File manager operations
 
@@ -63,50 +60,12 @@ message ControlMessage {
     AgentRunCommand agent_run = 110;                      // Run AI agent with prompt
     AgentCancelCommand agent_cancel = 111;                // Cancel running agent (v2.15.0)
 
-    // Browser Direct Control (v2.16.0)
-    // SDK → Django → Agent browser automation without LLM
-    BrowserCommand browser = 120;                         // Browser control command
-
     // Skills relay (v2.24.0)
     // SDK → Django → Agent skill management and execution
     SkillListCommand skill_list = 130;                    // List installed skills
     SkillShowCommand skill_show = 131;                    // Get skill details
     SkillRunCommand skill_run = 132;                      // Execute a skill
   }
-}
-
-// ============================================================================
-// BROWSER DIRECT CONTROL (v2.16.0)
-// ============================================================================
-
-// Browser command types
-enum BrowserCommandType {
-  BROWSER_CMD_CREATE_SESSION = 0;
-  BROWSER_CMD_CLOSE_SESSION = 1;
-  BROWSER_CMD_NAVIGATE = 2;
-  BROWSER_CMD_CLICK = 3;
-  BROWSER_CMD_TYPE = 4;
-  BROWSER_CMD_WAIT = 5;
-  BROWSER_CMD_EXTRACT = 6;
-  BROWSER_CMD_EXTRACT_REGEX = 7;
-  BROWSER_CMD_GET_HTML = 8;
-  BROWSER_CMD_GET_TEXT = 9;
-  BROWSER_CMD_EXECUTE_SCRIPT = 10;
-  BROWSER_CMD_SCREENSHOT = 11;
-  BROWSER_CMD_GET_STATE = 12;
-  BROWSER_CMD_SET_COOKIES = 13;
-  BROWSER_CMD_GET_COOKIES = 14;
-  // Selector validation & data extraction (v2.17.0)
-  BROWSER_CMD_VALIDATE_SELECTORS = 15;
-  BROWSER_CMD_EXTRACT_DATA = 16;
-}
-
-// Browser command wrapper
-// Contains command type and JSON-encoded payload
-message BrowserCommand {
-  string request_id = 1;              // Unique request ID for correlation
-  BrowserCommandType type = 2;        // Command type
-  string payload_json = 3;            // JSON-encoded request (BrowserNavigateRequest, etc.)
 }
 
 // Notification delivery method
@@ -173,13 +132,6 @@ message ConfigUpdateCommand {
   SessionConfig config = 1;                  // New configuration
 }
 
-// Get history command (request shell history from agent)
-message GetHistoryCommand {
-  int32 limit = 1;                           // Max commands to return
-  int32 offset = 2;                          // Offset for pagination
-  string source = 3;                         // History source: "shell" (file), "session" (memory)
-}
-
 // Refresh permissions command (v2.3.0)
 // Triggers agent to re-check all protected directories
 // On macOS, this will show TCC dialogs for any denied directories
@@ -199,9 +151,6 @@ enum AgentType {
   AGENT_TYPE_COMMAND = 2;     // Command execution agent
   AGENT_TYPE_ROUTER = 3;      // Router agent (delegates to specialists)
   AGENT_TYPE_PLANNER = 4;     // Planner agent (complex tasks)
-  AGENT_TYPE_BROWSER = 5;     // Browser automation agent (v2.13.0)
-  AGENT_TYPE_SCRAPER = 6;     // Web scraping agent (v2.13.0)
-  AGENT_TYPE_FORM_FILLER = 7; // Form automation agent (v2.13.0)
 }
 
 // Run AI agent command
@@ -216,37 +165,6 @@ message AgentRunCommand {
   // Optional: JSON Schema for structured output
   // If provided, agent returns output_json matching this schema
   string output_schema = 6;
-
-  // Browser agent options (v2.13.0)
-  BrowserAgentOptions browser_options = 7;
-}
-
-// Browser agent configuration options (v2.13.0)
-message BrowserAgentOptions {
-  // Session configuration
-  string session_type = 1;    // ephemeral, persistent, long_lived
-  string profile_id = 2;      // Browser profile ID for persistent sessions
-  string start_url = 3;       // Initial URL to navigate to
-
-  // Perception settings
-  bool use_axtree = 4;        // Use accessibility tree (default: true)
-  bool use_diff = 5;          // Use differential perception (default: true)
-  int32 max_tokens = 6;       // Max tokens for state (default: 8000)
-
-  // Stealth settings
-  string stealth_level = 7;   // none, minimal, standard, aggressive
-  bool use_proxy = 8;         // Enable proxy rotation
-  string proxy_url = 9;       // Specific proxy URL
-
-  // Session limits
-  int32 max_actions = 10;     // Max browser actions per run
-  int32 navigation_timeout_ms = 11;  // Navigation timeout (default: 30000)
-  int32 action_timeout_ms = 12;      // Action timeout (default: 10000)
-
-  // Screenshot settings
-  bool screenshot_on_action = 13;  // Take screenshot after each action
-  bool screenshot_fullpage = 14;   // Full page screenshots
-  string screenshot_format = 15;   // png, jpeg (default: png)
 }
 
 // ============================================================================
