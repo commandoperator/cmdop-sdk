@@ -131,7 +131,7 @@ from cmdop.logging import (
     get_log_dir,
 )
 
-__version__ = "2026.3.5"
+__version__ = "2026.3.5.1"
 
 __all__ = [
     # Version
