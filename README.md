@@ -1,6 +1,6 @@
 # CMDOP
 
-![CMDOP Architecture](https://cmdop.com/images/architecture/vs-personal-agent.png)
+![CMDOP](https://raw.githubusercontent.com/markolofsen/assets/main/libs/cmdop_sdk.webp)
 
 **Your OS. Online.**
 
