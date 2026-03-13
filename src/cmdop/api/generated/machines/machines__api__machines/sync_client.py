@@ -224,6 +224,7 @@ class SyncMachinesMachinesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def machines_logs_list(
@@ -282,6 +283,7 @@ class SyncMachinesMachinesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def machines_stats_retrieve(self, id: str) -> None:
@@ -301,6 +303,7 @@ class SyncMachinesMachinesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def machines_update_metrics_create(

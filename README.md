@@ -130,6 +130,35 @@ session = await client.terminal.get_active_session("prod-server")
 
 ---
 
+## MFA (Multi-Factor Authentication)
+
+When a workspace has `mfa_required` enabled, `attach()` automatically handles the TOTP challenge — no extra code needed.
+
+**Automatic (env var)** — best for CI/automation:
+```bash
+CMDOP_TOTP_CODE=123456 python script.py
+```
+
+**Interactive** — SDK prompts stdin if env var is not set:
+```
+MFA required. Enter TOTP code:
+```
+
+```python
+# Workspace with MFA enabled — SDK handles it automatically
+stream = client.terminal.stream()
+stream.on_output(lambda data: print(data.decode(), end=""))
+
+# Option 1: set env var for automation
+import os
+os.environ["CMDOP_TOTP_CODE"] = "123456"  # or set in shell
+
+# Option 2: SDK will prompt interactively if env not set
+await stream.attach(session.session_id)
+```
+
+---
+
 ## Files
 
 Read, write, list files on remote machines. No scp/sftp needed.

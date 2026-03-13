@@ -51,7 +51,7 @@ AGENT_EVENT_HANDOFF: AgentEventType
 AGENT_EVENT_CANCELLED: AgentEventType
 
 class AgentMessage(_message.Message):
-    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "skill_list_result", "skill_show_result", "skill_run_result")
+    __slots__ = ("session_id", "message_id", "timestamp", "register", "heartbeat", "output", "command_complete", "status", "error", "ack", "file_operation_result", "tunnel_created", "tunnel_data", "tunnel_closed", "tunnel_error", "permission_status", "agent_result", "agent_event", "skill_list_result", "skill_show_result", "skill_run_result", "auth_response")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
@@ -73,6 +73,7 @@ class AgentMessage(_message.Message):
     SKILL_LIST_RESULT_FIELD_NUMBER: _ClassVar[int]
     SKILL_SHOW_RESULT_FIELD_NUMBER: _ClassVar[int]
     SKILL_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
+    AUTH_RESPONSE_FIELD_NUMBER: _ClassVar[int]
     session_id: str
     message_id: str
     timestamp: _timestamp_pb2.Timestamp
@@ -94,10 +95,11 @@ class AgentMessage(_message.Message):
     skill_list_result: SkillListResult
     skill_show_result: SkillShowResult
     skill_run_result: SkillRunResult
-    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., skill_list_result: _Optional[_Union[SkillListResult, _Mapping]] = ..., skill_show_result: _Optional[_Union[SkillShowResult, _Mapping]] = ..., skill_run_result: _Optional[_Union[SkillRunResult, _Mapping]] = ...) -> None: ...
+    auth_response: AuthResponse
+    def __init__(self, session_id: _Optional[str] = ..., message_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., register: _Optional[_Union[RegisterRequest, _Mapping]] = ..., heartbeat: _Optional[_Union[HeartbeatUpdate, _Mapping]] = ..., output: _Optional[_Union[TerminalOutput, _Mapping]] = ..., command_complete: _Optional[_Union[CommandComplete, _Mapping]] = ..., status: _Optional[_Union[StatusUpdate, _Mapping]] = ..., error: _Optional[_Union[ErrorReport, _Mapping]] = ..., ack: _Optional[_Union[CommandAck, _Mapping]] = ..., file_operation_result: _Optional[_Union[_requests_pb2.FileOperationResult, _Mapping]] = ..., tunnel_created: _Optional[_Union[_tunnel_pb2.TunnelCreated, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_closed: _Optional[_Union[_tunnel_pb2.TunnelClosed, _Mapping]] = ..., tunnel_error: _Optional[_Union[_tunnel_pb2.TunnelError, _Mapping]] = ..., permission_status: _Optional[_Union[PermissionStatus, _Mapping]] = ..., agent_result: _Optional[_Union[AgentResult, _Mapping]] = ..., agent_event: _Optional[_Union[AgentStreamEvent, _Mapping]] = ..., skill_list_result: _Optional[_Union[SkillListResult, _Mapping]] = ..., skill_show_result: _Optional[_Union[SkillShowResult, _Mapping]] = ..., skill_run_result: _Optional[_Union[SkillRunResult, _Mapping]] = ..., auth_response: _Optional[_Union[AuthResponse, _Mapping]] = ...) -> None: ...
 
 class RegisterRequest(_message.Message):
-    __slots__ = ("version", "hostname", "platform", "supported_shells", "initial_size", "architecture", "device_id", "device_type", "has_shell", "device_model", "public_ip", "local_ips", "username", "uid", "is_root", "home_dir", "os_version", "kernel_version", "cpu_model", "cpu_count", "total_ram", "uptime_seconds")
+    __slots__ = ("version", "hostname", "platform", "supported_shells", "initial_size", "architecture", "device_id", "device_type", "has_shell", "device_model", "public_ip", "local_ips", "username", "uid", "is_root", "home_dir", "os_version", "kernel_version", "cpu_model", "cpu_count", "total_ram", "uptime_seconds", "session_signature", "session_public_key", "key_version", "agent_capabilities", "continuity_token", "agent_password")
     VERSION_FIELD_NUMBER: _ClassVar[int]
     HOSTNAME_FIELD_NUMBER: _ClassVar[int]
     PLATFORM_FIELD_NUMBER: _ClassVar[int]
@@ -120,6 +122,12 @@ class RegisterRequest(_message.Message):
     CPU_COUNT_FIELD_NUMBER: _ClassVar[int]
     TOTAL_RAM_FIELD_NUMBER: _ClassVar[int]
     UPTIME_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    SESSION_SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    SESSION_PUBLIC_KEY_FIELD_NUMBER: _ClassVar[int]
+    KEY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    AGENT_CAPABILITIES_FIELD_NUMBER: _ClassVar[int]
+    CONTINUITY_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    AGENT_PASSWORD_FIELD_NUMBER: _ClassVar[int]
     version: str
     hostname: str
     platform: str
@@ -142,7 +150,13 @@ class RegisterRequest(_message.Message):
     cpu_count: int
     total_ram: int
     uptime_seconds: int
-    def __init__(self, version: _Optional[str] = ..., hostname: _Optional[str] = ..., platform: _Optional[str] = ..., supported_shells: _Optional[_Iterable[str]] = ..., initial_size: _Optional[_Union[_common_types_pb2.TerminalSize, _Mapping]] = ..., architecture: _Optional[str] = ..., device_id: _Optional[str] = ..., device_type: _Optional[str] = ..., has_shell: bool = ..., device_model: _Optional[str] = ..., public_ip: _Optional[str] = ..., local_ips: _Optional[_Iterable[str]] = ..., username: _Optional[str] = ..., uid: _Optional[int] = ..., is_root: bool = ..., home_dir: _Optional[str] = ..., os_version: _Optional[str] = ..., kernel_version: _Optional[str] = ..., cpu_model: _Optional[str] = ..., cpu_count: _Optional[int] = ..., total_ram: _Optional[int] = ..., uptime_seconds: _Optional[int] = ...) -> None: ...
+    session_signature: bytes
+    session_public_key: bytes
+    key_version: int
+    agent_capabilities: _containers.RepeatedScalarFieldContainer[str]
+    continuity_token: str
+    agent_password: str
+    def __init__(self, version: _Optional[str] = ..., hostname: _Optional[str] = ..., platform: _Optional[str] = ..., supported_shells: _Optional[_Iterable[str]] = ..., initial_size: _Optional[_Union[_common_types_pb2.TerminalSize, _Mapping]] = ..., architecture: _Optional[str] = ..., device_id: _Optional[str] = ..., device_type: _Optional[str] = ..., has_shell: bool = ..., device_model: _Optional[str] = ..., public_ip: _Optional[str] = ..., local_ips: _Optional[_Iterable[str]] = ..., username: _Optional[str] = ..., uid: _Optional[int] = ..., is_root: bool = ..., home_dir: _Optional[str] = ..., os_version: _Optional[str] = ..., kernel_version: _Optional[str] = ..., cpu_model: _Optional[str] = ..., cpu_count: _Optional[int] = ..., total_ram: _Optional[int] = ..., uptime_seconds: _Optional[int] = ..., session_signature: _Optional[bytes] = ..., session_public_key: _Optional[bytes] = ..., key_version: _Optional[int] = ..., agent_capabilities: _Optional[_Iterable[str]] = ..., continuity_token: _Optional[str] = ..., agent_password: _Optional[str] = ...) -> None: ...
 
 class HeartbeatUpdate(_message.Message):
     __slots__ = ("metrics",)
@@ -287,6 +301,20 @@ class AgentStreamEvent(_message.Message):
     payload: str
     timestamp: int
     def __init__(self, request_id: _Optional[str] = ..., type: _Optional[_Union[AgentEventType, str]] = ..., payload: _Optional[str] = ..., timestamp: _Optional[int] = ...) -> None: ...
+
+class AuthResponse(_message.Message):
+    __slots__ = ("challenge_id", "password", "signature", "public_key", "key_version")
+    CHALLENGE_ID_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_FIELD_NUMBER: _ClassVar[int]
+    SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    PUBLIC_KEY_FIELD_NUMBER: _ClassVar[int]
+    KEY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    challenge_id: str
+    password: str
+    signature: bytes
+    public_key: bytes
+    key_version: int
+    def __init__(self, challenge_id: _Optional[str] = ..., password: _Optional[str] = ..., signature: _Optional[bytes] = ..., public_key: _Optional[bytes] = ..., key_version: _Optional[int] = ...) -> None: ...
 
 class SkillInfoItem(_message.Message):
     __slots__ = ("name", "description", "author", "version", "model", "origin", "required_bins", "required_env")

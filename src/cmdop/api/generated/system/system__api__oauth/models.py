@@ -38,6 +38,84 @@ class DeviceAuthorizeRequest(BaseModel):
 
 
 
+class TokenList(BaseModel):
+    """
+    Serializer for listing user's CLI tokens.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    id: str = ...
+    access_token_prefix: str = Field(
+    description='First 12 characters for identifi...',
+    max_length=12,
+)
+    workspace_name: str = ...
+    client_name: str | None = Field(None, max_length=100)
+    client_hostname: str | None = Field(None, max_length=255)
+    client_platform: str | None = Field(
+    None,
+    description='OS platform: darwin, linux, windows',
+    max_length=50,
+)
+    created_at: datetime.datetime = ...
+    last_used_at: datetime.datetime | None = Field(
+    None,
+    description='Last time access token was used',
+)
+    revoked_at: datetime.datetime | None = None
+    is_active: Any = ...
+
+
+
+class PaginatedTokenListList(BaseModel):
+    """
+    
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    count: int = Field(description='Total number of items across all...')
+    page: int = Field(description='Current page number (1-based)')
+    pages: int = Field(description='Total number of pages')
+    page_size: int = Field(description='Number of items per page')
+    has_next: bool = Field(description='Whether there is a next page')
+    has_previous: bool = Field(description='Whether there is a previous page')
+    next_page: int | None = Field(None, description='Next page number (null if no nex...')
+    previous_page: int | None = Field(None, description='Previous page number (null if no...')
+    results: list[TokenList] = Field(description='Array of items for current page')
+
+
+
+class TokenError(BaseModel):
+    """
+    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
+    error_description: str | None = Field(None, description='Human-readable error description')
+
+
+
 class DeviceAuthorizeResponse(BaseModel):
     """
     Response for device authorization.
@@ -117,28 +195,6 @@ class DeviceCodeResponse(BaseModel):
 
 
 
-class TokenRevokeRequest(BaseModel):
-    """
-    Request body for POST /api/oauth/revoke Revoke access token or refresh
-    token.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    token: str = Field(description='Token to revoke (access or refresh)', min_length=1)
-    token_type_hint: TokenRevokeRequestTokenTypeHint | None = Field(
-    None,
-    description='Hint about token type (optional)...',
-)
-
-
-
 class TokenRequestRequest(BaseModel):
     """
     Request body for POST /api/oauth/token CLI polls with device_code until
@@ -169,12 +225,12 @@ class TokenRequestRequest(BaseModel):
 
 
 
-class TokenResponse(BaseModel):
+class TokenRevokeRequest(BaseModel):
     """
-    Response body for POST /api/oauth/token Returns access token and refresh
+    Request body for POST /api/oauth/revoke Revoke access token or refresh
     token.
 
-    Response model (includes read-only fields).
+    Request model (no read-only fields).
     """
 
     model_config = ConfigDict(
@@ -183,33 +239,11 @@ class TokenResponse(BaseModel):
         frozen=False,
     )
 
-    access_token: str = Field(description='Access token (cmdop_...)')
-    refresh_token: str = Field(description='Refresh token (clitr_...)')
-    token_type: str | None = Field(None, description='Token type (always Bearer)')
-    expires_in: int = Field(description='Access token expiry in seconds')
-    scope: str | None = Field(None, description='Token scope')
-    workspace_id: str = Field(description='Workspace ID')
-    workspace_name: str = Field(description='Workspace name')
-    user_id: str = Field(description='User ID')
-    user_email: str | None = Field(None, description='User email (optional)')
-
-
-
-class TokenError(BaseModel):
-    """
-    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
-    error_description: str | None = Field(None, description='Human-readable error description')
+    token: str = Field(description='Token to revoke (access or refresh)', min_length=1)
+    token_type_hint: TokenRevokeRequestTokenTypeHint | None = Field(
+    None,
+    description='Hint about token type (optional)...',
+)
 
 
 
@@ -256,9 +290,10 @@ class TokenInfo(BaseModel):
 
 
 
-class TokenList(BaseModel):
+class TokenResponse(BaseModel):
     """
-    Serializer for listing user's CLI tokens.
+    Response body for POST /api/oauth/token Returns access token and refresh
+    token.
 
     Response model (includes read-only fields).
     """
@@ -269,50 +304,15 @@ class TokenList(BaseModel):
         frozen=False,
     )
 
-    id: str = ...
-    access_token_prefix: str = Field(
-    description='First 12 characters for identifi...',
-    max_length=12,
-)
-    workspace_name: str = ...
-    client_name: str | None = Field(None, max_length=100)
-    client_hostname: str | None = Field(None, max_length=255)
-    client_platform: str | None = Field(
-    None,
-    description='OS platform: darwin, linux, windows',
-    max_length=50,
-)
-    created_at: datetime.datetime = ...
-    last_used_at: datetime.datetime | None = Field(
-    None,
-    description='Last time access token was used',
-)
-    revoked_at: datetime.datetime | None = None
-    is_active: Any = ...
-
-
-
-class PaginatedTokenListList(BaseModel):
-    """
-    
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    count: int = Field(description='Total number of items across all...')
-    page: int = Field(description='Current page number (1-based)')
-    pages: int = Field(description='Total number of pages')
-    page_size: int = Field(description='Number of items per page')
-    has_next: bool = Field(description='Whether there is a next page')
-    has_previous: bool = Field(description='Whether there is a previous page')
-    next_page: int | None = Field(None, description='Next page number (null if no nex...')
-    previous_page: int | None = Field(None, description='Previous page number (null if no...')
-    results: list[TokenList] = Field(description='Array of items for current page')
+    access_token: str = Field(description='Access token (cmdop_...)')
+    refresh_token: str = Field(description='Refresh token (clitr_...)')
+    token_type: str | None = Field(None, description='Token type (always Bearer)')
+    expires_in: int = Field(description='Access token expiry in seconds')
+    scope: str | None = Field(None, description='Token scope')
+    workspace_id: str = Field(description='Workspace ID')
+    workspace_name: str = Field(description='Workspace name')
+    user_id: str = Field(description='User ID')
+    user_email: str | None = Field(None, description='User email (optional)')
 
 
 

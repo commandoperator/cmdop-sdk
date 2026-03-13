@@ -59,6 +59,9 @@ message AgentMessage {
     SkillListResult skill_list_result = 110;         // Skill list result
     SkillShowResult skill_show_result = 111;         // Skill show result
     SkillRunResult skill_run_result = 112;            // Skill run result
+
+    // MFA authentication response (v2.25.0)
+    AuthResponse auth_response = 120;                // Response to server AuthChallenge
   }
 }
 
@@ -90,6 +93,15 @@ message RegisterRequest {
   uint32 cpu_count = 20;                     // Number of CPU cores
   uint64 total_ram = 21;                     // Total RAM in bytes
   uint64 uptime_seconds = 22;                // System uptime in seconds
+
+  // MFA / Machine Identity fields (v2.25.0)
+  // Fields 30–35 reserved for security extensions.
+  // Populated only when the workspace requires MFA or signed sessions.
+  bytes  session_signature = 30;             // Ed25519 signature of handshake payload (64 bytes)
+  bytes  session_public_key = 31;            // Ed25519 public key for this machine (32 bytes)
+  uint32 key_version = 32;                   // Key version (for rotation tracking)
+  repeated string agent_capabilities = 33;   // Supported auth methods: ["totp", "ed25519"]
+  string continuity_token = 34;             // Short-lived token for grace-period reconnects
 }
 
 // Heartbeat with optional system metrics
@@ -217,6 +229,21 @@ enum AgentEventType {
   AGENT_EVENT_ERROR = 4;          // Error occurred
   AGENT_EVENT_HANDOFF = 5;        // Handoff to another agent
   AGENT_EVENT_CANCELLED = 6;      // Agent run cancelled (v2.15.0)
+}
+
+// ============================================================================
+// MFA AUTHENTICATION (v2.25.0)
+// ============================================================================
+
+// Response to an AuthChallenge sent by the server.
+// Sent as the second AgentMessage during ConnectTerminal handshake
+// when the workspace requires MFA or Ed25519 signing.
+message AuthResponse {
+  string challenge_id = 1;          // Echoes AuthChallenge.challenge_id
+  string totp_code = 2;             // 6-digit TOTP code (if method includes "totp")
+  bytes  signature = 3;             // Ed25519 signature, 64 bytes (if method includes "ed25519")
+  bytes  public_key = 4;            // Ed25519 public key, 32 bytes (first-time registration)
+  uint32 key_version = 5;           // Key version for rotation tracking
 }
 
 // ============================================================================

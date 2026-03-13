@@ -65,6 +65,9 @@ message ControlMessage {
     SkillListCommand skill_list = 130;                    // List installed skills
     SkillShowCommand skill_show = 131;                    // Get skill details
     SkillRunCommand skill_run = 132;                      // Execute a skill
+
+    // MFA authentication challenge (v2.25.0)
+    AuthChallenge auth_challenge = 120;                   // Server requests MFA verification
   }
 }
 
@@ -201,4 +204,26 @@ message SkillRunCommand {
   map<string, string> options = 4;      // Additional options (e.g. model override)
   int32 timeout_seconds = 5;            // Max execution time in seconds
   string output_schema = 6;             // Optional JSON Schema for structured output
+}
+
+// ============================================================================
+// MFA AUTHENTICATION (v2.25.0)
+// ============================================================================
+
+// Server sends this during ConnectTerminal handshake when workspace requires MFA.
+// Agent must respond with AuthResponse (in AgentMessage) within 60 seconds.
+// Until a valid AuthResponse is received, no ControlMessage commands are forwarded.
+message AuthChallenge {
+  string challenge_id = 1;              // Unique challenge ID (echoed back in AuthResponse)
+  repeated string methods = 2;          // Required auth methods: ["totp"], ["ed25519"], or both
+  // Note: nonce for Ed25519 signing is obtained via GetChallenge() unary RPC before stream open.
+  // The challenge_id here is for TOTP flow correlation only.
+}
+
+// Sent at stream close to allow seamless reconnect within the grace period (30s).
+// Agent includes this in RegisterRequest.continuity_token on reconnect.
+// Single-use: consumed immediately on first successful reconnect.
+message ContinuityToken {
+  string token = 1;                     // 64-char hex token (32 random bytes)
+  int64  expires_at = 2;                // Unix timestamp (stream_close_time + 30s)
 }

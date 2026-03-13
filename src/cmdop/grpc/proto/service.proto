@@ -10,10 +10,11 @@
 //   4. Input: Browser → Django → Agent (stdin)
 //   5. Output: Agent → Django → Browser (stdout/stderr)
 //
-// Version: 2.23.0
-// Date: 2026-02-28
+// Version: 2.25.0
+// Date: 2026-03-12
 //
 // Changelog:
+// - v2.25.0: Added GetChallenge RPC and MFA authentication messages (AuthChallenge, AuthResponse)
 // - v2.23.0: Added SkillList, SkillShow, SkillRun RPCs for remote skill management and execution
 // - v2.22.0: Added RunAgentStream RPC for SDK streaming agent execution
 // - v2.21.0: Added GetSessionByHostname RPC for SDK set_machine()
@@ -48,6 +49,12 @@ service TerminalStreamingService {
   // PRIMARY: Bidirectional streaming for terminal I/O
   // Agent opens stream → Django sends input → Agent sends output
   rpc ConnectTerminal(stream AgentMessage) returns (stream ControlMessage);
+
+  // MFA challenge nonce (v2.25.0)
+  // Called BEFORE ConnectTerminal when workspace requires Ed25519 signing.
+  // Returns a 32-byte nonce the agent must sign in RegisterRequest.session_signature.
+  // Also indicates which auth methods the workspace requires.
+  rpc GetChallenge(GetChallengeRequest) returns (GetChallengeResponse);
 
   // Session management RPCs
   rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
@@ -134,4 +141,23 @@ service TerminalStreamingService {
   // Execute a skill with a prompt
   rpc SkillRun(SkillRunRequest) returns (SkillRunResponse);
 
+}
+
+// ============================================================================
+// MFA CHALLENGE MESSAGES (v2.25.0)
+// ============================================================================
+
+// Request a challenge nonce before opening ConnectTerminal stream.
+// Used when workspace requires Ed25519 signed sessions.
+// Also returns which auth methods the workspace requires so agent
+// can prepare (prompt TOTP, load keypair) before opening the stream.
+message GetChallengeRequest {
+  string workspace_id = 1;    // Workspace the agent is connecting to
+  string session_id   = 2;    // Session UUID the agent will use in ConnectTerminal
+}
+
+message GetChallengeResponse {
+  bytes  nonce            = 1;   // 32-byte cryptographically random nonce
+  int64  expires_at       = 2;   // Unix timestamp: nonce valid until (now + 120s)
+  repeated string required_methods = 3;  // e.g. [], ["totp"], ["ed25519"], ["totp", "ed25519"]
 }

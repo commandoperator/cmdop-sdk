@@ -904,9 +904,13 @@
                     "created_at": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "agent_password_required": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
+                    "agent_password_required",
                     "created_at",
                     "session_id"
                 ]
