@@ -425,7 +425,7 @@ class TerminalStream:
 
         return session_id
 
-    async def attach(self, session_id: str, timeout: float = 10.0) -> str:
+    async def attach(self, session_id: str, timeout: float = 10.0, password: str | None = None) -> str:
         """
         Attach to an existing remote terminal session (agent).
 
@@ -435,12 +435,15 @@ class TerminalStream:
         How it works:
         1. SDK sends RegisterRequest with version="sdk-python-*-attach"
         2. Django sees "attach" in version → adds SDK to _sdk_subscribers
-        3. When agent sends output → Django forwards to all SDK subscribers
-        4. When SDK sends input → Django forwards to agent queue
+        3. If agent has a password set, Django sends AuthChallenge(methods=["password"])
+        4. SDK responds with AuthResponse(password=...) — password from arg or CMDOP_AGENT_PASSWORD env var
+        5. When agent sends output → Django forwards to all SDK subscribers
+        6. When SDK sends input → Django forwards to agent queue
 
         Args:
             session_id: Agent's session ID (from get_active_session()).
             timeout: Connection timeout in seconds.
+            password: Agent password (if required). Falls back to CMDOP_AGENT_PASSWORD env var.
 
         Returns:
             Session ID (same as input).
@@ -453,9 +456,11 @@ class TerminalStream:
         Example:
             >>> session = await client.terminal.get_active_session("my-server")
             >>> stream = client.terminal.stream()
-            >>> await stream.attach(session.session_id)  # Use agent's session_id!
+            >>> await stream.attach(session.session_id, password="secret")
             >>> stream.on_output(lambda data: print(data.decode(), end=""))
         """
+        import os
+        self._agent_password = password or os.environ.get("CMDOP_AGENT_PASSWORD")
         if self._state in (StreamState.CONNECTED, StreamState.CONNECTING):
             raise RuntimeError("Stream already connected. Create a new stream to attach.")
 
@@ -823,6 +828,10 @@ class TerminalStream:
                         f"Received cancel for command: {command_id}"
                     )
 
+        elif payload_type == "auth_challenge":
+            # MFA challenge from server (v2.25.0) — workspace requires TOTP verification
+            asyncio.ensure_future(self._handle_auth_challenge(message.auth_challenge))
+
         else:
             # Unknown message type - log in debug mode
             if self._settings.log_level == "DEBUG":
@@ -832,6 +841,53 @@ class TerminalStream:
                     f"Unknown message type: {payload_type}"
                 )
 
+
+    # =========================================================================
+    # Internal: MFA Authentication (v2.25.0)
+    # =========================================================================
+
+    async def _handle_auth_challenge(self, challenge: Any) -> None:
+        """
+        Handle agent password AuthChallenge from server (v2.26.0).
+
+        Reads password from attach(password=) arg or CMDOP_AGENT_PASSWORD env var,
+        then sends AuthResponse back to Django.
+        """
+        import getpass
+        import logging
+        import os
+
+        logger = logging.getLogger(__name__)
+        challenge_id = challenge.challenge_id
+        logger.info(f"Auth challenge received (id={challenge_id}), methods={list(challenge.methods)}")
+
+        password = getattr(self, "_agent_password", None) or os.environ.get("CMDOP_AGENT_PASSWORD")
+        if not password:
+            loop = asyncio.get_event_loop()
+            password = await loop.run_in_executor(
+                None,
+                lambda: getpass.getpass("Agent password required: "),
+            )
+
+        if not password:
+            logger.error("No agent password provided — auth challenge will time out")
+            return
+
+        await self._send_auth_response(challenge_id, password)
+        logger.info(f"AuthResponse sent for challenge {challenge_id}")
+
+    async def _send_auth_response(self, challenge_id: str, password: str) -> None:
+        """Send AuthResponse message to server."""
+        from cmdop.grpc.generated.agent_messages_pb2 import AgentMessage, AuthResponse
+
+        msg = AgentMessage(
+            session_id=self._session_id or "",
+            auth_response=AuthResponse(
+                challenge_id=challenge_id,
+                password=password,
+            ),
+        )
+        await self._enqueue_message(msg)
 
     # =========================================================================
     # Internal: Message Creation

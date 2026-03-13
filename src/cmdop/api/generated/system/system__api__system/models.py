@@ -35,33 +35,9 @@ class Alert(BaseModel):
 
 
 
-class PaginatedAlertList(BaseModel):
+class ApiKeyCreateRequest(BaseModel):
     """
-    
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    count: int = Field(description='Total number of items across all...')
-    page: int = Field(description='Current page number (1-based)')
-    pages: int = Field(description='Total number of pages')
-    page_size: int = Field(description='Number of items per page')
-    has_next: bool = Field(description='Whether there is a next page')
-    has_previous: bool = Field(description='Whether there is a previous page')
-    next_page: int | None = Field(None, description='Next page number (null if no nex...')
-    previous_page: int | None = Field(None, description='Previous page number (null if no...')
-    results: list[Alert] = Field(description='Array of items for current page')
-
-
-
-class AlertCreateRequest(BaseModel):
-    """
-    Serializer for creating alerts.
+    Serializer for creating new API key.
 
     Request model (no read-only fields).
     """
@@ -72,76 +48,12 @@ class AlertCreateRequest(BaseModel):
         frozen=False,
     )
 
-    workspace: str = ...
-    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
-    title: str = Field(min_length=1, max_length=200)
-    message: str = Field(min_length=1)
-    machine: str | None = None
-
-
-
-class AlertCreate(BaseModel):
-    """
-    Serializer for creating alerts.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
-    title: str = Field(max_length=200)
-    message: str = ...
-    machine: str | None = None
-
-
-
-class AlertRequest(BaseModel):
-    """
-    Serializer for Alert model.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
-    title: str = Field(min_length=1, max_length=200)
-    message: str = Field(min_length=1)
-    machine: str | None = None
-    read: bool | None = None
-
-
-
-class PatchedAlertRequest(BaseModel):
-    """
-    Serializer for Alert model.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str | None = None
-    type: AlertType | None = Field(None, description='* `machine_offline` - Machine Of...')
-    title: str | None = Field(None, min_length=1, max_length=200)
-    message: str | None = Field(None, min_length=1)
-    machine: str | None = None
-    read: bool | None = None
+    name: str = Field(
+    description='Descriptive name for this API key',
+    min_length=1,
+    max_length=100,
+)
+    workspace: str = Field(description='Workspace ID')
 
 
 
@@ -170,7 +82,7 @@ class ApiKey(BaseModel):
 
 
 
-class PaginatedApiKeyList(BaseModel):
+class PaginatedAlertList(BaseModel):
     """
     
     Response model (includes read-only fields).
@@ -190,29 +102,7 @@ class PaginatedApiKeyList(BaseModel):
     has_previous: bool = Field(description='Whether there is a previous page')
     next_page: int | None = Field(None, description='Next page number (null if no nex...')
     previous_page: int | None = Field(None, description='Previous page number (null if no...')
-    results: list[ApiKey] = Field(description='Array of items for current page')
-
-
-
-class ApiKeyCreateRequest(BaseModel):
-    """
-    Serializer for creating new API key.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    name: str = Field(
-    description='Descriptive name for this API key',
-    min_length=1,
-    max_length=100,
-)
-    workspace: str = Field(description='Workspace ID')
+    results: list[Alert] = Field(description='Array of items for current page')
 
 
 
@@ -237,6 +127,116 @@ class ApiKeyResponse(BaseModel):
     created_by: int | None = None
     created_by_email: Any = ...
     created_at: datetime.datetime = ...
+
+
+
+class AlertRequest(BaseModel):
+    """
+    Serializer for Alert model.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str = ...
+    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
+    title: str = Field(min_length=1, max_length=200)
+    message: str = Field(min_length=1)
+    machine: str | None = None
+    read: bool | None = None
+
+
+
+class AlertCreate(BaseModel):
+    """
+    Serializer for creating alerts.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str = ...
+    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
+    title: str = Field(max_length=200)
+    message: str = ...
+    machine: str | None = None
+
+
+
+class AlertCreateRequest(BaseModel):
+    """
+    Serializer for creating alerts.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str = ...
+    type: AlertType = Field(description='* `machine_offline` - Machine Of...')
+    title: str = Field(min_length=1, max_length=200)
+    message: str = Field(min_length=1)
+    machine: str | None = None
+
+
+
+class PaginatedApiKeyList(BaseModel):
+    """
+    
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    count: int = Field(description='Total number of items across all...')
+    page: int = Field(description='Current page number (1-based)')
+    pages: int = Field(description='Total number of pages')
+    page_size: int = Field(description='Number of items per page')
+    has_next: bool = Field(description='Whether there is a next page')
+    has_previous: bool = Field(description='Whether there is a previous page')
+    next_page: int | None = Field(None, description='Next page number (null if no nex...')
+    previous_page: int | None = Field(None, description='Previous page number (null if no...')
+    results: list[ApiKey] = Field(description='Array of items for current page')
+
+
+
+class PatchedAlertRequest(BaseModel):
+    """
+    Serializer for Alert model.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str | None = None
+    type: AlertType | None = Field(None, description='* `machine_offline` - Machine Of...')
+    title: str | None = Field(None, min_length=1, max_length=200)
+    message: str | None = Field(None, min_length=1)
+    machine: str | None = None
+    read: bool | None = None
 
 
 

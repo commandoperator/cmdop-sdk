@@ -94,5 +94,6 @@ class SyncMachinesMachineSharingAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 

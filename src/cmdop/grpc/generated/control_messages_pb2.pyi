@@ -17,7 +17,7 @@ from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from collections.abc import Mapping as _Mapping
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
@@ -47,7 +47,7 @@ AGENT_TYPE_ROUTER: AgentType
 AGENT_TYPE_PLANNER: AgentType
 
 class ControlMessage(_message.Message):
-    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "skill_list", "skill_show", "skill_run")
+    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "skill_list", "skill_show", "skill_run", "auth_challenge")
     COMMAND_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     INPUT_FIELD_NUMBER: _ClassVar[int]
@@ -70,6 +70,7 @@ class ControlMessage(_message.Message):
     SKILL_LIST_FIELD_NUMBER: _ClassVar[int]
     SKILL_SHOW_FIELD_NUMBER: _ClassVar[int]
     SKILL_RUN_FIELD_NUMBER: _ClassVar[int]
+    AUTH_CHALLENGE_FIELD_NUMBER: _ClassVar[int]
     command_id: str
     timestamp: _timestamp_pb2.Timestamp
     input: TerminalInput
@@ -92,7 +93,8 @@ class ControlMessage(_message.Message):
     skill_list: SkillListCommand
     skill_show: SkillShowCommand
     skill_run: SkillRunCommand
-    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., skill_list: _Optional[_Union[SkillListCommand, _Mapping]] = ..., skill_show: _Optional[_Union[SkillShowCommand, _Mapping]] = ..., skill_run: _Optional[_Union[SkillRunCommand, _Mapping]] = ...) -> None: ...
+    auth_challenge: AuthChallenge
+    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., skill_list: _Optional[_Union[SkillListCommand, _Mapping]] = ..., skill_show: _Optional[_Union[SkillShowCommand, _Mapping]] = ..., skill_run: _Optional[_Union[SkillRunCommand, _Mapping]] = ..., auth_challenge: _Optional[_Union[AuthChallenge, _Mapping]] = ...) -> None: ...
 
 class PushNotification(_message.Message):
     __slots__ = ("id", "type", "title", "message", "data", "priority", "silent", "method")
@@ -248,3 +250,19 @@ class SkillRunCommand(_message.Message):
     timeout_seconds: int
     output_schema: str
     def __init__(self, request_id: _Optional[str] = ..., skill_name: _Optional[str] = ..., prompt: _Optional[str] = ..., options: _Optional[_Mapping[str, str]] = ..., timeout_seconds: _Optional[int] = ..., output_schema: _Optional[str] = ...) -> None: ...
+
+class AuthChallenge(_message.Message):
+    __slots__ = ("challenge_id", "methods")
+    CHALLENGE_ID_FIELD_NUMBER: _ClassVar[int]
+    METHODS_FIELD_NUMBER: _ClassVar[int]
+    challenge_id: str
+    methods: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, challenge_id: _Optional[str] = ..., methods: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ContinuityToken(_message.Message):
+    __slots__ = ("token", "expires_at")
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    token: str
+    expires_at: int
+    def __init__(self, token: _Optional[str] = ..., expires_at: _Optional[int] = ...) -> None: ...

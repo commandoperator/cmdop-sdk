@@ -153,6 +153,7 @@ class SyncSystemSystemAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def alerts_mark_as_read_create(self, id: str) -> Alert:
@@ -188,6 +189,7 @@ class SyncSystemSystemAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def api_keys_list(
@@ -315,6 +317,7 @@ class SyncSystemSystemAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def api_keys_regenerate_create(self, id: str) -> ApiKeyResponse:

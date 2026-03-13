@@ -21,6 +21,7 @@ from .rpc_messages import push_pb2 as rpc__messages_dot_push__pb2
 from .rpc_messages import session_pb2 as rpc__messages_dot_session__pb2
 from .rpc_messages import skills_pb2 as rpc__messages_dot_skills__pb2
 from .rpc_messages import terminal_pb2 as rpc__messages_dot_terminal__pb2
+from . import service_pb2 as service__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
@@ -59,6 +60,11 @@ class TerminalStreamingServiceStub(object):
                 '/terminal.TerminalStreamingService/ConnectTerminal',
                 request_serializer=agent__messages__pb2.AgentMessage.SerializeToString,
                 response_deserializer=control__messages__pb2.ControlMessage.FromString,
+                _registered_method=True)
+        self.GetChallenge = channel.unary_unary(
+                '/terminal.TerminalStreamingService/GetChallenge',
+                request_serializer=service__pb2.GetChallengeRequest.SerializeToString,
+                response_deserializer=service__pb2.GetChallengeResponse.FromString,
                 _registered_method=True)
         self.CreateSession = channel.unary_unary(
                 '/terminal.TerminalStreamingService/CreateSession',
@@ -277,6 +283,16 @@ class TerminalStreamingServiceServicer(object):
     def ConnectTerminal(self, request_iterator, context):
         """PRIMARY: Bidirectional streaming for terminal I/O
         Agent opens stream → Django sends input → Agent sends output
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetChallenge(self, request, context):
+        """MFA challenge nonce (v2.25.0)
+        Called BEFORE ConnectTerminal when workspace requires Ed25519 signing.
+        Returns a 32-byte nonce the agent must sign in RegisterRequest.session_signature.
+        Also indicates which auth methods the workspace requires.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -566,6 +582,11 @@ def add_TerminalStreamingServiceServicer_to_server(servicer, server):
                     request_deserializer=agent__messages__pb2.AgentMessage.FromString,
                     response_serializer=control__messages__pb2.ControlMessage.SerializeToString,
             ),
+            'GetChallenge': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetChallenge,
+                    request_deserializer=service__pb2.GetChallengeRequest.FromString,
+                    response_serializer=service__pb2.GetChallengeResponse.SerializeToString,
+            ),
             'CreateSession': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateSession,
                     request_deserializer=rpc__messages_dot_session__pb2.CreateSessionRequest.FromString,
@@ -803,6 +824,33 @@ class TerminalStreamingService(object):
             '/terminal.TerminalStreamingService/ConnectTerminal',
             agent__messages__pb2.AgentMessage.SerializeToString,
             control__messages__pb2.ControlMessage.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetChallenge(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/terminal.TerminalStreamingService/GetChallenge',
+            service__pb2.GetChallengeRequest.SerializeToString,
+            service__pb2.GetChallengeResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -27,7 +27,28 @@ from file_operations import transfer_pb2 as _transfer_pb2
 from file_operations import hls_pb2 as _hls_pb2_1
 from file_operations import changes_pb2 as _changes_pb2
 from file_operations import requests_pb2 as _requests_pb2
+from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
-from typing import ClassVar as _ClassVar
+from google.protobuf import message as _message
+from collections.abc import Iterable as _Iterable
+from typing import ClassVar as _ClassVar, Optional as _Optional
 
 DESCRIPTOR: _descriptor.FileDescriptor
+
+class GetChallengeRequest(_message.Message):
+    __slots__ = ("workspace_id", "session_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    session_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., session_id: _Optional[str] = ...) -> None: ...
+
+class GetChallengeResponse(_message.Message):
+    __slots__ = ("nonce", "expires_at", "required_methods")
+    NONCE_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_METHODS_FIELD_NUMBER: _ClassVar[int]
+    nonce: bytes
+    expires_at: int
+    required_methods: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, nonce: _Optional[bytes] = ..., expires_at: _Optional[int] = ..., required_methods: _Optional[_Iterable[str]] = ...) -> None: ...

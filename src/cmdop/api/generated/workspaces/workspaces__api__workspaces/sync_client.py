@@ -121,6 +121,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def invitations_resend_create(
@@ -164,6 +165,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def invitations_decline_create(self, data: WorkspaceInvitationAcceptRequest) -> None:
@@ -183,6 +185,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def invitations_details_retrieve(self, token: str) -> WorkspaceInvitationPublic:
@@ -336,6 +339,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def members_update_role_create(
@@ -489,6 +493,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def workspaces_members_retrieve(self, id: str) -> None:
@@ -508,6 +513,7 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def workspaces_stats_retrieve(self, id: str) -> None:
@@ -527,5 +533,6 @@ class SyncWorkspacesWorkspacesAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 

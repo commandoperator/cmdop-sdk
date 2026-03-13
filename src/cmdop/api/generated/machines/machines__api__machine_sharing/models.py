@@ -9,28 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from ..enums import SharedMachinePermission
 
 
-class SharedMachineCreateRequest(BaseModel):
-    """
-    Serializer for creating a new share.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    expires_in_hours: int | None = Field(
-    None,
-    description='Hours until share expires (null ...',
-    ge=1,
-    le=720,
-)
-
-
-
 class SharedMachine(BaseModel):
     """
     Full shared machine details (for owners).
@@ -67,6 +45,28 @@ class SharedMachine(BaseModel):
     active_sessions_count: int = Field(description='Count active terminal sessions o...')
     created_by: int = ...
     created_at: datetime.datetime = ...
+
+
+
+class SharedMachineCreateRequest(BaseModel):
+    """
+    Serializer for creating a new share.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    expires_in_hours: int | None = Field(
+    None,
+    description='Hours until share expires (null ...',
+    ge=1,
+    le=720,
+)
 
 
 

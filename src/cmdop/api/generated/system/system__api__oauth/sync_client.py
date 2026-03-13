@@ -87,6 +87,7 @@ class SyncSystemOauthAPI:
             raise httpx.HTTPStatusError(
                 msg, request=response.request, response=response
             )
+        return None
 
 
     def system_oauth_token_create(self, data: TokenRequestRequest) -> TokenResponse:
