@@ -85,6 +85,10 @@ class RemoteTransport(BaseTransport):
         if self._agent_id:
             # Header name must match Node SDK (x-cmdop-agent-id) — server routes by it
             metadata.append(("x-cmdop-agent-id", self._agent_id))
+        # Session token for password-protected unary RPCs (v2.26.0)
+        session_token = getattr(self, "_session_token", None)
+        if session_token:
+            metadata.append(("x-session-token", session_token))
         return metadata
 
     def _create_channel(self) -> grpc.Channel:

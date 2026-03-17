@@ -1427,7 +1427,7 @@
                     "client_version": {
                         "type": "string",
                         "description": "Client version (e.g., 1.0.0)",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "client_hostname": {
                         "type": "string",
@@ -1437,7 +1437,7 @@
                     "client_platform": {
                         "type": "string",
                         "description": "OS platform: darwin, linux, windows",
-                        "maxLength": 50
+                        "maxLength": 100
                     }
                 }
             },
@@ -1763,7 +1763,7 @@
                     },
                     "client_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "client_hostname": {
                         "type": "string",
@@ -1772,7 +1772,7 @@
                     "client_platform": {
                         "type": "string",
                         "description": "OS platform: darwin, linux, windows",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "created_at": {
                         "type": "string",
@@ -1846,7 +1846,7 @@
                     "client_platform": {
                         "type": "string",
                         "description": "OS platform: darwin, linux, windows",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "created_at": {
                         "type": "string",

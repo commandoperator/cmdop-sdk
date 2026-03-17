@@ -957,11 +957,11 @@
                     },
                     "os_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "kernel_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "status": {
                         "enum": [
@@ -1003,7 +1003,7 @@
                         "type": "string",
                         "title": "CPU architecture",
                         "description": "CPU architecture (arm64, x86_64, etc.)",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "has_shell": {
                         "type": "boolean",
@@ -1117,7 +1117,7 @@
                     },
                     "agent_version": {
                         "type": "string",
-                        "maxLength": 20
+                        "maxLength": 100
                     },
                     "last_seen": {
                         "type": [
@@ -1193,7 +1193,7 @@
                     },
                     "os_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     }
                 },
                 "required": [
@@ -1238,7 +1238,7 @@
                     },
                     "os_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     }
                 },
                 "required": [
@@ -1367,11 +1367,11 @@
                     },
                     "os_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "kernel_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "status": {
                         "enum": [
@@ -1399,7 +1399,7 @@
                         "type": "string",
                         "title": "CPU architecture",
                         "description": "CPU architecture (arm64, x86_64, etc.)",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "has_shell": {
                         "type": "boolean",
@@ -1506,7 +1506,7 @@
                     },
                     "agent_version": {
                         "type": "string",
-                        "maxLength": 20
+                        "maxLength": 100
                     },
                     "agent_token": {
                         "type": "string",
@@ -1747,11 +1747,11 @@
                     },
                     "os_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "kernel_version": {
                         "type": "string",
-                        "maxLength": 50
+                        "maxLength": 255
                     },
                     "status": {
                         "enum": [
@@ -1779,7 +1779,7 @@
                         "type": "string",
                         "title": "CPU architecture",
                         "description": "CPU architecture (arm64, x86_64, etc.)",
-                        "maxLength": 50
+                        "maxLength": 100
                     },
                     "has_shell": {
                         "type": "boolean",
@@ -1886,7 +1886,7 @@
                     },
                     "agent_version": {
                         "type": "string",
-                        "maxLength": 20
+                        "maxLength": 100
                     },
                     "agent_token": {
                         "type": "string",

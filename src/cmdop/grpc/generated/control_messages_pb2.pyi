@@ -47,7 +47,7 @@ AGENT_TYPE_ROUTER: AgentType
 AGENT_TYPE_PLANNER: AgentType
 
 class ControlMessage(_message.Message):
-    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "skill_list", "skill_show", "skill_run", "auth_challenge")
+    __slots__ = ("command_id", "timestamp", "input", "resize", "start_session", "close_session", "signal", "cancel", "ping", "config_update", "file_operation", "push_notification", "streaming_relay_chunk", "tunnel_create", "tunnel_data", "tunnel_close", "refresh_permissions", "agent_run", "agent_cancel", "skill_list", "skill_show", "skill_run", "auth_challenge", "continuity_token", "auth_success")
     COMMAND_ID_FIELD_NUMBER: _ClassVar[int]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     INPUT_FIELD_NUMBER: _ClassVar[int]
@@ -71,6 +71,8 @@ class ControlMessage(_message.Message):
     SKILL_SHOW_FIELD_NUMBER: _ClassVar[int]
     SKILL_RUN_FIELD_NUMBER: _ClassVar[int]
     AUTH_CHALLENGE_FIELD_NUMBER: _ClassVar[int]
+    CONTINUITY_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    AUTH_SUCCESS_FIELD_NUMBER: _ClassVar[int]
     command_id: str
     timestamp: _timestamp_pb2.Timestamp
     input: TerminalInput
@@ -94,7 +96,9 @@ class ControlMessage(_message.Message):
     skill_show: SkillShowCommand
     skill_run: SkillRunCommand
     auth_challenge: AuthChallenge
-    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., skill_list: _Optional[_Union[SkillListCommand, _Mapping]] = ..., skill_show: _Optional[_Union[SkillShowCommand, _Mapping]] = ..., skill_run: _Optional[_Union[SkillRunCommand, _Mapping]] = ..., auth_challenge: _Optional[_Union[AuthChallenge, _Mapping]] = ...) -> None: ...
+    continuity_token: ContinuityToken
+    auth_success: AuthSuccess
+    def __init__(self, command_id: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., input: _Optional[_Union[TerminalInput, _Mapping]] = ..., resize: _Optional[_Union[ResizeCommand, _Mapping]] = ..., start_session: _Optional[_Union[StartSessionCommand, _Mapping]] = ..., close_session: _Optional[_Union[CloseSessionCommand, _Mapping]] = ..., signal: _Optional[_Union[SignalCommand, _Mapping]] = ..., cancel: _Optional[_Union[CancelCommand, _Mapping]] = ..., ping: _Optional[_Union[PingCommand, _Mapping]] = ..., config_update: _Optional[_Union[ConfigUpdateCommand, _Mapping]] = ..., file_operation: _Optional[_Union[_requests_pb2.FileOperationRequest, _Mapping]] = ..., push_notification: _Optional[_Union[PushNotification, _Mapping]] = ..., streaming_relay_chunk: _Optional[_Union[_transfer_pb2.StreamingRelayChunk, _Mapping]] = ..., tunnel_create: _Optional[_Union[_tunnel_pb2.TunnelCreate, _Mapping]] = ..., tunnel_data: _Optional[_Union[_tunnel_pb2.TunnelData, _Mapping]] = ..., tunnel_close: _Optional[_Union[_tunnel_pb2.TunnelClose, _Mapping]] = ..., refresh_permissions: _Optional[_Union[RefreshPermissionsCommand, _Mapping]] = ..., agent_run: _Optional[_Union[AgentRunCommand, _Mapping]] = ..., agent_cancel: _Optional[_Union[AgentCancelCommand, _Mapping]] = ..., skill_list: _Optional[_Union[SkillListCommand, _Mapping]] = ..., skill_show: _Optional[_Union[SkillShowCommand, _Mapping]] = ..., skill_run: _Optional[_Union[SkillRunCommand, _Mapping]] = ..., auth_challenge: _Optional[_Union[AuthChallenge, _Mapping]] = ..., continuity_token: _Optional[_Union[ContinuityToken, _Mapping]] = ..., auth_success: _Optional[_Union[AuthSuccess, _Mapping]] = ...) -> None: ...
 
 class PushNotification(_message.Message):
     __slots__ = ("id", "type", "title", "message", "data", "priority", "silent", "method")
@@ -258,6 +262,16 @@ class AuthChallenge(_message.Message):
     challenge_id: str
     methods: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, challenge_id: _Optional[str] = ..., methods: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class AuthSuccess(_message.Message):
+    __slots__ = ("challenge_id", "session_token", "ttl_seconds")
+    CHALLENGE_ID_FIELD_NUMBER: _ClassVar[int]
+    SESSION_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    TTL_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    challenge_id: str
+    session_token: str
+    ttl_seconds: int
+    def __init__(self, challenge_id: _Optional[str] = ..., session_token: _Optional[str] = ..., ttl_seconds: _Optional[int] = ...) -> None: ...
 
 class ContinuityToken(_message.Message):
     __slots__ = ("token", "expires_at")

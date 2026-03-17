@@ -100,8 +100,9 @@ message RegisterRequest {
   bytes  session_signature = 30;             // Ed25519 signature of handshake payload (64 bytes)
   bytes  session_public_key = 31;            // Ed25519 public key for this machine (32 bytes)
   uint32 key_version = 32;                   // Key version (for rotation tracking)
-  repeated string agent_capabilities = 33;   // Supported auth methods: ["totp", "ed25519"]
+  repeated string agent_capabilities = 33;   // Supported auth methods: ["password", "ed25519"]
   string continuity_token = 34;             // Short-lived token for grace-period reconnects
+  string agent_password = 35;               // plaintext agent password — Django hashes on first save (v2.26.0)
 }
 
 // Heartbeat with optional system metrics
@@ -235,12 +236,12 @@ enum AgentEventType {
 // MFA AUTHENTICATION (v2.25.0)
 // ============================================================================
 
-// Response to an AuthChallenge sent by the server.
-// Sent as the second AgentMessage during ConnectTerminal handshake
-// when the workspace requires MFA or Ed25519 signing.
+// Response to an AuthChallenge sent by the server to an SDK client.
+// SDK clients send this during ConnectTerminal attach when workspace requires MFA.
+// NOTE: Go agents (CLI / Wails) never send AuthResponse — they use Ed25519 RegisterRequest signing.
 message AuthResponse {
   string challenge_id = 1;          // Echoes AuthChallenge.challenge_id
-  string totp_code = 2;             // 6-digit TOTP code (if method includes "totp")
+  string password = 2;              // Plaintext session password for verification (v2.26.0)
   bytes  signature = 3;             // Ed25519 signature, 64 bytes (if method includes "ed25519")
   bytes  public_key = 4;            // Ed25519 public key, 32 bytes (first-time registration)
   uint32 key_version = 5;           // Key version for rotation tracking

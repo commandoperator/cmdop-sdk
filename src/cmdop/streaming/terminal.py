@@ -437,8 +437,10 @@ class TerminalStream:
         2. Django sees "attach" in version → adds SDK to _sdk_subscribers
         3. If agent has a password set, Django sends AuthChallenge(methods=["password"])
         4. SDK responds with AuthResponse(password=...) — password from arg or CMDOP_AGENT_PASSWORD env var
-        5. When agent sends output → Django forwards to all SDK subscribers
-        6. When SDK sends input → Django forwards to agent queue
+        5. Django verifies bcrypt → sends AuthSuccess(session_token, ttl) → SDK stores token
+        6. SDK includes session_token as x-session-token metadata on all unary RPCs
+        7. When agent sends output → Django forwards to all SDK subscribers
+        8. When SDK sends input → Django forwards to agent queue
 
         Args:
             session_id: Agent's session ID (from get_active_session()).
@@ -831,6 +833,16 @@ class TerminalStream:
         elif payload_type == "auth_challenge":
             # MFA challenge from server (v2.25.0) — workspace requires TOTP verification
             asyncio.ensure_future(self._handle_auth_challenge(message.auth_challenge))
+
+        elif payload_type == "auth_success":
+            # Auth success from server (v2.26.0) — store session token for unary RPCs
+            self._session_token = message.auth_success.session_token
+            # Propagate token to transport so unary RPCs include x-session-token metadata
+            self._transport._session_token = self._session_token  # type: ignore[attr-defined]
+            import logging
+            logging.getLogger(__name__).info(
+                "Session token received (ttl=%ds)", message.auth_success.ttl_seconds
+            )
 
         else:
             # Unknown message type - log in debug mode

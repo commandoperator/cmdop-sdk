@@ -68,6 +68,12 @@ message ControlMessage {
 
     // MFA authentication challenge (v2.25.0)
     AuthChallenge auth_challenge = 120;                   // Server requests MFA verification
+
+    // Continuity token for grace-period reconnect without MFA (v2.25.0 Week 5)
+    ContinuityToken continuity_token = 121;               // Short-lived token for fast reconnect
+
+    // Auth success — delivers session token after password verification (v2.26.0)
+    AuthSuccess auth_success = 122;                       // Server confirms auth + session token
   }
 }
 
@@ -210,14 +216,23 @@ message SkillRunCommand {
 // MFA AUTHENTICATION (v2.25.0)
 // ============================================================================
 
-// Server sends this during ConnectTerminal handshake when workspace requires MFA.
-// Agent must respond with AuthResponse (in AgentMessage) within 60 seconds.
-// Until a valid AuthResponse is received, no ControlMessage commands are forwarded.
+// Server sends this to SDK clients during ConnectTerminal attach when workspace requires MFA.
+// SDK client must respond with AuthResponse (in AgentMessage) within 60 seconds.
+// NOTE: Agents (Go CLI / Wails) do NOT receive AuthChallenge — they authenticate via Ed25519 only.
 message AuthChallenge {
   string challenge_id = 1;              // Unique challenge ID (echoed back in AuthResponse)
-  repeated string methods = 2;          // Required auth methods: ["totp"], ["ed25519"], or both
+  repeated string methods = 2;          // Required auth methods: ["password"], ["ed25519"], or both
   // Note: nonce for Ed25519 signing is obtained via GetChallenge() unary RPC before stream open.
-  // The challenge_id here is for TOTP flow correlation only.
+  // The challenge_id here is for password flow correlation only.
+}
+
+// Server confirms auth and delivers session token to SDK client (v2.26.0).
+// Sent after successful password verification in ConnectTerminal attach flow.
+// SDK must include session_token as x-session-token metadata on unary RPCs.
+message AuthSuccess {
+  string challenge_id = 1;              // Echoes AuthChallenge.challenge_id
+  string session_token = 2;            // Token for x-session-token metadata on unary RPCs
+  int32  ttl_seconds = 3;             // Token TTL in seconds (informational)
 }
 
 // Sent at stream close to allow seamless reconnect within the grace period (30s).
