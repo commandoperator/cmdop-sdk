@@ -23,7 +23,7 @@ from .rpc_messages import skills_pb2 as rpc__messages_dot_skills__pb2
 from .rpc_messages import terminal_pb2 as rpc__messages_dot_terminal__pb2
 from . import service_pb2 as service__pb2
 
-GRPC_GENERATED_VERSION = '1.76.0'
+GRPC_GENERATED_VERSION = '1.78.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 

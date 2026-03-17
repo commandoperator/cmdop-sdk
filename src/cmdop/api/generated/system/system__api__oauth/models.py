@@ -38,6 +38,182 @@ class DeviceAuthorizeRequest(BaseModel):
 
 
 
+class DeviceCodeResponse(BaseModel):
+    """
+    Response body for POST /api/oauth/device Returns device code info for CLI to
+    display to user.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    device_code: str = Field(description='Device code for polling (not sho...')
+    user_code: str = Field(description='Human-readable code to show user...')
+    verification_uri: str = Field(description='URL where user authorizes (e.g.,...')
+    expires_in: int = Field(description='Seconds until device code expire...')
+    interval: int = Field(description='Polling interval in seconds (typ...')
+
+
+
+class TokenError(BaseModel):
+    """
+    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
+    error_description: str | None = Field(None, description='Human-readable error description')
+
+
+
+class TokenInfo(BaseModel):
+    """
+    Response for GET /api/oauth/token/info Returns information about current
+    token.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    id: str = ...
+    access_token_prefix: str = Field(
+    description='First 12 characters for identifi...',
+    max_length=12,
+)
+    workspace_id: str = ...
+    workspace_name: str = ...
+    user_id: str = ...
+    username: str = ...
+    client_name: str | None = Field(None, max_length=100)
+    client_version: str | None = Field(None, max_length=100)
+    client_hostname: str | None = Field(None, max_length=255)
+    client_platform: str | None = Field(
+    None,
+    description='OS platform: darwin, linux, windows',
+    max_length=100,
+)
+    created_at: datetime.datetime = ...
+    access_token_expires_at: datetime.datetime = ...
+    refresh_token_expires_at: datetime.datetime = ...
+    last_used_at: datetime.datetime | None = Field(
+    None,
+    description='Last time access token was used',
+)
+    is_expired: Any = ...
+    is_refresh_expired: Any = ...
+
+
+
+class DeviceCodeRequestRequest(BaseModel):
+    """
+    Request body for POST /api/oauth/device Client sends metadata about itself.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    client_name: str | None = Field(
+    None,
+    description='Client application name',
+    min_length=1,
+    max_length=100,
+)
+    client_version: str | None = Field(
+    None,
+    description='Client version (e.g., 1.0.0)',
+    max_length=100,
+)
+    client_hostname: str | None = Field(
+    None,
+    description='Client machine hostname',
+    max_length=255,
+)
+    client_platform: str | None = Field(
+    None,
+    description='OS platform: darwin, linux, windows',
+    max_length=100,
+)
+
+
+
+class TokenResponse(BaseModel):
+    """
+    Response body for POST /api/oauth/token Returns access token and refresh
+    token.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    access_token: str = Field(description='Access token (cmdop_...)')
+    refresh_token: str = Field(description='Refresh token (clitr_...)')
+    token_type: str | None = Field(None, description='Token type (always Bearer)')
+    expires_in: int = Field(description='Access token expiry in seconds')
+    scope: str | None = Field(None, description='Token scope')
+    workspace_id: str = Field(description='Workspace ID')
+    workspace_name: str = Field(description='Workspace name')
+    user_id: str = Field(description='User ID')
+    user_email: str | None = Field(None, description='User email (optional)')
+
+
+
+class TokenRequestRequest(BaseModel):
+    """
+    Request body for POST /api/oauth/token CLI polls with device_code until
+    approved.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    grant_type: TokenRequestRequestGrantType = Field(
+    description='OAuth grant type  * `urn:ietf:pa...',
+)
+    device_code: str | None = Field(
+    None,
+    description='Device code from initial request...',
+    min_length=1,
+)
+    refresh_token: str | None = Field(
+    None,
+    description='Refresh token (for token refresh)',
+    min_length=1,
+)
+
+
+
 class TokenList(BaseModel):
     """
     Serializer for listing user's CLI tokens.
@@ -62,7 +238,7 @@ class TokenList(BaseModel):
     client_platform: str | None = Field(
     None,
     description='OS platform: darwin, linux, windows',
-    max_length=50,
+    max_length=100,
 )
     created_at: datetime.datetime = ...
     last_used_at: datetime.datetime | None = Field(
@@ -98,24 +274,6 @@ class PaginatedTokenListList(BaseModel):
 
 
 
-class TokenError(BaseModel):
-    """
-    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
-    error_description: str | None = Field(None, description='Human-readable error description')
-
-
-
 class DeviceAuthorizeResponse(BaseModel):
     """
     Response for device authorization.
@@ -133,95 +291,6 @@ class DeviceAuthorizeResponse(BaseModel):
     message: str = ...
     user_code: str = ...
     status: str = ...
-
-
-
-class DeviceCodeRequestRequest(BaseModel):
-    """
-    Request body for POST /api/oauth/device Client sends metadata about itself.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    client_name: str | None = Field(
-    None,
-    description='Client application name',
-    min_length=1,
-    max_length=100,
-)
-    client_version: str | None = Field(
-    None,
-    description='Client version (e.g., 1.0.0)',
-    max_length=50,
-)
-    client_hostname: str | None = Field(
-    None,
-    description='Client machine hostname',
-    max_length=255,
-)
-    client_platform: str | None = Field(
-    None,
-    description='OS platform: darwin, linux, windows',
-    max_length=50,
-)
-
-
-
-class DeviceCodeResponse(BaseModel):
-    """
-    Response body for POST /api/oauth/device Returns device code info for CLI to
-    display to user.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    device_code: str = Field(description='Device code for polling (not sho...')
-    user_code: str = Field(description='Human-readable code to show user...')
-    verification_uri: str = Field(description='URL where user authorizes (e.g.,...')
-    expires_in: int = Field(description='Seconds until device code expire...')
-    interval: int = Field(description='Polling interval in seconds (typ...')
-
-
-
-class TokenRequestRequest(BaseModel):
-    """
-    Request body for POST /api/oauth/token CLI polls with device_code until
-    approved.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    grant_type: TokenRequestRequestGrantType = Field(
-    description='OAuth grant type  * `urn:ietf:pa...',
-)
-    device_code: str | None = Field(
-    None,
-    description='Device code from initial request...',
-    min_length=1,
-)
-    refresh_token: str | None = Field(
-    None,
-    description='Refresh token (for token refresh)',
-    min_length=1,
-)
 
 
 
@@ -244,75 +313,6 @@ class TokenRevokeRequest(BaseModel):
     None,
     description='Hint about token type (optional)...',
 )
-
-
-
-class TokenInfo(BaseModel):
-    """
-    Response for GET /api/oauth/token/info Returns information about current
-    token.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    id: str = ...
-    access_token_prefix: str = Field(
-    description='First 12 characters for identifi...',
-    max_length=12,
-)
-    workspace_id: str = ...
-    workspace_name: str = ...
-    user_id: str = ...
-    username: str = ...
-    client_name: str | None = Field(None, max_length=100)
-    client_version: str | None = Field(None, max_length=50)
-    client_hostname: str | None = Field(None, max_length=255)
-    client_platform: str | None = Field(
-    None,
-    description='OS platform: darwin, linux, windows',
-    max_length=50,
-)
-    created_at: datetime.datetime = ...
-    access_token_expires_at: datetime.datetime = ...
-    refresh_token_expires_at: datetime.datetime = ...
-    last_used_at: datetime.datetime | None = Field(
-    None,
-    description='Last time access token was used',
-)
-    is_expired: Any = ...
-    is_refresh_expired: Any = ...
-
-
-
-class TokenResponse(BaseModel):
-    """
-    Response body for POST /api/oauth/token Returns access token and refresh
-    token.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    access_token: str = Field(description='Access token (cmdop_...)')
-    refresh_token: str = Field(description='Refresh token (clitr_...)')
-    token_type: str | None = Field(None, description='Token type (always Bearer)')
-    expires_in: int = Field(description='Access token expiry in seconds')
-    scope: str | None = Field(None, description='Token scope')
-    workspace_id: str = Field(description='Workspace ID')
-    workspace_name: str = Field(description='Workspace name')
-    user_id: str = Field(description='User ID')
-    user_email: str | None = Field(None, description='User email (optional)')
 
 
 
