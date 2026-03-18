@@ -1,6 +1,6 @@
 # CMDOP
 
-![CMDOP](https://raw.githubusercontent.com/markolofsen/assets/main/libs/cmdop_sdk.webp)
+![CMDOP](https://raw.githubusercontent.com/markolofsen/assets/main/libs/cmdop/cmdop.webp)
 
 **Your OS. Online.**
 
