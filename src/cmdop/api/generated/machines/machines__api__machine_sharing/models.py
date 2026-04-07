@@ -9,11 +9,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from ..enums import SharedMachinePermission
 
 
-class SharedMachineCreateRequest(BaseModel):
+class SharedMachine(BaseModel):
     """
-    Serializer for creating a new share.
+    Full shared machine details (for owners).
 
-    Request model (no read-only fields).
+    Response model (includes read-only fields).
     """
 
     model_config = ConfigDict(
@@ -22,12 +22,29 @@ class SharedMachineCreateRequest(BaseModel):
         frozen=False,
     )
 
-    expires_in_hours: int | None = Field(
+    id: str = ...
+    share_token: Any = Field(description='Unique token for public access')
+    share_url: Any = Field(description='Generate full share URL.')
+    permission: SharedMachinePermission | None = Field(
     None,
-    description='Hours until share expires (null ...',
-    ge=1,
-    le=720,
+    description='* `read_only` - Read Only',
 )
+    machine: str = ...
+    machine_name: Any = ...
+    machine_hostname: Any = ...
+    machine_status: Any = ...
+    expires_at: datetime.datetime | None = Field(
+    None,
+    description='When this share expires (null = ...',
+)
+    views_count: int = ...
+    last_viewed_at: datetime.datetime | None = None
+    is_active: bool | None = Field(None, description='Can be deactivated without deleting')
+    is_expired: bool = ...
+    is_valid: bool = ...
+    active_sessions_count: int = Field(description='Count active terminal sessions o...')
+    created_by: int = ...
+    created_at: datetime.datetime = ...
 
 
 
@@ -88,11 +105,11 @@ class PaginatedSharedMachineListList(BaseModel):
 
 
 
-class SharedMachine(BaseModel):
+class SharedMachineCreateRequest(BaseModel):
     """
-    Full shared machine details (for owners).
+    Serializer for creating a new share.
 
-    Response model (includes read-only fields).
+    Request model (no read-only fields).
     """
 
     model_config = ConfigDict(
@@ -101,29 +118,12 @@ class SharedMachine(BaseModel):
         frozen=False,
     )
 
-    id: str = ...
-    share_token: Any = Field(description='Unique token for public access')
-    share_url: Any = Field(description='Generate full share URL.')
-    permission: SharedMachinePermission | None = Field(
+    expires_in_hours: int | None = Field(
     None,
-    description='* `read_only` - Read Only',
+    description='Hours until share expires (null ...',
+    ge=1,
+    le=720,
 )
-    machine: str = ...
-    machine_name: Any = ...
-    machine_hostname: Any = ...
-    machine_status: Any = ...
-    expires_at: datetime.datetime | None = Field(
-    None,
-    description='When this share expires (null = ...',
-)
-    views_count: int = ...
-    last_viewed_at: datetime.datetime | None = None
-    is_active: bool | None = Field(None, description='Can be deactivated without deleting')
-    is_expired: bool = ...
-    is_valid: bool = ...
-    active_sessions_count: int = Field(description='Count active terminal sessions o...')
-    created_by: int = ...
-    created_at: datetime.datetime = ...
 
 
 

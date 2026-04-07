@@ -2,10 +2,10 @@
 CMDOP SDK CLI.
 
 Usage:
-    cmdop ssh my-server
-    cmdop ssh my-server --exec "ls -la"
-    cmdop fleet status
-    cmdop tui
+    cmdop-sdk ssh my-server
+    cmdop-sdk ssh my-server --exec "ls -la"
+    cmdop-sdk fleet status
+    cmdop-sdk tui
 """
 
 from __future__ import annotations
@@ -71,11 +71,11 @@ def ssh(
 
     Examples:
 
-        cmdop ssh my-server
+        cmdop-sdk ssh my-server
 
-        cmdop ssh my-server --exec "ls -la"
+        cmdop-sdk ssh my-server --exec "ls -la"
 
-        cmdop ssh --session-id abc123
+        cmdop-sdk ssh --session-id abc123
     """
     api_key = get_api_key(ctx)
     code = asyncio.run(_ssh_async(api_key, hostname, execute, session_id, timeout))
@@ -226,13 +226,13 @@ def exec(
 ) -> None:
     """Execute command on remote machine.
 
-    Shorthand for: cmdop ssh HOSTNAME --exec "COMMAND"
+    Shorthand for: cmdop-sdk ssh HOSTNAME --exec "COMMAND"
 
     Examples:
 
-        cmdop exec my-server ls -la
+        cmdop-sdk exec my-server ls -la
 
-        cmdop exec my-server cat /etc/hostname
+        cmdop-sdk exec my-server cat /etc/hostname
     """
     api_key = get_api_key(ctx)
     cmd = " ".join(command)

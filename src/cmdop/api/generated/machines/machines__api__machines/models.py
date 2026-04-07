@@ -57,7 +57,12 @@ class PatchedMachineRequest(BaseModel):
     description='Current username running the agent',
     max_length=255,
 )
-    uid: int | None = Field(None, description='Unix user ID', ge=0, le=2147483647)
+    uid: int | None = Field(
+    None,
+    description='Unix user ID (or platform-specif...',
+    ge=-9223372036854775808,
+    le=9223372036854775808,
+)
     is_root: bool | None = Field(None, description='Whether agent is running as root...')
     home_dir: str | None = Field(None, max_length=500)
     cpu_model: str | None = Field(None, max_length=255)
@@ -75,6 +80,137 @@ class PatchedMachineRequest(BaseModel):
     process_count: int | None = Field(None, ge=-2147483648, le=2147483647)
     agent_version: str | None = Field(None, max_length=100)
     agent_token: str | None = Field(None, min_length=1, max_length=255)
+
+
+
+class MachineLog(BaseModel):
+    """
+    Serializer for MachineLog model.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    id: str = ...
+    machine: str = ...
+    machine_name: Any = ...
+    level: MachineLogLevel = Field(description='* `info` - Info * `warning` - Wa...')
+    message: str = ...
+    source: str | None = Field(None, max_length=100)
+    created_at: datetime.datetime = ...
+
+
+
+class MachinesMachinesUpdateMetricsCreateRequest(BaseModel):
+    """
+    
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    cpu_usage: float | None = Field(None, ge=0.0, le=100.0)
+    memory_usage: float | None = Field(None, ge=0.0, le=100.0)
+    status: MachinesMachinesUpdateMetricsCreateRequestStatus | None = None
+
+
+
+class MachineCreate(BaseModel):
+    """
+    Serializer for creating machines.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str = ...
+    name: str = Field(max_length=100)
+    hostname: str = Field(max_length=255)
+    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
+    os_version: str | None = Field(None, max_length=255)
+
+
+
+class MachineRequest(BaseModel):
+    """
+    Serializer for Machine model. All fields are always present in responses.
+    Read-only fields are explicitly defined to ensure correct OpenAPI schema.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    workspace: str = ...
+    name: str = Field(min_length=1, max_length=100)
+    hostname: str = Field(min_length=1, max_length=255)
+    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
+    os_version: str | None = Field(None, max_length=255)
+    kernel_version: str | None = Field(None, max_length=255)
+    status: MachineStatus | None = Field(None, description='* `online` - Online * `offline` ...')
+    device_type: str | None = Field(
+    None,
+    description='Device type: desktop, ios, android',
+    max_length=20,
+)
+    device_id: str | None = Field(
+    None,
+    description='Unique device identifier (UDID f...',
+    max_length=255,
+)
+    architecture: str | None = Field(
+    None,
+    description='CPU architecture (arm64, x86_64,...',
+    max_length=100,
+)
+    has_shell: bool | None = Field(None, description='Whether device has shell access ...')
+    public_ip: str | None = Field(None, min_length=1)
+    username: str | None = Field(
+    None,
+    description='Current username running the agent',
+    max_length=255,
+)
+    uid: int | None = Field(
+    None,
+    description='Unix user ID (or platform-specif...',
+    ge=-9223372036854775808,
+    le=9223372036854775808,
+)
+    is_root: bool | None = Field(None, description='Whether agent is running as root...')
+    home_dir: str | None = Field(None, max_length=500)
+    cpu_model: str | None = Field(None, max_length=255)
+    cpu_count: int | None = Field(None, ge=0, le=32767)
+    total_ram_bytes: int | None = Field(None, ge=-9223372036854775808, le=9223372036854775808)
+    cpu_usage: float | None = None
+    memory_usage: float | None = None
+    memory_total_gb: float | None = None
+    disk_usage: float | None = None
+    disk_total_gb: float | None = None
+    battery_level: float | None = Field(None, description='-1 means no battery')
+    is_charging: bool | None = None
+    is_on_ac_power: bool | None = None
+    uptime_seconds: int | None = Field(None, ge=-9223372036854775808, le=9223372036854775808)
+    process_count: int | None = Field(None, ge=-2147483648, le=2147483647)
+    agent_version: str | None = Field(None, max_length=100)
+    agent_token: str = Field(min_length=1, max_length=255)
 
 
 
@@ -146,7 +282,12 @@ class Machine(BaseModel):
     description='Current username running the agent',
     max_length=255,
 )
-    uid: int | None = Field(None, description='Unix user ID', ge=0, le=2147483647)
+    uid: int | None = Field(
+    None,
+    description='Unix user ID (or platform-specif...',
+    ge=-9223372036854775808,
+    le=9223372036854775808,
+)
     is_root: bool | None = Field(None, description='Whether agent is running as root...')
     home_dir: str | None = Field(None, max_length=500)
     cpu_model: str | None = Field(None, max_length=255)
@@ -189,27 +330,6 @@ class MachineLogRequest(BaseModel):
 
 
 
-class MachineCreate(BaseModel):
-    """
-    Serializer for creating machines.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    name: str = Field(max_length=100)
-    hostname: str = Field(max_length=255)
-    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
-    os_version: str | None = Field(None, max_length=255)
-
-
-
 class PaginatedMachineList(BaseModel):
     """
     
@@ -234,9 +354,10 @@ class PaginatedMachineList(BaseModel):
 
 
 
-class MachinesMachinesUpdateMetricsCreateRequest(BaseModel):
+class MachineCreateRequest(BaseModel):
     """
-    
+    Serializer for creating machines.
+
     Request model (no read-only fields).
     """
 
@@ -246,32 +367,11 @@ class MachinesMachinesUpdateMetricsCreateRequest(BaseModel):
         frozen=False,
     )
 
-    cpu_usage: float | None = Field(None, ge=0.0, le=100.0)
-    memory_usage: float | None = Field(None, ge=0.0, le=100.0)
-    status: MachinesMachinesUpdateMetricsCreateRequestStatus | None = None
-
-
-
-class MachineLog(BaseModel):
-    """
-    Serializer for MachineLog model.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    id: str = ...
-    machine: str = ...
-    machine_name: Any = ...
-    level: MachineLogLevel = Field(description='* `info` - Info * `warning` - Wa...')
-    message: str = ...
-    source: str | None = Field(None, max_length=100)
-    created_at: datetime.datetime = ...
+    workspace: str = ...
+    name: str = Field(min_length=1, max_length=100)
+    hostname: str = Field(min_length=1, max_length=255)
+    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
+    os_version: str | None = Field(None, max_length=255)
 
 
 
@@ -296,91 +396,6 @@ class PaginatedMachineLogList(BaseModel):
     next_page: int | None = Field(None, description='Next page number (null if no nex...')
     previous_page: int | None = Field(None, description='Previous page number (null if no...')
     results: list[MachineLog] = Field(description='Array of items for current page')
-
-
-
-class MachineRequest(BaseModel):
-    """
-    Serializer for Machine model. All fields are always present in responses.
-    Read-only fields are explicitly defined to ensure correct OpenAPI schema.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    name: str = Field(min_length=1, max_length=100)
-    hostname: str = Field(min_length=1, max_length=255)
-    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
-    os_version: str | None = Field(None, max_length=255)
-    kernel_version: str | None = Field(None, max_length=255)
-    status: MachineStatus | None = Field(None, description='* `online` - Online * `offline` ...')
-    device_type: str | None = Field(
-    None,
-    description='Device type: desktop, ios, android',
-    max_length=20,
-)
-    device_id: str | None = Field(
-    None,
-    description='Unique device identifier (UDID f...',
-    max_length=255,
-)
-    architecture: str | None = Field(
-    None,
-    description='CPU architecture (arm64, x86_64,...',
-    max_length=100,
-)
-    has_shell: bool | None = Field(None, description='Whether device has shell access ...')
-    public_ip: str | None = Field(None, min_length=1)
-    username: str | None = Field(
-    None,
-    description='Current username running the agent',
-    max_length=255,
-)
-    uid: int | None = Field(None, description='Unix user ID', ge=0, le=2147483647)
-    is_root: bool | None = Field(None, description='Whether agent is running as root...')
-    home_dir: str | None = Field(None, max_length=500)
-    cpu_model: str | None = Field(None, max_length=255)
-    cpu_count: int | None = Field(None, ge=0, le=32767)
-    total_ram_bytes: int | None = Field(None, ge=-9223372036854775808, le=9223372036854775808)
-    cpu_usage: float | None = None
-    memory_usage: float | None = None
-    memory_total_gb: float | None = None
-    disk_usage: float | None = None
-    disk_total_gb: float | None = None
-    battery_level: float | None = Field(None, description='-1 means no battery')
-    is_charging: bool | None = None
-    is_on_ac_power: bool | None = None
-    uptime_seconds: int | None = Field(None, ge=-9223372036854775808, le=9223372036854775808)
-    process_count: int | None = Field(None, ge=-2147483648, le=2147483647)
-    agent_version: str | None = Field(None, max_length=100)
-    agent_token: str = Field(min_length=1, max_length=255)
-
-
-
-class MachineCreateRequest(BaseModel):
-    """
-    Serializer for creating machines.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    name: str = Field(min_length=1, max_length=100)
-    hostname: str = Field(min_length=1, max_length=255)
-    os: MachineOs = Field(description='* `macos` - macOS * `windows` - ...')
-    os_version: str | None = Field(None, max_length=255)
 
 
 

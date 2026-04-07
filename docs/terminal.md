@@ -22,8 +22,8 @@ async with AsyncCMDOPClient.remote(api_key="cmdop_xxx") as client:
 ## SSH-like Interactive Session
 
 ```bash
-# CLI
-cmdop ssh my-server
+# CLI (Python SDK)
+cmdop-sdk ssh my-server
 
 # Python
 from cmdop.services.terminal.tui.ssh import ssh_connect

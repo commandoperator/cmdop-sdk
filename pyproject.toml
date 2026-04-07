@@ -1,12 +1,12 @@
 [project]
 name = "cmdop"
-version = "2026.3.18"
+version = "2026.4.7.2"
 description = "Python SDK for CMDOP agent interaction"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [{ name = "CMDOP Team" }]
-keywords = ["cmdop", "terminal", "agent", "automation"]
+keywords = ["cmdop", "cmdop-sdk", "terminal", "agent", "automation"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -60,7 +60,7 @@ dev = [
 ]
 
 [project.scripts]
-cmdop = "cmdop.cli:main"
+cmdop-sdk = "cmdop.cli:main"
 
 [project.urls]
 Homepage = "https://cmdop.com"
