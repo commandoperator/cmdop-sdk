@@ -1034,10 +1034,11 @@
                             "integer",
                             "null"
                         ],
-                        "maximum": 2147483647,
-                        "minimum": 0,
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
                         "title": "User ID",
-                        "description": "Unix user ID"
+                        "description": "Unix user ID (or platform-specific numeric ID)"
                     },
                     "is_root": {
                         "type": "boolean",
@@ -1423,10 +1424,11 @@
                             "integer",
                             "null"
                         ],
-                        "maximum": 2147483647,
-                        "minimum": 0,
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
                         "title": "User ID",
-                        "description": "Unix user ID"
+                        "description": "Unix user ID (or platform-specific numeric ID)"
                     },
                     "is_root": {
                         "type": "boolean",
@@ -1803,10 +1805,11 @@
                             "integer",
                             "null"
                         ],
-                        "maximum": 2147483647,
-                        "minimum": 0,
+                        "maximum": 9223372036854775807,
+                        "minimum": -9223372036854775808,
+                        "format": "int64",
                         "title": "User ID",
-                        "description": "Unix user ID"
+                        "description": "Unix user ID (or platform-specific numeric ID)"
                     },
                     "is_root": {
                         "type": "boolean",

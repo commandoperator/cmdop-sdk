@@ -14,6 +14,8 @@ Practical examples for common CMDOP operations.
 pip install cmdop
 ```
 
+Use the **`cmdop-sdk`** command for SDK CLI examples (SSH-like session, fleet, TUI). Import path remains `import cmdop`.
+
 ## Examples
 
 | Example | Description |

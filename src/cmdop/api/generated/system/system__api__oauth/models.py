@@ -14,113 +14,6 @@ from ..enums import (
 )
 
 
-class DeviceAuthorizeRequest(BaseModel):
-    """
-    Request body for POST /api/oauth/authorize User approves or denies device
-    code in browser.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    user_code: str = Field(
-    description='User code to authorize (e.g., AB...',
-    min_length=1,
-    max_length=10,
-)
-    action: DeviceAuthorizeRequestAction = Field(description='User decision: approve or deny  ...')
-    workspace_id: str | None = Field(None, description='Workspace ID to grant access to ...')
-
-
-
-class DeviceCodeResponse(BaseModel):
-    """
-    Response body for POST /api/oauth/device Returns device code info for CLI to
-    display to user.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    device_code: str = Field(description='Device code for polling (not sho...')
-    user_code: str = Field(description='Human-readable code to show user...')
-    verification_uri: str = Field(description='URL where user authorizes (e.g.,...')
-    expires_in: int = Field(description='Seconds until device code expire...')
-    interval: int = Field(description='Polling interval in seconds (typ...')
-
-
-
-class TokenError(BaseModel):
-    """
-    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
-    error_description: str | None = Field(None, description='Human-readable error description')
-
-
-
-class TokenInfo(BaseModel):
-    """
-    Response for GET /api/oauth/token/info Returns information about current
-    token.
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    id: str = ...
-    access_token_prefix: str = Field(
-    description='First 12 characters for identifi...',
-    max_length=12,
-)
-    workspace_id: str = ...
-    workspace_name: str = ...
-    user_id: str = ...
-    username: str = ...
-    client_name: str | None = Field(None, max_length=100)
-    client_version: str | None = Field(None, max_length=100)
-    client_hostname: str | None = Field(None, max_length=255)
-    client_platform: str | None = Field(
-    None,
-    description='OS platform: darwin, linux, windows',
-    max_length=100,
-)
-    created_at: datetime.datetime = ...
-    access_token_expires_at: datetime.datetime = ...
-    refresh_token_expires_at: datetime.datetime = ...
-    last_used_at: datetime.datetime | None = Field(
-    None,
-    description='Last time access token was used',
-)
-    is_expired: Any = ...
-    is_refresh_expired: Any = ...
-
-
-
 class DeviceCodeRequestRequest(BaseModel):
     """
     Request body for POST /api/oauth/device Client sends metadata about itself.
@@ -158,10 +51,10 @@ class DeviceCodeRequestRequest(BaseModel):
 
 
 
-class TokenResponse(BaseModel):
+class DeviceCodeResponse(BaseModel):
     """
-    Response body for POST /api/oauth/token Returns access token and refresh
-    token.
+    Response body for POST /api/oauth/device Returns device code info for CLI to
+    display to user.
 
     Response model (includes read-only fields).
     """
@@ -172,15 +65,11 @@ class TokenResponse(BaseModel):
         frozen=False,
     )
 
-    access_token: str = Field(description='Access token (cmdop_...)')
-    refresh_token: str = Field(description='Refresh token (clitr_...)')
-    token_type: str | None = Field(None, description='Token type (always Bearer)')
-    expires_in: int = Field(description='Access token expiry in seconds')
-    scope: str | None = Field(None, description='Token scope')
-    workspace_id: str = Field(description='Workspace ID')
-    workspace_name: str = Field(description='Workspace name')
-    user_id: str = Field(description='User ID')
-    user_email: str | None = Field(None, description='User email (optional)')
+    device_code: str = Field(description='Device code for polling (not sho...')
+    user_code: str = Field(description='Human-readable code to show user...')
+    verification_uri: str = Field(description='URL where user authorizes (e.g.,...')
+    expires_in: int = Field(description='Seconds until device code expire...')
+    interval: int = Field(description='Polling interval in seconds (typ...')
 
 
 
@@ -274,9 +163,10 @@ class PaginatedTokenListList(BaseModel):
 
 
 
-class DeviceAuthorizeResponse(BaseModel):
+class TokenResponse(BaseModel):
     """
-    Response for device authorization.
+    Response body for POST /api/oauth/token Returns access token and refresh
+    token.
 
     Response model (includes read-only fields).
     """
@@ -287,10 +177,58 @@ class DeviceAuthorizeResponse(BaseModel):
         frozen=False,
     )
 
-    success: bool = ...
-    message: str = ...
-    user_code: str = ...
-    status: str = ...
+    access_token: str = Field(description='Access token (cmdop_...)')
+    refresh_token: str = Field(description='Refresh token (clitr_...)')
+    token_type: str | None = Field(None, description='Token type (always Bearer)')
+    expires_in: int = Field(description='Access token expiry in seconds')
+    scope: str | None = Field(None, description='Token scope')
+    workspace_id: str = Field(description='Workspace ID')
+    workspace_name: str = Field(description='Workspace name')
+    user_id: str = Field(description='User ID')
+    user_email: str | None = Field(None, description='User email (optional)')
+
+
+
+class TokenInfo(BaseModel):
+    """
+    Response for GET /api/oauth/token/info Returns information about current
+    token.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    id: str = ...
+    access_token_prefix: str = Field(
+    description='First 12 characters for identifi...',
+    max_length=12,
+)
+    workspace_id: str = ...
+    workspace_name: str = ...
+    user_id: str = ...
+    username: str = ...
+    client_name: str | None = Field(None, max_length=100)
+    client_version: str | None = Field(None, max_length=100)
+    client_hostname: str | None = Field(None, max_length=255)
+    client_platform: str | None = Field(
+    None,
+    description='OS platform: darwin, linux, windows',
+    max_length=100,
+)
+    created_at: datetime.datetime = ...
+    access_token_expires_at: datetime.datetime = ...
+    refresh_token_expires_at: datetime.datetime = ...
+    last_used_at: datetime.datetime | None = Field(
+    None,
+    description='Last time access token was used',
+)
+    is_expired: Any = ...
+    is_refresh_expired: Any = ...
 
 
 
@@ -313,6 +251,68 @@ class TokenRevokeRequest(BaseModel):
     None,
     description='Hint about token type (optional)...',
 )
+
+
+
+class DeviceAuthorizeResponse(BaseModel):
+    """
+    Response for device authorization.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    success: bool = ...
+    message: str = ...
+    user_code: str = ...
+    status: str = ...
+
+
+
+class TokenError(BaseModel):
+    """
+    Error response for POST /api/oauth/token OAuth 2.0 standard error format.
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    error: TokenErrorError = Field(description='OAuth error code  * `authorizati...')
+    error_description: str | None = Field(None, description='Human-readable error description')
+
+
+
+class DeviceAuthorizeRequest(BaseModel):
+    """
+    Request body for POST /api/oauth/authorize User approves or denies device
+    code in browser.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    user_code: str = Field(
+    description='User code to authorize (e.g., AB...',
+    min_length=1,
+    max_length=10,
+)
+    action: DeviceAuthorizeRequestAction = Field(description='User decision: approve or deny  ...')
+    workspace_id: str | None = Field(None, description='Workspace ID to grant access to ...')
 
 
 

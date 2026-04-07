@@ -18,6 +18,8 @@ Your Code ──── Cloud Relay ──── Agent (on server)
 pip install cmdop
 ```
 
+The package still imports as `cmdop`. The installed CLI entry point is **`cmdop-sdk`** (`ssh`, `fleet`, `exec`, `tui`) so it does not collide with the main CMDOP desktop/Go binary on `PATH`.
+
 ## Quick Start
 
 ```python

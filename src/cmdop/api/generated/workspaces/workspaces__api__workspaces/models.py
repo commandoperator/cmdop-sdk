@@ -16,9 +16,9 @@ from ..enums import (
 )
 
 
-class WorkspaceInvitationCreateRequest(BaseModel):
+class WorkspaceInvitationAcceptRequest(BaseModel):
     """
-    Serializer for creating workspace invitation.
+    Serializer for accepting workspace invitation.
 
     Request model (no read-only fields).
     """
@@ -29,33 +29,7 @@ class WorkspaceInvitationCreateRequest(BaseModel):
         frozen=False,
     )
 
-    email: str = Field(min_length=1)
-    role: WorkspaceInvitationCreateRequestRole | None = Field(
-    None,
-    description='* `admin` - admin * `member` - m...',
-)
-
-
-
-class WorkspaceInvitationRequest(BaseModel):
-    """
-    Serializer for WorkspaceInvitation model.
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    workspace: str = ...
-    email: str = Field(min_length=1, max_length=254)
-    role: WorkspaceInvitationRole | None = Field(
-    None,
-    description='* `admin` - Admin * `member` - M...',
-)
+    token: str = Field(min_length=1, max_length=64)
 
 
 
@@ -83,65 +57,6 @@ class PatchedWorkspaceRequest(BaseModel):
     None,
     description='* `free` - Free * `pro` - Pro * ...',
 )
-
-
-
-class WorkspaceRequest(BaseModel):
-    """
-    Serializer for Workspace model. All fields are always present in responses
-    (even read_only ones).
-
-    Request model (no read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    name: str = Field(min_length=1, max_length=100)
-    slug: str = Field(min_length=1, max_length=100, pattern='^[-a-zA-Z0-9_]+$')
-    type: PatchedWorkspaceRequestType | None = Field(
-    None,
-    description='* `personal` - Personal * `team`...',
-)
-    plan: PatchedWorkspaceRequestPlan | None = Field(
-    None,
-    description='* `free` - Free * `pro` - Pro * ...',
-)
-
-
-
-class WorkspaceInvitationPublic(BaseModel):
-    """
-    Public serializer for invitation details (for accept page).
-
-    Response model (includes read-only fields).
-    """
-
-    model_config = ConfigDict(
-        validate_assignment=True,
-        extra="allow",
-        frozen=False,
-    )
-
-    id: str = ...
-    workspace_name: Any = ...
-    email: str = Field(max_length=254)
-    role: WorkspaceInvitationRole | None = Field(
-    None,
-    description='* `admin` - Admin * `member` - M...',
-)
-    status: WorkspaceInvitationStatus | None = Field(
-    None,
-    description='* `pending` - Pending * `accepte...',
-)
-    invited_by_name: Any = ...
-    created_at: datetime.datetime = ...
-    expires_at: datetime.datetime | None = None
-    is_expired: bool = ...
-    is_valid: bool = ...
 
 
 
@@ -196,10 +111,11 @@ class WorkspaceInvitation(BaseModel):
 
 
 
-class PaginatedWorkspaceInvitationList(BaseModel):
+class PatchedWorkspaceMemberRequest(BaseModel):
     """
-    
-    Response model (includes read-only fields).
+    Serializer for WorkspaceMember model.
+
+    Request model (no read-only fields).
     """
 
     model_config = ConfigDict(
@@ -208,15 +124,12 @@ class PaginatedWorkspaceInvitationList(BaseModel):
         frozen=False,
     )
 
-    count: int = Field(description='Total number of items across all...')
-    page: int = Field(description='Current page number (1-based)')
-    pages: int = Field(description='Total number of pages')
-    page_size: int = Field(description='Number of items per page')
-    has_next: bool = Field(description='Whether there is a next page')
-    has_previous: bool = Field(description='Whether there is a previous page')
-    next_page: int | None = Field(None, description='Next page number (null if no nex...')
-    previous_page: int | None = Field(None, description='Previous page number (null if no...')
-    results: list[WorkspaceInvitation] = Field(description='Array of items for current page')
+    workspace: str | None = None
+    user_id: str | None = None
+    role: PatchedWorkspaceMemberRequestRole | None = Field(
+    None,
+    description='* `owner` - Owner * `admin` - Ad...',
+)
 
 
 
@@ -266,6 +179,62 @@ class WorkspaceMember(BaseModel):
 
 
 
+class PaginatedWorkspaceInvitationList(BaseModel):
+    """
+    
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    count: int = Field(description='Total number of items across all...')
+    page: int = Field(description='Current page number (1-based)')
+    pages: int = Field(description='Total number of pages')
+    page_size: int = Field(description='Number of items per page')
+    has_next: bool = Field(description='Whether there is a next page')
+    has_previous: bool = Field(description='Whether there is a previous page')
+    next_page: int | None = Field(None, description='Next page number (null if no nex...')
+    previous_page: int | None = Field(None, description='Previous page number (null if no...')
+    results: list[WorkspaceInvitation] = Field(description='Array of items for current page')
+
+
+
+class WorkspaceInvitationPublic(BaseModel):
+    """
+    Public serializer for invitation details (for accept page).
+
+    Response model (includes read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    id: str = ...
+    workspace_name: Any = ...
+    email: str = Field(max_length=254)
+    role: WorkspaceInvitationRole | None = Field(
+    None,
+    description='* `admin` - Admin * `member` - M...',
+)
+    status: WorkspaceInvitationStatus | None = Field(
+    None,
+    description='* `pending` - Pending * `accepte...',
+)
+    invited_by_name: Any = ...
+    created_at: datetime.datetime = ...
+    expires_at: datetime.datetime | None = None
+    is_expired: bool = ...
+    is_valid: bool = ...
+
+
+
 class PaginatedWorkspaceMemberList(BaseModel):
     """
     
@@ -290,9 +259,9 @@ class PaginatedWorkspaceMemberList(BaseModel):
 
 
 
-class PatchedWorkspaceMemberRequest(BaseModel):
+class WorkspaceCreateRequest(BaseModel):
     """
-    Serializer for WorkspaceMember model.
+    Serializer for creating workspaces.
 
     Request model (no read-only fields).
     """
@@ -303,11 +272,35 @@ class PatchedWorkspaceMemberRequest(BaseModel):
         frozen=False,
     )
 
-    workspace: str | None = None
-    user_id: str | None = None
-    role: PatchedWorkspaceMemberRequestRole | None = Field(
+    name: str = Field(min_length=1, max_length=100)
+    type: PatchedWorkspaceRequestType | None = Field(
     None,
-    description='* `owner` - Owner * `admin` - Ad...',
+    description='* `personal` - Personal * `team`...',
+)
+    plan: PatchedWorkspaceRequestPlan | None = Field(
+    None,
+    description='* `free` - Free * `pro` - Pro * ...',
+)
+
+
+
+class WorkspaceInvitationCreateRequest(BaseModel):
+    """
+    Serializer for creating workspace invitation.
+
+    Request model (no read-only fields).
+    """
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        frozen=False,
+    )
+
+    email: str = Field(min_length=1)
+    role: WorkspaceInvitationCreateRequestRole | None = Field(
+    None,
+    description='* `admin` - admin * `member` - m...',
 )
 
 
@@ -343,9 +336,10 @@ class Workspace(BaseModel):
 
 
 
-class WorkspaceCreateRequest(BaseModel):
+class WorkspaceRequest(BaseModel):
     """
-    Serializer for creating workspaces.
+    Serializer for Workspace model. All fields are always present in responses
+    (even read_only ones).
 
     Request model (no read-only fields).
     """
@@ -357,6 +351,7 @@ class WorkspaceCreateRequest(BaseModel):
     )
 
     name: str = Field(min_length=1, max_length=100)
+    slug: str = Field(min_length=1, max_length=100, pattern='^[-a-zA-Z0-9_]+$')
     type: PatchedWorkspaceRequestType | None = Field(
     None,
     description='* `personal` - Personal * `team`...',
@@ -390,9 +385,9 @@ class WorkspaceMemberRequest(BaseModel):
 
 
 
-class WorkspaceInvitationAcceptRequest(BaseModel):
+class WorkspaceInvitationRequest(BaseModel):
     """
-    Serializer for accepting workspace invitation.
+    Serializer for WorkspaceInvitation model.
 
     Request model (no read-only fields).
     """
@@ -403,7 +398,12 @@ class WorkspaceInvitationAcceptRequest(BaseModel):
         frozen=False,
     )
 
-    token: str = Field(min_length=1, max_length=64)
+    workspace: str = ...
+    email: str = Field(min_length=1, max_length=254)
+    role: WorkspaceInvitationRole | None = Field(
+    None,
+    description='* `admin` - Admin * `member` - M...',
+)
 
 
 
