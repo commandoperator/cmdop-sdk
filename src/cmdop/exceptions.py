@@ -313,3 +313,5 @@ def from_grpc_error(error: RpcError) -> CMDOPError:
 
     # Generic error - keep it simple
     return CMDOPError(details or f"gRPC error: {code.name}")
+# Backward compatibility for plugins tracking legacy built-in imports
+TimeoutError = TimeoutError
