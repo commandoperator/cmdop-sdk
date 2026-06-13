@@ -1,18 +1,17 @@
 # @cmdop/sdk (Node)
 
-![@cmdop/sdk — Go-first Node SDK](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-node.webp)
+![@cmdop/sdk — Node SDK for CMDOP](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-node.webp)
 
-Typed Node SDK for CMDOP. A **thin** client: it spawns the baked-in `cmdop-core`
-Go binary and speaks a protobuf-length-delimited `Envelope` protocol over its
-stdio. All relay logic (REST, the `/ask` SSE stream, pin/confirm side-channels,
-retries, error mapping) lives in the Go core.
+Typed Node SDK for CMDOP — manage your machines, fleets, tunnels, and schedules,
+stream a machine's AI agent, and drive the skills marketplace, all from typed
+TypeScript.
 
-- **No Go toolchain, no `cmdop_go` install** — every platform's `cmdop-core`
-  binary is baked into the one package; the right one is selected at runtime
-  (no `optionalDependencies`). `npm i @cmdop/sdk` is everything.
-- **Pure stdio** — no local port, no socket. Token via `CMDOP_TOKEN` env at spawn.
-- **No macOS notarization** — npm-extracted binaries are unquarantined (ad-hoc
-  signed only).
+- **One install, zero dependencies** — `npm i @cmdop/sdk` is everything. No
+  native build step, no `optionalDependencies`, nothing fetched on first run.
+- **Works anywhere, offline-ready** — a single self-contained package runs the
+  same on macOS, Linux, and Windows, including air-gapped hosts.
+- **Typed end to end** — full TypeScript types for every resource and response,
+  with one clean async streaming API for live agent output.
 
 ## Install
 
@@ -35,7 +34,7 @@ for (const m of page.items) console.log(m.hostname, m.presence);
 const text = await c.machines.ask(machineId, "uptime").collect();
 console.log(text);
 
-await c.close();                                // reap the core subprocess
+await c.close();                                // release resources
 ```
 
 `await using c = new Client(...)` works too (`Symbol.asyncDispose`).
@@ -60,9 +59,9 @@ List endpoints also expose `iter(...)` (an async generator over every item,
 following cursors) and `pages(...)` (an async generator over each page).
 
 > **Two planes, one client.** `machines / fleets / tunnels / schedules / keys`
-> talk to the relay with `CMDOP_TOKEN`; the **`skills`** marketplace lives on the
-> platform (Django) and uses the `UserAPIKey` (`CMDOP_API_KEY`). Both are passed
-> to the core at spawn; you only set whichever you use.
+> use your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your
+> platform API key (`CMDOP_API_KEY`). Set whichever you need — the client routes
+> each call to the right plane for you.
 
 ## Streaming: `machines.ask()`
 
@@ -102,15 +101,14 @@ pin_denied`. An `error` outcome throws `AgentStreamError`.
 | `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
 | `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
 | `CMDOP_TIMEOUT_MS` | per-call timeout | `30000` |
-| `CMDOP_CORE_BINARY` | override the baked binary (dev / offline) | baked binary |
 
 Precedence is always explicit option > env var > default. Pass a string to the
 constructor (`new Client("token")`) as a shorthand for `{ token }`.
 
 ## Error handling
 
-The core emits a terminal `ERROR` frame; the client maps its `code` to a typed
-error (all extend `CmdopError`):
+Every failure surfaces as a typed error carrying a stable `code` (all extend
+`CmdopError`):
 
 ```ts
 import {
@@ -127,15 +125,5 @@ try {
 }
 ```
 
-`ConnectionError` also covers the core process dying mid-call (pending
-promises reject). `AgentStreamError` is the streaming-`ask` error outcome.
-
-## Using your own core binary
-
-Released packages bake in every platform's binary, picked automatically at spawn.
-To point the client at a specific `cmdop-core` instead — an offline mirror, a
-pinned build, an air-gapped host — set `CMDOP_CORE_BINARY` to its path:
-
-```bash
-CMDOP_CORE_BINARY=/opt/cmdop/cmdop-core CMDOP_TOKEN=... node your_app.js
-```
+`ConnectionError` also covers a lost connection mid-call (pending promises
+reject). `AgentStreamError` is the streaming-`ask` error outcome.

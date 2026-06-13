@@ -1,18 +1,17 @@
 # cmdop (Python)
 
-![cmdop — Go-first Python SDK](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-python.webp)
+![cmdop — Python SDK for CMDOP](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-python.webp)
 
-Async-first Python SDK for CMDOP. A **thin** client: it spawns the baked-in
-`cmdop-core` Go binary and speaks a protobuf-length-delimited `Envelope` protocol
-over its stdio. All relay logic (REST, the `/ask` SSE stream, pin/confirm
-side-channels, retries, error mapping) lives in the Go core.
+Async-first Python SDK for CMDOP — manage your machines, fleets, tunnels, and
+schedules, stream a machine's AI agent, and drive the skills marketplace, all
+from typed Python.
 
-- **No Go toolchain, no `cmdop_go` install** — every platform's `cmdop-core`
-  binary is baked into one wheel; the right one is selected at runtime.
-  `pip install cmdop` is everything.
-- **Pure stdio** — no local port, no socket. Token via `CMDOP_TOKEN` env at spawn.
-- **No macOS notarization** — pip-extracted binaries are unquarantined (ad-hoc
-  signed only).
+- **One install, zero dependencies** — `pip install cmdop` is everything. No
+  native build step, no extra runtime, nothing fetched on first run.
+- **Works anywhere, offline-ready** — a single self-contained package runs the
+  same on macOS, Linux, and Windows, including air-gapped hosts.
+- **Typed end to end** — every resource and response is fully typed, with one
+  clean async streaming API for live agent output.
 
 ## Install
 
@@ -34,8 +33,8 @@ async with Client(token="...") as c:        # or Client.from_env()
     print(text)
 ```
 
-`Client` is an async context manager — use `async with` so the core subprocess is
-reaped on exit (or call `await c.aclose()`).
+`Client` is an async context manager — use `async with` so resources are released
+on exit (or call `await c.aclose()`).
 
 ## Namespaces
 
@@ -57,9 +56,9 @@ List endpoints also expose `iter(...)` (yield every item, following cursors) and
 `pages(...)` (yield each page).
 
 > **Two planes, one client.** `machines / fleets / tunnels / schedules / keys`
-> talk to the relay with `CMDOP_TOKEN`; the **`skills`** marketplace lives on the
-> platform (Django) and uses the `UserAPIKey` (`CMDOP_API_KEY`). Both are passed
-> to the core at spawn; you only set whichever you use.
+> use your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your
+> platform API key (`CMDOP_API_KEY`). Set whichever you need — the client routes
+> each call to the right plane for you.
 
 ## Streaming: `machines.ask()`
 
@@ -97,14 +96,13 @@ pin_denied`. An `error` outcome raises `AgentStreamError`.
 | `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
 | `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
 | `CMDOP_TIMEOUT_MS` | per-call timeout | `30000` |
-| `CMDOP_CORE_BINARY` | override the baked binary (dev / offline) | baked wheel binary |
 
 Precedence is always explicit arg > env var > default.
 
 ## Error handling
 
-The core emits a terminal `ERROR` frame; the client maps its `code` to a typed
-exception (all subclass `CmdopError`):
+Every failure surfaces as a typed exception carrying a stable `code` (all
+subclass `CmdopError`):
 
 ```python
 from cmdop import (
@@ -121,15 +119,5 @@ except CmdopError as e:
     print(e.code, e.message)
 ```
 
-`ConnectionError` also covers the core process dying mid-call (pending calls
-reject). `AgentStreamError` is the streaming-`ask` error outcome.
-
-## Using your own core binary
-
-Released wheels bake in every platform's binary, picked automatically at spawn.
-To point the client at a specific `cmdop-core` instead — an offline mirror, a
-pinned build, an air-gapped host — set `CMDOP_CORE_BINARY` to its path:
-
-```bash
-CMDOP_CORE_BINARY=/opt/cmdop/cmdop-core CMDOP_TOKEN=... python your_app.py
-```
+`ConnectionError` also covers a lost connection mid-call (pending calls reject).
+`AgentStreamError` is the streaming-`ask` error outcome.
