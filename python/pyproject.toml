@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cmdop"
+version = "1.0.0"
+description = "Async-first Python SDK for CMDOP — spawns the baked-in cmdop-core Go binary and speaks protobuf over stdio."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "CMDOP" }]
+keywords = ["cmdop", "sdk", "relay", "agents", "stdio", "protobuf"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+dependencies = [
+    "protobuf>=5",
+]
+
+[project.urls]
+Homepage = "https://cmdop.com"
+Repository = "https://github.com/commandoperator/cmdop-sdk"
+Documentation = "https://github.com/commandoperator/cmdop-sdk/tree/main/python"
+"Bug Tracker" = "https://github.com/commandoperator/cmdop-sdk/issues"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "types-protobuf>=5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cmdop"]
+# Single fat wheel (py3-none-any): ALL 5 cmdop-core binaries are staged into
+# src/cmdop/_bin/ by scripts/stage_packages.py at build time, named
+# cmdop-core-<plat>-<arch>[.exe]. _bin/ is .gitignored (the binaries are build
+# artifacts, never committed), so hatchling's default VCS exclusion would drop
+# them from the wheel — force-include the whole dir as build artifacts. The
+# locator (cmdop/_locate.py) picks the host's binary via
+# importlib.resources.files("cmdop._bin"). The wheel is platform-neutral
+# (py3-none-any) — it carries every platform's binary, no wheel-tag matching.
+artifacts = ["src/cmdop/_bin/*"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/cmdop", "README.md"]
+# Never ship the per-platform binary in the sdist — the sdist is platform-neutral
+# source; only the per-platform wheels carry the baked binary.
+exclude = ["src/cmdop/_bin"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Vendored, generated protobuf code — never lint it.
+extend-exclude = ["src/cmdop/_proto"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/cmdop"]
+exclude = ["src/cmdop/_proto/"]
+ignore_missing_imports = true
+follow_imports = "silent"
