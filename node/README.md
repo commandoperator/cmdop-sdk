@@ -130,16 +130,12 @@ try {
 `ConnectionError` also covers the core process dying mid-call (pending
 promises reject). `AgentStreamError` is the streaming-`ask` error outcome.
 
-## Local development
+## Using your own core binary
 
-Released packages bake in every platform's binary. For local work, build the
-core and point the client at it with `CMDOP_CORE_BINARY` (also the offline
-escape hatch in production):
+Released packages bake in every platform's binary, picked automatically at spawn.
+To point the client at a specific `cmdop-core` instead — an offline mirror, a
+pinned build, an air-gapped host — set `CMDOP_CORE_BINARY` to its path:
 
 ```bash
-cd ../../cmdop_go/go && go build -o /tmp/cmdop-core ./cmd/cmdop-core
-CMDOP_CORE_BINARY=/tmp/cmdop-core CMDOP_TOKEN=... node ...
+CMDOP_CORE_BINARY=/opt/cmdop/cmdop-core CMDOP_TOKEN=... node your_app.js
 ```
-
-Tests: `pnpm exec vitest run`. The cross-language parity gate:
-`python ../../core/parity/check.py`.
