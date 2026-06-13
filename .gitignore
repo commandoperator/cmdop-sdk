@@ -1,0 +1,74 @@
+# ─── Public mirror .gitignore ────────────────────────────────────────────────
+# This repo is GENERATED: `release.py mirror` syncs a clean client tree from the
+# private monorepo. Keep it to source + README + assets only — never commit build
+# artifacts, baked binaries, caches, or local cruft. (The sync also filters these,
+# this is the belt-and-suspenders for anyone editing the mirror directly.)
+
+# ── Python build / packaging ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+*.whl
+*.tar.gz
+.installed.cfg
+
+# the baked Go binaries — NEVER in source control (staged into wheels at build)
+python/src/cmdop/_bin/
+**/_bin/
+*.so
+*.dylib
+cmdop-core
+cmdop-core.exe
+
+# ── Node build / packaging ──────────────────────────────────────────────────
+node_modules/
+node/dist/
+node/bin/cmdop-core-*
+*.tsbuildinfo
+.npm/
+*.tgz
+
+# ── Lockfiles (apps lock; a published library does not pin) ──────────────────
+uv.lock
+poetry.lock
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# ── Test / type / lint caches ───────────────────────────────────────────────
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.turbo/
+
+# ── Virtualenvs ─────────────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Editor / OS / local ─────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Private tooling that must never reach the public mirror ──────────────────
+.claude/
+.sidecar/
+CLAUDE.md
+@*/
+.env
+.env.*
