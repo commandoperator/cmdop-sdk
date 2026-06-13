@@ -1,5 +1,7 @@
 # cmdop_sdk — Go-first SDK for CMDOP
 
+![cmdop SDK — Go-first, Python + Node](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-sdk.webp)
+
 Two typed thin clients — **PyPI [`cmdop`](https://pypi.org/project/cmdop/)** and
 **npm [`@cmdop/sdk`](https://www.npmjs.com/package/@cmdop/sdk)** — over one
 shared **Go core** (`cmdop-core`). Write the hard relay logic once in Go; get

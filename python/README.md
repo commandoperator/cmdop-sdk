@@ -124,16 +124,12 @@ except CmdopError as e:
 `ConnectionError` also covers the core process dying mid-call (pending calls
 reject). `AgentStreamError` is the streaming-`ask` error outcome.
 
-## Local development
+## Using your own core binary
 
-Released wheels bake in every platform's binary. For local work, build the core
-and point the client at it with `CMDOP_CORE_BINARY` (also the offline escape
-hatch in production):
+Released wheels bake in every platform's binary, picked automatically at spawn.
+To point the client at a specific `cmdop-core` instead — an offline mirror, a
+pinned build, an air-gapped host — set `CMDOP_CORE_BINARY` to its path:
 
 ```bash
-cd ../../cmdop_go/go && go build -o /tmp/cmdop-core ./cmd/cmdop-core
-CMDOP_CORE_BINARY=/tmp/cmdop-core CMDOP_TOKEN=... uv run python -c "..."
+CMDOP_CORE_BINARY=/opt/cmdop/cmdop-core CMDOP_TOKEN=... python your_app.py
 ```
-
-Tests: `uv run pytest`. The cross-language parity gate:
-`python ../../core/parity/check.py`.
