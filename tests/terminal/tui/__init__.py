@@ -1,1 +1,0 @@
-"""TUI module tests."""

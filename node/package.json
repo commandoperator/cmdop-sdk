@@ -1,0 +1,59 @@
+{
+  "name": "@cmdop/sdk",
+  "version": "1.0.0",
+  "description": "Typed Node SDK for CMDOP \u2014 spawns the baked-in cmdop-core Go binary and speaks protobuf over stdio (machines, fleets, tunnels, schedules, keys, and machine AI ask streaming).",
+  "license": "MIT",
+  "homepage": "https://github.com/commandoperator/cmdop-sdk/tree/main/node#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/commandoperator/cmdop-sdk.git",
+    "directory": "node"
+  },
+  "bugs": {
+    "url": "https://github.com/commandoperator/cmdop-sdk/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
