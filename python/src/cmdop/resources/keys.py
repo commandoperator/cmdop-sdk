@@ -29,12 +29,13 @@ class KeysResource(BaseResource):
     ) -> IssueKeyResponse:
         """Mint a key. ``raw_token`` is returned only this once."""
         fid = self._fleet(fleet_id)
-        req = pb.Envelope(
-            issue_key_req=k_pb.IssueKeyRequest(
-                fleet_id=fid, name=name, expires_in_days=expires_in_days or 0
-            )
-        )
-        return (await self._unary(req)).issue_key_resp
+        ik = k_pb.IssueKeyRequest(fleet_id=fid, name=name)
+        # `expires_in_days` is an optional proto field the server requires to be
+        # >= 1 when present. Only set it when the caller actually passed one —
+        # assigning 0 would mark the optional field present and 422 the request.
+        if expires_in_days is not None:
+            ik.expires_in_days = expires_in_days
+        return (await self._unary(pb.Envelope(issue_key_req=ik))).issue_key_resp
 
     async def revoke(self, key_id: str, *, fleet_id: str | None = None) -> None:
         fid = self._fleet(fleet_id)

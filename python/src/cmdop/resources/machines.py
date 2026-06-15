@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from cmdop.types import (
         ClearMessagesResponse,
         MachineDetail,
+        MachineInfoResponse,
         MachineList,
         MachineSummary,
         MessagesResponse,
@@ -63,9 +64,11 @@ class MachinesResource(BaseResource):
         req = pb.Envelope(disable_machine_req=m_pb.DisableMachineRequest(machine_id=str(machine_id)))
         await self._unary(req)
 
-    async def info(self, machine_id: str) -> MachineDetail:
+    async def info(self, machine_id: str) -> MachineInfoResponse:
+        """The /info read model (identity / hardware / live_state / session /
+        presence / fingerprint) — distinct from get()'s MachineDetail."""
         req = pb.Envelope(machine_info_req=m_pb.MachineInfoRequest(machine_id=str(machine_id)))
-        return (await self._unary(req)).machine_detail
+        return (await self._unary(req)).machine_info_resp
 
     async def spend(self, machine_id: str, *, window: str = "7d") -> m_pb.MachineSpend:
         req = pb.Envelope(
