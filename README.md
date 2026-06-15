@@ -19,6 +19,15 @@ complete API reference, and streaming details. Product pages:
 [SDK](https://cmdop.com/sdk) · [Bots](https://cmdop.com/bots) ·
 [Connect](https://cmdop.com/connect).
 
+## How it connects
+
+![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
+
+Your app uses the SDK to reach your machines — any hardware, anywhere — through a
+**CMDOP server you choose** (the public cloud, or one you self-host in your own
+network). The server links your fleet over gRPC and hosts **Jarvis**, a built-in
+AI that can drive those machines on its own.
+
 ## Why it's easy to adopt
 
 - **One install, zero dependencies.** `pip install cmdop` / `npm i @cmdop/sdk` is
