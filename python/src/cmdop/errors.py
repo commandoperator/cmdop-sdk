@@ -3,9 +3,9 @@
 The Go core emits a terminal ``ERROR`` frame carrying an ``ErrorInfo{code,
 message}``; the thin client maps that ``code`` to the right typed exception via
 :func:`map_core_error`. The ``code`` values are owned by the core
-(``internal/core/errmap.go``): ``auth / permission / not_found / conflict /
-validation / rate_limit / server / connection`` (plus ``internal``,
-``unknown_op``, ``unsupported`` catch-alls).
+(``internal/sdk/core/errmap.go``): ``auth / permission / not_found / conflict /
+validation / rate_limit / server / connection / timeout / unavailable`` (plus
+``internal``, ``unknown_op``, ``unsupported`` catch-alls).
 
 This mirrors the archived REST wrapper's :class:`CmdopError` tree exactly; only
 the source of the discriminator changed (an HTTP status became an
@@ -19,6 +19,9 @@ from typing import Any
 
 class CmdopError(Exception):
     """Base class for every SDK error."""
+
+    #: True for transient failures worth retrying (timeouts). Subclasses override.
+    retryable: bool = False
 
     def __init__(
         self,
@@ -68,7 +71,19 @@ class ServerError(CmdopError):
 
 
 class ConnectionError(CmdopError):  # noqa: A001 - intentional shadow within this ns
-    """``connection`` — transport failure (DNS/timeout/reset) or the core process died."""
+    """``connection`` — transport failure (DNS, refused, reset) or the core process died."""
+
+
+class TimeoutError(ConnectionError):  # noqa: A001 - intentional shadow within this ns
+    """``timeout`` — a deadline/handshake timeout. Retryable; subclasses
+    :class:`ConnectionError` so existing ``except ConnectionError`` still catches it."""
+
+    retryable = True
+
+
+class UnavailableError(CmdopError):
+    """``unavailable`` — the relay is reachable but the target machine/agent has no
+    connected session (it's offline). Distinct from a transport failure."""
 
 
 class AgentStreamError(CmdopError):
@@ -78,7 +93,7 @@ class AgentStreamError(CmdopError):
         super().__init__(message, code=code)
 
 
-# ErrorInfo.code -> exception class (codes owned by internal/core/errmap.go).
+# ErrorInfo.code -> exception class (codes owned by internal/sdk/core/errmap.go).
 _CODE_MAP: dict[str, type[CmdopError]] = {
     "auth": AuthError,
     "permission": PermissionError,
@@ -87,6 +102,8 @@ _CODE_MAP: dict[str, type[CmdopError]] = {
     "validation": ValidationError,
     "server": ServerError,
     "connection": ConnectionError,
+    "timeout": TimeoutError,
+    "unavailable": UnavailableError,
 }
 
 
