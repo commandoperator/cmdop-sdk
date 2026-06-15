@@ -23,10 +23,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://cmdop.com"
+Homepage = "https://cmdop.com/sdk"
+Documentation = "https://docs.cmdop.com"
 Repository = "https://github.com/commandoperator/cmdop-sdk"
-Documentation = "https://github.com/commandoperator/cmdop-sdk/tree/main/python"
 "Bug Tracker" = "https://github.com/commandoperator/cmdop-sdk/issues"
+Bots = "https://cmdop.com/bots"
+Connect = "https://cmdop.com/connect"
 
 [dependency-groups]
 dev = [

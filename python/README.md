@@ -6,6 +6,9 @@ Async-first Python SDK for CMDOP — manage your machines, fleets, tunnels, and
 schedules, stream a machine's AI agent, and drive the skills marketplace, all
 from typed Python.
 
+📚 **Docs: [docs.cmdop.com](https://docs.cmdop.com)** · [SDK](https://cmdop.com/sdk) ·
+[Bots](https://cmdop.com/bots) · [Connect](https://cmdop.com/connect)
+
 - **One install, zero dependencies** — `pip install cmdop` is everything. No
   native build step, no extra runtime, nothing fetched on first run.
 - **Works anywhere, offline-ready** — a single self-contained package runs the
@@ -108,7 +111,7 @@ subclass `CmdopError`):
 from cmdop import (
     AuthError, PermissionError, NotFoundError, ConflictError,
     ValidationError, RateLimitError, ServerError, ConnectionError,
-    AgentStreamError, CmdopError,
+    TimeoutError, UnavailableError, AgentStreamError, CmdopError,
 )
 
 try:
@@ -116,8 +119,21 @@ try:
 except NotFoundError:
     ...
 except CmdopError as e:
+    if e.retryable:           # True on TimeoutError — safe to retry
+        ...
     print(e.code, e.message)
 ```
 
-`ConnectionError` also covers a lost connection mid-call (pending calls reject).
+`ConnectionError` covers a lost connection mid-call (pending calls reject);
+`TimeoutError` (a retryable subclass) is a deadline/handshake timeout;
+`UnavailableError` means the relay is up but the target agent/machine is offline.
 `AgentStreamError` is the streaming-`ask` error outcome.
+
+## Links
+
+- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
+- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
+  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
+  [cmdop.com/connect](https://cmdop.com/connect)
+- [`cmdop` on PyPI](https://pypi.org/project/cmdop/) ·
+  [source](https://github.com/commandoperator/cmdop-sdk)

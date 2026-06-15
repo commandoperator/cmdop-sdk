@@ -14,6 +14,11 @@ drive the skills marketplace, all behind one typed client.
 Both clients ship in lockstep at the **same version** and expose the **same
 surface** — snake_case in Python, camelCase in Node.
 
+📚 **Full documentation: [docs.cmdop.com](https://docs.cmdop.com)** — guides, the
+complete API reference, and streaming details. Product pages:
+[SDK](https://cmdop.com/sdk) · [Bots](https://cmdop.com/bots) ·
+[Connect](https://cmdop.com/connect).
+
 ## Why it's easy to adopt
 
 - **One install, zero dependencies.** `pip install cmdop` / `npm i @cmdop/sdk` is
@@ -75,8 +80,12 @@ handling live in each package's README:
 
 ## Links
 
-- [`cmdop` on PyPI](https://pypi.org/project/cmdop/)
-- [`@cmdop/sdk` on npm](https://www.npmjs.com/package/@cmdop/sdk)
+- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
+- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
+  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
+  [cmdop.com/connect](https://cmdop.com/connect)
+- [`cmdop` on PyPI](https://pypi.org/project/cmdop/) ·
+  [`@cmdop/sdk` on npm](https://www.npmjs.com/package/@cmdop/sdk)
 - [CMDOP](https://cmdop.com)
 
 ## License

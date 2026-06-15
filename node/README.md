@@ -6,6 +6,9 @@ Typed Node SDK for CMDOP — manage your machines, fleets, tunnels, and schedule
 stream a machine's AI agent, and drive the skills marketplace, all from typed
 TypeScript.
 
+📚 **Docs: [docs.cmdop.com](https://docs.cmdop.com)** · [SDK](https://cmdop.com/sdk) ·
+[Bots](https://cmdop.com/bots) · [Connect](https://cmdop.com/connect)
+
 - **One install, zero dependencies** — `npm i @cmdop/sdk` is everything. No
   native build step, no `optionalDependencies`, nothing fetched on first run.
 - **Works anywhere, offline-ready** — a single self-contained package runs the
@@ -114,16 +117,30 @@ Every failure surfaces as a typed error carrying a stable `code` (all extend
 import {
   AuthError, PermissionError, NotFoundError, ConflictError,
   ValidationError, RateLimitError, ServerError, ConnectionError,
-  AgentStreamError, CmdopError,
+  TimeoutError, UnavailableError, AgentStreamError, CmdopError,
 } from "@cmdop/sdk";
 
 try {
   await c.machines.get("missing-id");
 } catch (e) {
   if (e instanceof NotFoundError) { /* ... */ }
-  else if (e instanceof CmdopError) console.log(e.code, e.message);
+  else if (e instanceof CmdopError) {
+    if (e.retryable) { /* true on TimeoutError — safe to retry */ }
+    console.log(e.code, e.message);
+  }
 }
 ```
 
-`ConnectionError` also covers a lost connection mid-call (pending promises
-reject). `AgentStreamError` is the streaming-`ask` error outcome.
+`ConnectionError` covers a lost connection mid-call (pending promises reject);
+`TimeoutError` (a retryable subclass) is a deadline/handshake timeout;
+`UnavailableError` means the relay is up but the target agent/machine is offline.
+`AgentStreamError` is the streaming-`ask` error outcome.
+
+## Links
+
+- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
+- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
+  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
+  [cmdop.com/connect](https://cmdop.com/connect)
+- [`@cmdop/sdk` on npm](https://www.npmjs.com/package/@cmdop/sdk) ·
+  [source](https://github.com/commandoperator/cmdop-sdk)
