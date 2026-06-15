@@ -27,6 +27,8 @@ from cmdop.errors import (
     PermissionError,
     RateLimitError,
     ServerError,
+    TimeoutError,
+    UnavailableError,
     ValidationError,
     map_core_error,
 )
@@ -70,6 +72,8 @@ __all__ = [
     "PinRequiredFrame",
     "RateLimitError",
     "ServerError",
+    "TimeoutError",
+    "UnavailableError",
     "UnknownFrame",
     "ValidationError",
     "__version__",
