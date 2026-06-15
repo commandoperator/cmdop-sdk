@@ -24,6 +24,7 @@ export type {
   HistoryMessage,
   LiveMetrics,
   MachineDetail,
+  MachineInfoResponse,
   MachineList,
   MachineSpecs,
   MachineSpend,

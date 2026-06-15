@@ -4,14 +4,17 @@
  * Mirror of the Python `CmdopError` tree. The Go core emits a terminal `ERROR`
  * frame carrying an `ErrorInfo{code, message}`; {@link mapCoreError} maps that
  * `code` to the right typed exception. Codes are owned by the core
- * (`internal/core/errmap.go`): `auth / permission / not_found / conflict /
- * validation / rate_limit / server / connection` (+ catch-alls).
+ * (`internal/sdk/core/errmap.go`): `auth / permission / not_found / conflict /
+ * validation / rate_limit / server / connection / timeout / unavailable`
+ * (+ catch-alls).
  */
 
 export class CmdopError extends Error {
   readonly status?: number;
   readonly code?: string;
   readonly body?: unknown;
+  /** True for transient failures worth retrying (timeouts). Subclasses override. */
+  readonly retryable: boolean = false;
 
   constructor(message: string, status?: number, code?: string, body?: unknown) {
     super(message);
@@ -41,6 +44,20 @@ export class RateLimitError extends CmdopError {
 export class ServerError extends CmdopError {}
 export class ConnectionError extends CmdopError {}
 
+/**
+ * `timeout` — a deadline/handshake timeout. Retryable; extends
+ * {@link ConnectionError} so existing `instanceof ConnectionError` still catches it.
+ */
+export class TimeoutError extends ConnectionError {
+  override readonly retryable = true;
+}
+
+/**
+ * `unavailable` — the relay is reachable but the target machine/agent has no
+ * connected session (it's offline). Distinct from a transport failure.
+ */
+export class UnavailableError extends CmdopError {}
+
 /** An `error` outcome from `machines.ask` (machine_offline/timeout/internal). */
 export class AgentStreamError extends CmdopError {
   constructor(code: string, message: string) {
@@ -63,6 +80,8 @@ const CODE_MAP: Record<string, CmdopErrorCtor> = {
   validation: ValidationError,
   server: ServerError,
   connection: ConnectionError,
+  timeout: TimeoutError,
+  unavailable: UnavailableError,
 };
 
 /** Map a core `ErrorInfo{code, message}` to a typed {@link CmdopError}. */

@@ -34,6 +34,8 @@ export {
   PermissionError,
   RateLimitError,
   ServerError,
+  TimeoutError,
+  UnavailableError,
   ValidationError,
 } from "./errors";
 

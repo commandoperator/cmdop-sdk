@@ -39,12 +39,15 @@ export class KeysResource extends BaseResource {
   /** Mint a key — `rawToken` is returned only here. */
   async issue(opts: { name: string; expiresInDays?: number; fleetId?: string }): Promise<IssueKeyResponse> {
     const fid = this.fleet(opts.fleetId);
-    const env = await this.unary(
-      this.req({
-        case: "issueKeyReq",
-        value: { fleetId: fid, name: opts.name, expiresInDays: opts.expiresInDays ?? 0 },
-      }),
-    );
+    // `expiresInDays` is an optional proto field the server requires to be >= 1
+    // when present. Only set it when the caller passed one — sending 0 marks the
+    // optional field present and 422s the request.
+    const value: { fleetId: string; name: string; expiresInDays?: number } = {
+      fleetId: fid,
+      name: opts.name,
+    };
+    if (opts.expiresInDays !== undefined) value.expiresInDays = opts.expiresInDays;
+    const env = await this.unary(this.req({ case: "issueKeyReq", value }));
     return env.payload.value as IssueKeyResponse;
   }
 
