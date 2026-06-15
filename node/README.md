@@ -9,6 +9,8 @@ TypeScript.
 📚 **Docs: [docs.cmdop.com](https://docs.cmdop.com)** · [SDK](https://cmdop.com/sdk) ·
 [Bots](https://cmdop.com/bots) · [Connect](https://cmdop.com/connect)
 
+![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
+
 - **One install, zero dependencies** — `npm i @cmdop/sdk` is everything. No
   native build step, no `optionalDependencies`, nothing fetched on first run.
 - **Works anywhere, offline-ready** — a single self-contained package runs the
