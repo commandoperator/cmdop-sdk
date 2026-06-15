@@ -9,6 +9,7 @@ import type { AskStream } from "../streaming";
 import type {
   ClearMessagesResponse,
   MachineDetail,
+  MachineInfoResponse,
   MachineList,
   MachineSpend,
   MachineSummary,
@@ -64,9 +65,11 @@ export class MachinesResource extends BaseResource {
     await this.unary(this.req({ case: "disableMachineReq", value: { machineId } }));
   }
 
-  async info(machineId: string): Promise<MachineDetail> {
+  async info(machineId: string): Promise<MachineInfoResponse> {
+    // The /info read model (identity / hardware / liveState / session /
+    // presence / fingerprint) — distinct from get()'s MachineDetail.
     const env = await this.unary(this.req({ case: "machineInfoReq", value: { machineId } }));
-    return env.payload.value as MachineDetail;
+    return env.payload.value as MachineInfoResponse;
   }
 
   async spend(machineId: string, opts: { window?: string } = {}): Promise<MachineSpend> {
@@ -118,8 +121,11 @@ export class MachinesResource extends BaseResource {
   /** The live agent session id (empty string if none). */
   async activeSession(machineId: string): Promise<string> {
     const env = await this.unary(this.req({ case: "activeSessionReq", value: { machineId } }));
-    const resp = env.payload.value as { agentSessionId: string };
-    return resp.agentSessionId;
+    const resp = env.payload.value as { agentSessionId?: string };
+    // agent_session_id is an optional proto field: unset (no live session) reads
+    // as undefined in protobuf-es. Coalesce to "" so the contract matches Python
+    // ("" when none) and the declared Promise<string> return type.
+    return resp.agentSessionId ?? "";
   }
 }
 

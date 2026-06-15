@@ -45,7 +45,7 @@ from cmdop.streaming import (
 )
 
 # semver (X.Y.Z, starts 0.1.0). Python + Node ship in lockstep.
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # The streaming object machines.ask() returns. Aliased to mirror the archived
 # wrapper's ``AskStream`` name (the type the SDK's docs/examples reference).
