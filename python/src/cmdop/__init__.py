@@ -25,6 +25,8 @@ from cmdop.errors import (
     ConnectionError,
     NotFoundError,
     PermissionError,
+    PinDeniedError,
+    PinTimeoutError,
     RateLimitError,
     ServerError,
     TimeoutError,
@@ -45,7 +47,7 @@ from cmdop.streaming import (
 )
 
 # semver (X.Y.Z, starts 0.1.0). Python + Node ship in lockstep.
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 # The streaming object machines.ask() returns. Aliased to mirror the archived
 # wrapper's ``AskStream`` name (the type the SDK's docs/examples reference).
@@ -68,8 +70,10 @@ __all__ = [
     "FrameStream",
     "NotFoundError",
     "PermissionError",
+    "PinDeniedError",
     "PinDeniedFrame",
     "PinRequiredFrame",
+    "PinTimeoutError",
     "RateLimitError",
     "ServerError",
     "TimeoutError",

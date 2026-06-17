@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cmdop"
-version = "1.0.1"
+version = "1.1.0"
 description = "Async-first Python SDK for CMDOP — spawns the baked-in cmdop-core Go binary and speaks protobuf over stdio."
 readme = "README.md"
 requires-python = ">=3.10"

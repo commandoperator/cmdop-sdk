@@ -25,7 +25,20 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from cmdop._proto.cmdop.core.v1 import envelope_pb2 as pb
 from cmdop._proto.cmdop.core.v1 import machines_pb2 as m_pb
-from cmdop.errors import AgentStreamError
+from cmdop.errors import AgentStreamError, CmdopError, map_core_error
+
+# Stream-terminal ``error`` codes that surface as their typed exception (not the
+# generic AgentStreamError) — the connection-PIN gate's verdicts. Everything else
+# keeps the established AgentStreamError stream contract.
+_TYPED_STREAM_ERROR_CODES = frozenset({"pin_denied", "pin_required_timeout"})
+
+
+def _stream_error(code: str, message: str) -> CmdopError:
+    """Raise the typed PIN exception for a PIN-gate verdict; otherwise the
+    generic :class:`AgentStreamError` (the ask stream's error-frame contract)."""
+    if code in _TYPED_STREAM_ERROR_CODES:
+        return map_core_error(code, message)
+    return AgentStreamError(code or "internal", message or "")
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -178,8 +191,9 @@ class FrameStream:
                 # transport-level failure (core crashed / EOF mid-stream).
                 raise item
             if item.kind == pb.Envelope.KIND_ERROR:
-                # ask stream's terminal error frame.
-                raise AgentStreamError(item.error.code or "internal", item.error.message or "")
+                # ask stream's terminal error frame. PIN-gate verdicts surface as
+                # their typed exception (PinDeniedError / PinTimeoutError).
+                raise _stream_error(item.error.code or "", item.error.message or "")
             yield _frame_from_envelope(item)
 
     async def pin(self, challenge_id: str, pin: str) -> None:
@@ -214,7 +228,7 @@ class FrameStream:
             elif isinstance(frame, DoneFrame):
                 return frame.text or text
             elif isinstance(frame, ErrorFrame):
-                raise AgentStreamError(frame.code, frame.message)
+                raise _stream_error(frame.code, frame.message)
         return text
 
     def _require_id(self) -> int:

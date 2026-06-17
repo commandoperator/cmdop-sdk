@@ -12,7 +12,7 @@
  */
 
 import { create } from "@bufbuild/protobuf";
-import { AgentStreamError } from "./errors";
+import { AgentStreamError, type CmdopError, mapCoreError } from "./errors";
 import {
   type Envelope,
   Envelope_Kind,
@@ -36,6 +36,24 @@ export interface StreamSource {
   envelopes(): AsyncGenerator<Envelope>;
   /** Write an ANSWER envelope on this stream's id. */
   answer(env: Envelope): Promise<void>;
+}
+
+/**
+ * Stream-terminal `error` codes that surface as their typed exception (not the
+ * generic {@link AgentStreamError}) — the connection-PIN gate's verdicts.
+ * Everything else keeps the established AgentStreamError stream contract.
+ */
+const TYPED_STREAM_ERROR_CODES = new Set(["pin_denied", "pin_required_timeout"]);
+
+/**
+ * Build the error to throw for a stream-terminal ERROR frame: the typed PIN
+ * exception for a PIN-gate verdict, else the generic {@link AgentStreamError}.
+ */
+function streamError(code: string, message: string): CmdopError {
+  if (TYPED_STREAM_ERROR_CODES.has(code)) {
+    return mapCoreError(code, message);
+  }
+  return new AgentStreamError(code || "internal", message || "");
 }
 
 function frameFromEnvelope(env: Envelope): AskFrame {
@@ -103,7 +121,8 @@ export class AskStream implements AsyncIterable<AskFrame> {
     for await (const env of this.source.envelopes()) {
       if (env.kind === Envelope_Kind.ERROR) {
         const info = env.payload.case === "error" ? env.payload.value : undefined;
-        throw new AgentStreamError(info?.code || "internal", info?.message || "");
+        // PIN-gate verdicts surface as PinDeniedError / PinTimeoutError.
+        throw streamError(info?.code || "", info?.message || "");
       }
       yield frameFromEnvelope(env);
     }

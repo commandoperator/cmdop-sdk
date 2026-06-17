@@ -319,7 +319,7 @@ class MachineSpend(_message.Message):
     def __init__(self, window: _Optional[str] = ..., total_usd: _Optional[float] = ..., delta_usd: _Optional[float] = ..., delta_pct: _Optional[float] = ..., tokens_in: _Optional[int] = ..., tokens_out: _Optional[int] = ..., calls: _Optional[int] = ..., ocr_pages: _Optional[int] = ..., top_models: _Optional[_Iterable[_Union[TopModel, _Mapping]]] = ...) -> None: ...
 
 class AskRequest(_message.Message):
-    __slots__ = ("machine_id", "session_id", "prompt", "agent_type", "timeout_seconds", "options")
+    __slots__ = ("machine_id", "session_id", "prompt", "agent_type", "timeout_seconds", "options", "pin")
     class OptionsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -333,13 +333,15 @@ class AskRequest(_message.Message):
     AGENT_TYPE_FIELD_NUMBER: _ClassVar[int]
     TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
     OPTIONS_FIELD_NUMBER: _ClassVar[int]
+    PIN_FIELD_NUMBER: _ClassVar[int]
     machine_id: str
     session_id: str
     prompt: str
     agent_type: str
     timeout_seconds: int
     options: _containers.ScalarMap[str, str]
-    def __init__(self, machine_id: _Optional[str] = ..., session_id: _Optional[str] = ..., prompt: _Optional[str] = ..., agent_type: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., options: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    pin: str
+    def __init__(self, machine_id: _Optional[str] = ..., session_id: _Optional[str] = ..., prompt: _Optional[str] = ..., agent_type: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., options: _Optional[_Mapping[str, str]] = ..., pin: _Optional[str] = ...) -> None: ...
 
 class AskFrame(_message.Message):
     __slots__ = ("event", "confirm_required", "pin_required", "pin_denied")

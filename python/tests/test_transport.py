@@ -27,6 +27,8 @@ from cmdop.errors import (
     ConnectionError,
     NotFoundError,
     PermissionError,
+    PinDeniedError,
+    PinTimeoutError,
     RateLimitError,
     ServerError,
     ValidationError,
@@ -212,6 +214,37 @@ async def test_ask_stream_error_frame_raises() -> None:
     with pytest.raises(AgentStreamError, match="machine offline"):
         async for _ in stream:
             pass
+    await core_task
+    await t.aclose()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("code", "exc"),
+    [
+        ("pin_denied", PinDeniedError),
+        ("pin_required_timeout", PinTimeoutError),
+    ],
+)
+async def test_ask_stream_pin_error_frame_raises_typed(code: str, exc: type) -> None:
+    """The connection-PIN gate's terminal error frames surface as their typed
+    exceptions (PinDeniedError / PinTimeoutError) — NOT the generic
+    AgentStreamError — and both are PermissionError subclasses (non-retryable)."""
+    t, proc = _make_transport()
+
+    async def core() -> None:
+        req = await _read_request(proc)
+        _feed(proc, pb.Envelope(id=req.id, kind=pb.Envelope.KIND_ERROR,
+              error=m_pb.ErrorInfo(code=code, message="pin gate")))
+
+    core_task = asyncio.create_task(core())
+    stream = t.call_stream(pb.Envelope(ask_req=m_pb.AskRequest(machine_id="m1", prompt="x")))
+    with pytest.raises(exc, match="pin gate") as ei:
+        async for _ in stream:
+            pass
+    assert isinstance(ei.value, PermissionError)
+    assert ei.value.retryable is False
+    assert ei.value.code == code
     await core_task
     await t.aclose()
 

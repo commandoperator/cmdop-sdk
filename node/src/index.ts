@@ -32,6 +32,8 @@ export {
   mapCoreError,
   NotFoundError,
   PermissionError,
+  PinDeniedError,
+  PinTimeoutError,
   RateLimitError,
   ServerError,
   TimeoutError,
