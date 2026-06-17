@@ -58,6 +58,23 @@ export class TimeoutError extends ConnectionError {
  */
 export class UnavailableError extends CmdopError {}
 
+/**
+ * `pin_denied` — the connection PIN was rejected (wrong PIN, lockout).
+ * Extends {@link PermissionError} so existing `instanceof PermissionError`
+ * still catches it. Non-retryable: a wrong PIN won't fix itself on retry.
+ */
+export class PinDeniedError extends PermissionError {
+  override readonly retryable = false;
+}
+
+/**
+ * `pin_required_timeout` — no PIN supplied (or verified) within the gate window.
+ * Extends {@link PermissionError}. Non-retryable.
+ */
+export class PinTimeoutError extends PermissionError {
+  override readonly retryable = false;
+}
+
 /** An `error` outcome from `machines.ask` (machine_offline/timeout/internal). */
 export class AgentStreamError extends CmdopError {
   constructor(code: string, message: string) {
@@ -82,6 +99,8 @@ const CODE_MAP: Record<string, CmdopErrorCtor> = {
   connection: ConnectionError,
   timeout: TimeoutError,
   unavailable: UnavailableError,
+  pin_denied: PinDeniedError,
+  pin_required_timeout: PinTimeoutError,
 };
 
 /** Map a core `ErrorInfo{code, message}` to a typed {@link CmdopError}. */

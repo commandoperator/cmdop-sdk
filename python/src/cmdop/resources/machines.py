@@ -108,9 +108,14 @@ class MachinesResource(BaseResource):
         agent_type: str | None = None,
         timeout_seconds: int | None = None,
         options: dict[str, str] | None = None,
+        pin: str | None = None,
     ) -> FrameStream:
         """Talk to the machine's AI agent. Returns a :class:`FrameStream` with
-        ``pin()`` / ``confirm()`` / ``collect()``."""
+        ``pin()`` / ``confirm()`` / ``collect()``.
+
+        ``pin`` is the upfront connection PIN for a PIN-gated target: the relay
+        forwards it once to the machine for local verification (zero-knowledge —
+        never stored/hashed). Omit for machines that require no PIN."""
         req = m_pb.AskRequest(
             machine_id=str(machine_id),
             session_id=session_id or uuid.uuid4().hex,
@@ -121,6 +126,8 @@ class MachinesResource(BaseResource):
             req.agent_type = agent_type
         if timeout_seconds is not None:
             req.timeout_seconds = timeout_seconds
+        if pin is not None:
+            req.pin = pin
         return self._t.call_stream(pb.Envelope(ask_req=req))
 
     # -- chat history ------------------------------------------------------

@@ -86,6 +86,22 @@ class UnavailableError(CmdopError):
     connected session (it's offline). Distinct from a transport failure."""
 
 
+class PinDeniedError(PermissionError):  # noqa: A001 - intentional shadow within this ns
+    """``pin_denied`` — the connection PIN was rejected (wrong PIN, lockout).
+
+    Subclasses :class:`PermissionError` so existing ``except PermissionError``
+    still catches it. Non-retryable: a wrong PIN won't fix itself on retry."""
+
+    retryable = False
+
+
+class PinTimeoutError(PermissionError):  # noqa: A001 - intentional shadow within this ns
+    """``pin_required_timeout`` — no PIN supplied (or verified) within the gate
+    window. Subclasses :class:`PermissionError`. Non-retryable."""
+
+    retryable = False
+
+
 class AgentStreamError(CmdopError):
     """An ``error`` outcome from ``machines.ask`` (machine_offline/timeout/internal)."""
 
@@ -104,6 +120,8 @@ _CODE_MAP: dict[str, type[CmdopError]] = {
     "connection": ConnectionError,
     "timeout": TimeoutError,
     "unavailable": UnavailableError,
+    "pin_denied": PinDeniedError,
+    "pin_required_timeout": PinTimeoutError,
 }
 
 

@@ -30,6 +30,10 @@ export interface AskOptions {
   agentType?: string;
   timeoutSeconds?: number;
   options?: Record<string, string>;
+  /** Upfront connection PIN for a PIN-gated target. The relay forwards it once
+   * to the machine for local verification (zero-knowledge — never
+   * stored/hashed). Omit for machines that require no PIN. */
+  pin?: string;
 }
 
 export class MachinesResource extends BaseResource {
@@ -101,6 +105,7 @@ export class MachinesResource extends BaseResource {
     });
     if (opts.agentType !== undefined) askReq.agentType = opts.agentType;
     if (opts.timeoutSeconds !== undefined) askReq.timeoutSeconds = opts.timeoutSeconds;
+    if (opts.pin !== undefined) askReq.pin = opts.pin;
     return this.t.callStream(this.req({ case: "askReq", value: askReq }));
   }
 

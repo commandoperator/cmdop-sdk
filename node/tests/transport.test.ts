@@ -19,6 +19,8 @@ import {
   ConnectionError,
   NotFoundError,
   PermissionError,
+  PinDeniedError,
+  PinTimeoutError,
   RateLimitError,
   ServerError,
   ValidationError,
@@ -213,6 +215,40 @@ describe("transport demux", () => {
     await expect(consume).rejects.toThrowError(AgentStreamError);
     await t.close();
   });
+
+  it.each([
+    ["pin_denied", PinDeniedError],
+    ["pin_required_timeout", PinTimeoutError],
+  ] as const)(
+    "ask stream: %s error frame raises its typed PIN error",
+    async (code, Ctor) => {
+      // The connection-PIN gate's terminal error frames surface as their typed
+      // exceptions (not the generic AgentStreamError); both extend
+      // PermissionError and are non-retryable.
+      const { t, feed, reqs } = makeTransport();
+      const stream = t.callStream(
+        create(EnvelopeSchema, { payload: { case: "askReq", value: { machineId: "m1", prompt: "x" } } }),
+      );
+      const consume = (async () => {
+        for await (const _ of stream) {
+          /* drain */
+        }
+      })();
+      const req = await nextReq(reqs);
+      feed(
+        create(EnvelopeSchema, {
+          id: req.id,
+          kind: Envelope_Kind.ERROR,
+          payload: { case: "error", value: { code, message: "pin gate" } },
+        }),
+      );
+      await expect(consume).rejects.toThrowError(Ctor);
+      await expect(consume).rejects.toThrowError(PermissionError);
+      await expect(consume).rejects.toThrow(/pin gate/);
+      await expect(consume).rejects.toMatchObject({ code, retryable: false });
+      await t.close();
+    },
+  );
 
   it("collect accumulates event deltas", async () => {
     const { t, feed, reqs } = makeTransport();

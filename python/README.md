@@ -88,6 +88,18 @@ async for frame in stream:
 text = await c.machines.ask(machine_id, "uptime").collect()
 ```
 
+**Connection PIN.** If a machine requires a PIN, pass it **upfront** — the SDK is
+headless, so there's no prompt to answer:
+
+```python
+text = await c.machines.ask(machine_id, "uptime", pin="1234").collect()
+```
+
+A wrong PIN raises `PinDeniedError`; an unverified one raises `PinTimeoutError`
+(both subclass `PermissionError`, non-retryable). The reactive `stream.pin(...)`
+callback above is for interactive use (a human at a prompt). The relay never
+stores the PIN — it forwards it once to the target, which verifies it locally.
+
 Frame types: `event · done · error · confirm_required · pin_required ·
 pin_denied`. An `error` outcome raises `AgentStreamError`.
 

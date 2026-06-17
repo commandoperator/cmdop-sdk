@@ -71,8 +71,9 @@ await c.close();
 | `skills` | browse, install, publish, and review skills from the marketplace |
 
 The headline feature is **`machines.ask()`** — stream a machine's AI agent as a
-clean async iterator of typed events, with mid-stream PIN and confirmation
-prompts surfaced as first-class steps.
+clean async iterator of typed events. A connection PIN can be passed **upfront**
+(`ask(…, pin="…")`, the headless default) or answered reactively mid-stream, and
+dangerous plans surface as inline confirmation prompts.
 
 > **Two planes, one client.** `machines / fleets / tunnels / schedules / keys` use
 > your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your platform
