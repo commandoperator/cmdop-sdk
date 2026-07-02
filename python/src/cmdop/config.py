@@ -16,9 +16,20 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
-DEFAULT_BASE_URL = "https://cloud.cmdop.com"
+# No default relay base URL. Each CMDOP relay has its own address — a per-account
+# dynamic domain (e.g. https://<yours>.cmdop.host), a domain you connect yourself,
+# or a LAN address — so there is no single global relay host to default to. The
+# base URL is therefore required for relay ops; see _MISSING_BASE_URL_HELP.
 DEFAULT_API_BASE_URL = "https://api.cmdop.com"
 DEFAULT_TIMEOUT_MS = 30_000
+
+_MISSING_BASE_URL_HELP = (
+    "No relay base URL. Pass base_url= or set CMDOP_BASE_URL to your relay's "
+    "address — e.g. https://<yours>.cmdop.host (shown in your free cmdop.com "
+    "account), your own connected domain, or a LAN address like "
+    "http://192.168.1.10:63141. The local embedded relay listens on "
+    "http://127.0.0.1:63141. See https://docs.cmdop.com."
+)
 
 
 @dataclass(frozen=True)
@@ -26,7 +37,7 @@ class ClientConfig:
     """Resolved, immutable per-client configuration."""
 
     token: str
-    base_url: str = DEFAULT_BASE_URL
+    base_url: str
     fleet_id: str | None = None
     timeout_ms: int = DEFAULT_TIMEOUT_MS
     api_key: str | None = None
@@ -55,7 +66,9 @@ class ClientConfig:
                 "No token. Pass token= or set CMDOP_TOKEN (or CMDOP_API_KEY)."
             )
 
-        resolved_base = base_url or os.environ.get("CMDOP_BASE_URL") or DEFAULT_BASE_URL
+        resolved_base = base_url or os.environ.get("CMDOP_BASE_URL")
+        if not resolved_base:
+            raise ValueError(_MISSING_BASE_URL_HELP)
 
         resolved_fleet = fleet_id or os.environ.get("CMDOP_FLEET_ID") or None
 

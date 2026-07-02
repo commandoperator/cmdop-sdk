@@ -9,9 +9,19 @@
  * The two credentials are SEPARATE and must not be conflated.
  */
 
-export const DEFAULT_BASE_URL = "https://cloud.cmdop.com";
+// No default relay base URL. Each CMDOP relay has its own address — a per-account
+// dynamic domain (e.g. https://<yours>.cmdop.host), a domain you connect yourself,
+// or a LAN address — so there is no single global relay host to default to. The
+// base URL is therefore required for relay ops; see MISSING_BASE_URL_HELP.
 export const DEFAULT_API_BASE_URL = "https://api.cmdop.com";
 export const DEFAULT_TIMEOUT_MS = 30_000;
+
+const MISSING_BASE_URL_HELP =
+  "No relay base URL. Pass baseUrl or set CMDOP_BASE_URL to your relay's " +
+  "address — e.g. https://<yours>.cmdop.host (shown in your free cmdop.com " +
+  "account), your own connected domain, or a LAN address like " +
+  "http://192.168.1.10:63141. The local embedded relay listens on " +
+  "http://127.0.0.1:63141. See https://docs.cmdop.com.";
 
 export interface ClientConfig {
   token: string;
@@ -41,9 +51,11 @@ export function resolveConfig(opts: Partial<ClientConfig> = {}): ClientConfig {
     );
   }
 
-  const baseUrl = stripTrailingSlash(
-    opts.baseUrl ?? env.CMDOP_BASE_URL ?? DEFAULT_BASE_URL,
-  );
+  const resolvedBase = opts.baseUrl ?? env.CMDOP_BASE_URL;
+  if (!resolvedBase) {
+    throw new Error(MISSING_BASE_URL_HELP);
+  }
+  const baseUrl = stripTrailingSlash(resolvedBase);
 
   const fleetId = opts.fleetId ?? env.CMDOP_FLEET_ID ?? undefined;
 

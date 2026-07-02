@@ -6,6 +6,11 @@ Programmatic access to your CMDOP fleet from **Python** and **Node** — manage
 machines, fleets, tunnels, and schedules, stream a machine's AI agent live, and
 drive the skills marketplace, all behind one typed client.
 
+CMDOP is a messenger for machines: every machine runs a resident AI agent you can
+message. **This repo is the open, MIT-licensed SDK** — typed Python and Node
+clients for the platform. The agent + relay ship as a separate, free-to-use
+binary. Same model as Telegram: an open client, a hosted service you sign in to.
+
 | | Install | Import |
 |---|---|---|
 | **Python** | `pip install cmdop` | [`cmdop`](https://pypi.org/project/cmdop/) |
@@ -23,20 +28,44 @@ complete API reference, and streaming details. Product pages:
 
 ![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
 
-Your app uses the SDK to reach your machines — any hardware, anywhere — through a
-**CMDOP server you choose** (the public cloud, or one you self-host in your own
-network). The server links your fleet over gRPC and hosts **Jarvis**, a built-in
-AI that can drive those machines on its own.
+Your app uses the SDK to reach your machines — any hardware, anywhere — through
+**your CMDOP relay**. A free [cmdop.com](https://cmdop.com) account provisions your
+own isolated relay domain (self-hosting the relay is also supported). The relay
+links your fleet over gRPC and hosts the **fleet orchestrator**, a built-in AI
+that can drive those machines on its own.
 
 ## Why it's easy to adopt
 
 - **One install, zero dependencies.** `pip install cmdop` / `npm i @cmdop/sdk` is
   everything — no native build step, no extra runtime, nothing fetched on first
   run.
-- **Works anywhere, offline-ready.** A single self-contained package runs the
-  same on macOS, Linux, and Windows, including air-gapped hosts.
+- **Runs on macOS, Linux, and Windows.** A single self-contained package;
+  nothing is fetched at install or first run. (The CMDOP agent your machines run
+  ships for macOS and Linux.)
 - **Typed end to end.** Every resource and response is fully typed, with one clean
   async streaming API for live agent output.
+
+## Get your token
+
+The SDK is a client — you need a CMDOP account to point it at.
+
+1. Create a free account at **[cmdop.com](https://cmdop.com)**. It provisions your
+   own isolated **relay domain** — that's your `CMDOP_BASE_URL` (e.g.
+   `https://<yours>.cmdop.host`). *(Or point at a relay you self-host / a LAN
+   address like `http://127.0.0.1:63141`.)*
+2. Copy your **`CMDOP_TOKEN`** (relay session token) from the CLI-token page at
+   **[my.cmdop.com](https://my.cmdop.com)**.
+3. For the `skills` marketplace, also grab a **`CMDOP_API_KEY`** (platform
+   `UserAPIKey`) from your account settings at [my.cmdop.com](https://my.cmdop.com).
+
+```bash
+export CMDOP_BASE_URL="https://<yours>.cmdop.host"
+export CMDOP_TOKEN="cmdop_…"
+export CMDOP_API_KEY="…"        # only for skills
+```
+
+Then `Client.from_env()` / `Client.fromEnv()` picks these up. `CMDOP_BASE_URL` is
+required — there is no default relay host (each account gets its own domain).
 
 ## Quick start
 
@@ -100,4 +129,5 @@ handling live in each package's README:
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+The SDK (this repo) is **MIT** — see [LICENSE](LICENSE). The CMDOP agent/relay
+binary and cloud are separate products.

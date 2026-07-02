@@ -17,7 +17,7 @@
 export { Client, type ClientOptions } from "./client";
 export {
   type ClientConfig,
-  DEFAULT_BASE_URL,
+  DEFAULT_API_BASE_URL,
   DEFAULT_TIMEOUT_MS,
   resolveConfig,
 } from "./config";

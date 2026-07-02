@@ -83,7 +83,9 @@ async def _read_request(proc: FakeProc) -> pb.Envelope:
 
 
 def test_api_key_flows_into_config() -> None:
-    cfg = ClientConfig.resolve(token="t", api_key="cmd_xyz", api_base_url="https://api.example")
+    cfg = ClientConfig.resolve(
+        token="t", base_url="https://x", api_key="cmd_xyz", api_base_url="https://api.example"
+    )
     assert cfg.api_key == "cmd_xyz"
     assert cfg.api_base_url == "https://api.example"
 
