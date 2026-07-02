@@ -13,8 +13,9 @@ from typed Python.
 
 - **One install, zero dependencies** — `pip install cmdop` is everything. No
   native build step, no extra runtime, nothing fetched on first run.
-- **Works anywhere, offline-ready** — a single self-contained package runs the
-  same on macOS, Linux, and Windows, including air-gapped hosts.
+- **Runs on macOS, Linux, and Windows** — a single self-contained package;
+  nothing is fetched at install or first run. (The CMDOP agent your machines run
+  ships for macOS and Linux.)
 - **Typed end to end** — every resource and response is fully typed, with one
   clean async streaming API for live agent output.
 
@@ -108,11 +109,22 @@ pin_denied`. An `error` outcome raises `AgentStreamError`.
 | Var | Meaning | Default |
 |---|---|---|
 | `CMDOP_TOKEN` | relay Bearer token (machines/fleets/…) | — (required for relay ops) |
-| `CMDOP_BASE_URL` | relay REST root | `https://cloud.cmdop.com` |
+| `CMDOP_BASE_URL` | relay REST root — your relay's address (e.g. `https://<yours>.cmdop.host`) | — (required for relay ops) |
 | `CMDOP_API_KEY` | platform `UserAPIKey` (for `skills`) | — (required for skills) |
 | `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
 | `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
 | `CMDOP_TIMEOUT_MS` | per-call timeout | `30000` |
+
+**Where to get them.** Create a free account at [cmdop.com](https://cmdop.com) —
+it provisions your own relay domain, which becomes your `CMDOP_BASE_URL` (e.g.
+`https://<yours>.cmdop.host`). `CMDOP_TOKEN` is a relay session token — copy it
+from your account's CLI-token page at [my.cmdop.com](https://my.cmdop.com) (or, if
+you run the relay yourself, mint one from its `/admin`); it's the same token the
+desktop/CLI saves when you enroll a machine. `CMDOP_API_KEY` is a platform
+`UserAPIKey` — create it in your account settings at
+[my.cmdop.com](https://my.cmdop.com). The SDK is a client: it does **not** enroll
+machines (that's `cmdop enroll <enrollment-password>` on the agent), so you never
+paste an enrollment password here.
 
 Precedence is always explicit arg > env var > default.
 

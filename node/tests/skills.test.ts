@@ -57,6 +57,7 @@ describe("skills resource", () => {
   it("apiKey + apiBaseUrl resolve onto the config", () => {
     const cfg = resolveConfig({
       token: "t",
+      baseUrl: "https://x",
       apiKey: "cmd_xyz",
       apiBaseUrl: "https://api.example",
     });

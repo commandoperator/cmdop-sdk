@@ -1,9 +1,9 @@
 {
   "name": "@cmdop/sdk",
-  "version": "1.1.0",
-  "description": "Typed Node SDK for CMDOP \u2014 spawns the baked-in cmdop-core Go binary and speaks protobuf over stdio (machines, fleets, tunnels, schedules, keys, and machine AI ask streaming).",
+  "version": "1.1.1",
+  "description": "Typed Node SDK for CMDOP \u2014 the messenger for machines. Manage your fleet, stream each machine's resident AI agent, zero dependencies (machines, fleets, tunnels, schedules, keys, and machine AI ask streaming).",
   "license": "MIT",
-  "homepage": "https://docs.cmdop.com",
+  "homepage": "https://cmdop.com/sdk",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/commandoperator/cmdop-sdk.git",
