@@ -114,7 +114,7 @@ pin_denied`. An `error` outcome throws `AgentStreamError`.
 | Var | Meaning | Default |
 |---|---|---|
 | `CMDOP_TOKEN` | relay Bearer token (machines/fleets/…) | — (required for relay ops) |
-| `CMDOP_BASE_URL` | relay REST root — your relay's address (e.g. `https://<yours>.cmdop.host`) | — (required for relay ops) |
+| `CMDOP_BASE_URL` | relay REST root — your relay's address (e.g. `https://<yours>.cmdop.dev`) | — (required for relay ops) |
 | `CMDOP_API_KEY` | platform `UserAPIKey` (for `skills`) | — (required for skills) |
 | `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
 | `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
@@ -122,7 +122,7 @@ pin_denied`. An `error` outcome throws `AgentStreamError`.
 
 **Where to get them.** Create a free account at [cmdop.com](https://cmdop.com) —
 it provisions your own relay domain, which becomes your `CMDOP_BASE_URL` (e.g.
-`https://<yours>.cmdop.host`). `CMDOP_TOKEN` is a relay session token — copy it
+`https://<yours>.cmdop.dev`). `CMDOP_TOKEN` is a relay session token — copy it
 from your account's CLI-token page at [my.cmdop.com](https://my.cmdop.com) (or, if
 you run the relay yourself, mint one from its `/admin`); it's the same token the
 desktop/CLI saves when you enroll a machine. `CMDOP_API_KEY` is a platform

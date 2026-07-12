@@ -51,7 +51,7 @@ The SDK is a client — you need a CMDOP account to point it at.
 
 1. Create a free account at **[cmdop.com](https://cmdop.com)**. It provisions your
    own isolated **relay domain** — that's your `CMDOP_BASE_URL` (e.g.
-   `https://<yours>.cmdop.host`). *(Or point at a relay you self-host / a LAN
+   `https://<yours>.cmdop.dev`). *(Or point at a relay you self-host / a LAN
    address like `http://127.0.0.1:63141`.)*
 2. Copy your **`CMDOP_TOKEN`** (relay session token) from the CLI-token page at
    **[my.cmdop.com](https://my.cmdop.com)**.
@@ -59,7 +59,7 @@ The SDK is a client — you need a CMDOP account to point it at.
    `UserAPIKey`) from your account settings at [my.cmdop.com](https://my.cmdop.com).
 
 ```bash
-export CMDOP_BASE_URL="https://<yours>.cmdop.host"
+export CMDOP_BASE_URL="https://<yours>.cmdop.dev"
 export CMDOP_TOKEN="cmdop_…"
 export CMDOP_API_KEY="…"        # only for skills
 ```
