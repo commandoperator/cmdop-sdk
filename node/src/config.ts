@@ -10,7 +10,7 @@
  */
 
 // No default relay base URL. Each CMDOP relay has its own address — a per-account
-// dynamic domain (e.g. https://<yours>.cmdop.host), a domain you connect yourself,
+// dynamic domain (e.g. https://<yours>.cmdop.dev), a domain you connect yourself,
 // or a LAN address — so there is no single global relay host to default to. The
 // base URL is therefore required for relay ops; see MISSING_BASE_URL_HELP.
 export const DEFAULT_API_BASE_URL = "https://api.cmdop.com";
@@ -18,7 +18,7 @@ export const DEFAULT_TIMEOUT_MS = 30_000;
 
 const MISSING_BASE_URL_HELP =
   "No relay base URL. Pass baseUrl or set CMDOP_BASE_URL to your relay's " +
-  "address — e.g. https://<yours>.cmdop.host (shown in your free cmdop.com " +
+  "address — e.g. https://<yours>.cmdop.dev (shown in your free cmdop.com " +
   "account), your own connected domain, or a LAN address like " +
   "http://192.168.1.10:63141. The local embedded relay listens on " +
   "http://127.0.0.1:63141. See https://docs.cmdop.com.";

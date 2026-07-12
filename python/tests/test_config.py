@@ -6,7 +6,7 @@ import pytest
 
 from cmdop.config import DEFAULT_TIMEOUT_MS, ClientConfig
 
-BASE_URL = "https://acme.cmdop.host"
+BASE_URL = "https://acme.cmdop.dev"
 
 ENV_KEYS = [
     "CMDOP_TOKEN",

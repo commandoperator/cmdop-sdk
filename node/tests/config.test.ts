@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { DEFAULT_TIMEOUT_MS, resolveConfig } from "../src/config";
 
-const BASE_URL = "https://acme.cmdop.host";
+const BASE_URL = "https://acme.cmdop.dev";
 
 const ENV_KEYS = [
   "CMDOP_TOKEN",
