@@ -1,172 +1,133 @@
-# @cmdop/sdk (Node)
+# @cmdop/sdk 2.0 (Node)
 
-![@cmdop/sdk — Node SDK for CMDOP](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-node.webp)
-
-Typed Node SDK for CMDOP — manage your machines, fleets, tunnels, and schedules,
-stream a machine's AI agent, and drive the skills marketplace, all from typed
-TypeScript.
-
-📚 **Docs: [docs.cmdop.com](https://docs.cmdop.com)** · [SDK](https://cmdop.com/sdk) ·
-[Bots](https://cmdop.com/bots) · [Connect](https://cmdop.com/connect)
-
-![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
-
-- **One install, zero dependencies** — `npm i @cmdop/sdk` is everything. No
-  native build step, no `optionalDependencies`, nothing fetched on first run.
-- **Runs on macOS, Linux, and Windows** — a single self-contained package;
-  nothing is fetched at install or first run. (The CMDOP agent your machines run
-  ships for macOS and Linux.)
-- **Typed end to end** — full TypeScript types for every resource and response,
-  with one clean async streaming API for live agent output.
+Typed Node SDK for the current Cmdop machine roster, agent stream, and durable
+messages. Requires Node 18 or newer.
 
 ## Install
 
 ```bash
-npm i @cmdop/sdk        # or: pnpm add @cmdop/sdk / yarn add @cmdop/sdk
+npm install @cmdop/sdk
 ```
 
-ESM + CJS, Node ≥ 18.
+The package includes `cmdop-core` for supported macOS, Linux, and Windows
+hosts. It does not download a runtime on first use.
 
 ## Quick start
+
+`new Client()` is the canonical local configuration. The core discovers the
+active Cmdop server and credentials from the local Cmdop configuration.
 
 ```ts
 import { Client } from "@cmdop/sdk";
 
-const c = new Client({ token: "..." });        // or Client.fromEnv()
+const client = new Client();
+try {
+  const bootstrap = await client.system.bootstrap();
+  console.log(bootstrap.version, bootstrap.capabilities);
 
-const page = await c.machines.list({ presence: "online" });
-for (const m of page.items) console.log(m.hostname, m.presence);
-
-const text = await c.machines.ask(machineId, "uptime").collect();
-console.log(text);
-
-await c.close();                                // release resources
-```
-
-`await using c = new Client(...)` works too (`Symbol.asyncDispose`).
-
-## Namespaces
-
-The same surface as the relay, mirrored exactly by the Python SDK (camelCase
-here, snake_case there):
-
-| Namespace | Methods |
-|---|---|
-| `machines` | `list · get · update · disable · info · spend · ask · messages · clearMessages · activeSession` |
-| `fleets` | `list · get · create · update · disable` |
-| `fleets.members` | `list · add · setRole · remove` |
-| `fleets.machines` | `list · attach · detach` |
-| `tunnels` | `open · close · list · get · sessions` |
-| `schedules` | `list · get · create · update · delete · trigger · runs` |
-| `keys` | `list · issue · revoke` |
-| `skills` | `list · get · my · install · star · versions · reviews · create · update · delete · publish · publishStatus · categories · tags` |
-
-List endpoints also expose `iter(...)` (an async generator over every item,
-following cursors) and `pages(...)` (an async generator over each page).
-
-> **Two planes, one client.** `machines / fleets / tunnels / schedules / keys`
-> use your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your
-> platform API key (`CMDOP_API_KEY`). Set whichever you need — the client routes
-> each call to the right plane for you.
-
-## Streaming: `machines.ask()`
-
-`ask()` returns an `AskStream` — an async iterable of typed frames with `pin()` /
-`confirm()` / `collect()`:
-
-```ts
-const stream = c.machines.ask(machineId, "df -h", { sessionId: "s1" });
-for await (const frame of stream) {
-  if (frame.type === "event") {
-    process.stdout.write(String((frame.payload as { delta?: string })?.delta ?? ""));
-  } else if (frame.type === "pin_required") {       // machine asked for its connect PIN
-    await stream.pin(frame.challengeId, "1234");
-  } else if (frame.type === "confirm_required") {    // a dangerous plan awaits approval
-    await stream.confirm(frame.token, true);
-  } else if (frame.type === "pin_denied") {
-    console.log("PIN rejected:", frame.reason);
-  } else if (frame.type === "done") {
-    console.log("\n->", frame.text);
+  const snapshot = await client.machines.list();
+  for (const machine of snapshot.machines) {
+    console.log(machine.machineId, machine.displayName, machine.presence);
   }
+} finally {
+  await client.close();
 }
-
-// one-shot: drain to the final text
-const text = await c.machines.ask(machineId, "uptime").collect();
 ```
 
-**Connection PIN.** If a machine requires a PIN, pass it **upfront** — the SDK is
-headless, so there's no prompt to answer:
+For an explicit remote relay, provide both its URL and bearer token. Constructor
+options take precedence over environment variables.
 
 ```ts
-const text = await c.machines.ask(machineId, "uptime", { pin: "1234" }).collect();
+const client = new Client({ baseUrl: "https://relay.example.com", token: "..." });
 ```
 
-A wrong PIN throws `PinDeniedError`; an unverified one throws `PinTimeoutError`
-(both extend `PermissionError`, non-retryable). The reactive `stream.pin(...)`
-callback above is for interactive use (a human at a prompt). The relay never
-stores the PIN — it forwards it once to the target, which verifies it locally.
+The equivalent environment variables are `CMDOP_BASE_URL` and `CMDOP_TOKEN`.
+A remote URL without a token fails closed. An explicit loopback URL can mint a
+local loopback token.
 
-Frame types: `event · done · error · confirm_required · pin_required ·
-pin_denied`. An `error` outcome throws `AgentStreamError`.
+## Public API
 
-## Environment variables
-
-| Var | Meaning | Default |
+| Namespace | Method | Result |
 |---|---|---|
-| `CMDOP_TOKEN` | relay Bearer token (machines/fleets/…) | — (required for relay ops) |
-| `CMDOP_BASE_URL` | relay REST root — your relay's address (e.g. `https://<yours>.cmdop.dev`) | — (required for relay ops) |
-| `CMDOP_API_KEY` | platform `UserAPIKey` (for `skills`) | — (required for skills) |
-| `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
-| `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
-| `CMDOP_TIMEOUT_MS` | per-call timeout | `30000` |
+| `system` | `await client.system.bootstrap()` | version, bundle, contract range, capabilities, update state |
+| `machines` | `await client.machines.list()` | authoritative `MachineRosterSnapshot` |
+| `machines` | `client.machines.ask(machineId, prompt, options)` | `AskStream` |
+| `machines` | `await client.machines.messages(machineId, options)` | durable `MachineMessageList` |
 
-**Where to get them.** Create a free account at [cmdop.com](https://cmdop.com) —
-it provisions your own relay domain, which becomes your `CMDOP_BASE_URL` (e.g.
-`https://<yours>.cmdop.dev`). `CMDOP_TOKEN` is a relay session token — copy it
-from your account's CLI-token page at [my.cmdop.com](https://my.cmdop.com) (or, if
-you run the relay yourself, mint one from its `/admin`); it's the same token the
-desktop/CLI saves when you enroll a machine. `CMDOP_API_KEY` is a platform
-`UserAPIKey` — create it in your account settings at
-[my.cmdop.com](https://my.cmdop.com). The SDK is a client: it does **not** enroll
-machines (that's `cmdop enroll <enrollment-password>` on the agent), so you never
-paste an enrollment password here.
+## Ask streaming and PIN
 
-Precedence is always explicit option > env var > default. Pass a string to the
-constructor (`new Client("token")`) as a shorthand for `{ token }`.
-
-## Error handling
-
-Every failure surfaces as a typed error carrying a stable `code` (all extend
-`CmdopError`):
+Pass a connection PIN up front, before consuming the headless stream.
 
 ```ts
-import {
-  AuthError, PermissionError, NotFoundError, ConflictError,
-  ValidationError, RateLimitError, ServerError, ConnectionError,
-  TimeoutError, UnavailableError, AgentStreamError, CmdopError,
-} from "@cmdop/sdk";
+const stream = client.machines.ask(
+  machineId,
+  "Summarize the current system load.",
+  { pin: "1234", session: "2" },
+);
+
+for await (const frame of stream) {
+  if (frame.type === "event") console.log(frame.payload);
+  else if (frame.type === "error") console.log(frame.code, frame.message);
+  else console.log(frame.success, frame.text);
+}
+```
+
+For the common one-shot case, `collect()` drains the stream and returns final
+text. An unsuccessful `done` throws `AgentStreamError`.
+
+```ts
+const text = await client.machines.ask(
+  machineId,
+  "Reply with: pong",
+  { pin: "1234" },
+).collect();
+```
+
+Ask options also include `attachmentIds`, `engine`, `workingDir`,
+`projectRootId`, and `model`. A stream is single-consumer and yields only typed
+`event`, `error`, and `done` frames.
+
+## Durable messages
+
+```ts
+const history = await client.machines.messages(machineId, { session: "2", limit: 100 });
+for (const message of history.messages) {
+  console.log(message.seq, message.role, message.content);
+}
+```
+
+`limit` must be between 1 and 500.
+
+## Configuration
+
+| Setting | Constructor | Environment | Default |
+|---|---|---|---|
+| Relay URL | `baseUrl` | `CMDOP_BASE_URL` | local Cmdop config |
+| Bearer token | `token` | `CMDOP_TOKEN` | local Cmdop credentials |
+| Timeout | `timeoutMs` | `CMDOP_TIMEOUT_MS` | `30000` |
+| Development binary override | `binaryPath` | `CMDOP_CORE_BINARY` | packaged host binary |
+
+Call `await client.close()` when finished. `await using` is also supported on
+runtimes configured for explicit resource management.
+
+## Typed errors
+
+Every protocol failure is a `CmdopError` with stable `code`, optional HTTP
+`status`, `retryable`, and redacted `details` fields. Common subclasses include
+`AuthError`, `PermissionError`, `ValidationError`, `NotFoundError`,
+`UnavailableError`, `TimeoutError`, `ConnectionError`, and `AgentStreamError`.
+
+```ts
+import { CmdopError } from "@cmdop/sdk";
 
 try {
-  await c.machines.get("missing-id");
-} catch (e) {
-  if (e instanceof NotFoundError) { /* ... */ }
-  else if (e instanceof CmdopError) {
-    if (e.retryable) { /* true on TimeoutError — safe to retry */ }
-    console.log(e.code, e.message);
+  await client.machines.messages("missing");
+} catch (error) {
+  if (error instanceof CmdopError) {
+    console.log(error.code, error.status, error.retryable);
   }
 }
 ```
 
-`ConnectionError` covers a lost connection mid-call (pending promises reject);
-`TimeoutError` (a retryable subclass) is a deadline/handshake timeout;
-`UnavailableError` means the relay is up but the target agent/machine is offline.
-`AgentStreamError` is the streaming-`ask` error outcome.
-
-## Links
-
-- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
-- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
-  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
-  [cmdop.com/connect](https://cmdop.com/connect)
-- [`@cmdop/sdk` on npm](https://www.npmjs.com/package/@cmdop/sdk) ·
-  [source](https://github.com/commandoperator/cmdop-sdk)
+Documentation: [docs.cmdop.com](https://docs.cmdop.com) · Source:
+[commandoperator/cmdop-sdk](https://github.com/commandoperator/cmdop-sdk)

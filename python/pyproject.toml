@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cmdop"
-version = "1.1.1"
-description = "Async-first Python SDK for CMDOP — the messenger for machines. Manage your fleet, stream each machine's resident AI agent, zero dependencies."
+version = "2.0.0"
+description = "Async Python SDK for the current Cmdop machine roster, agent stream, and durable messages."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "CMDOP" }]
-keywords = ["cmdop", "sdk", "relay", "agents", "fleet", "remote-control", "ai-agents", "automation"]
+keywords = ["cmdop", "sdk", "relay", "agents", "remote-control", "ai-agents", "automation"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -19,9 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Typing :: Typed",
 ]
-dependencies = [
-    "protobuf>=5",
-]
+dependencies = ["protobuf>=7.35.1"]
 
 [project.urls]
 Homepage = "https://cmdop.com/sdk"

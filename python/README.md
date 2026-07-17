@@ -1,165 +1,131 @@
-# cmdop (Python)
+# cmdop 2.0 (Python)
 
-![cmdop — Python SDK for CMDOP](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-python.webp)
-
-Async-first Python SDK for CMDOP — manage your machines, fleets, tunnels, and
-schedules, stream a machine's AI agent, and drive the skills marketplace, all
-from typed Python.
-
-📚 **Docs: [docs.cmdop.com](https://docs.cmdop.com)** · [SDK](https://cmdop.com/sdk) ·
-[Bots](https://cmdop.com/bots) · [Connect](https://cmdop.com/connect)
-
-![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
-
-- **One install, zero dependencies** — `pip install cmdop` is everything. No
-  native build step, no extra runtime, nothing fetched on first run.
-- **Runs on macOS, Linux, and Windows** — a single self-contained package;
-  nothing is fetched at install or first run. (The CMDOP agent your machines run
-  ships for macOS and Linux.)
-- **Typed end to end** — every resource and response is fully typed, with one
-  clean async streaming API for live agent output.
+Async Python SDK for the current Cmdop machine roster, agent stream, and
+durable messages.
 
 ## Install
 
 ```bash
-pip install cmdop        # or: uv add cmdop
+pip install cmdop
 ```
+
+The package includes `cmdop-core` for supported macOS, Linux, and Windows
+hosts. It does not download a runtime on first use.
 
 ## Quick start
 
+`Client()` is the canonical local configuration. The core discovers the active
+Cmdop server and credentials from the local Cmdop configuration.
+
 ```python
+import asyncio
+
 from cmdop import Client
 
-async with Client(token="...") as c:        # or Client.from_env()
-    page = await c.machines.list(presence="online")
-    for m in page.items:
-        print(m.hostname, m.presence)
 
-    text = await c.machines.ask(machine_id, "uptime").collect()
-    print(text)
+async def main() -> None:
+    async with Client() as client:
+        bootstrap = await client.system.bootstrap()
+        print(bootstrap.version, bootstrap.capabilities)
+
+        snapshot = await client.machines.list()
+        for machine in snapshot.machines:
+            print(machine.machine_id, machine.display_name, machine.presence)
+
+
+asyncio.run(main())
 ```
 
-`Client` is an async context manager — use `async with` so resources are released
-on exit (or call `await c.aclose()`).
-
-## Namespaces
-
-The same surface as the relay, mirrored exactly by the Node SDK (snake_case here,
-camelCase there):
-
-| Namespace | Methods |
-|---|---|
-| `machines` | `list · get · update · disable · info · spend · ask · messages · clear_messages · active_session` |
-| `fleets` | `list · get · create · update · disable` |
-| `fleets.members` | `list · add · set_role · remove` |
-| `fleets.machines` | `list · attach · detach` |
-| `tunnels` | `open · close · list · get · sessions` |
-| `schedules` | `list · get · create · update · delete · trigger · runs` |
-| `keys` | `list · issue · revoke` |
-| `skills` | `list · get · my · install · star · versions · reviews · create · update · delete · publish · publish_status · categories · tags` |
-
-List endpoints also expose `iter(...)` (yield every item, following cursors) and
-`pages(...)` (yield each page).
-
-> **Two planes, one client.** `machines / fleets / tunnels / schedules / keys`
-> use your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your
-> platform API key (`CMDOP_API_KEY`). Set whichever you need — the client routes
-> each call to the right plane for you.
-
-## Streaming: `machines.ask()`
-
-`ask()` returns a `FrameStream` (aliased `AskStream`) — an async iterator of
-typed frames with `pin()` / `confirm()` / `collect()`:
+For an explicit remote relay, provide both its URL and bearer token. Constructor
+arguments take precedence over environment variables.
 
 ```python
-stream = c.machines.ask(machine_id, "df -h", session_id="s1")
-async for frame in stream:
-    if frame.type == "event":
-        print(frame.payload.get("delta", ""), end="")
-    elif frame.type == "pin_required":          # machine asked for its connect PIN
-        await stream.pin(frame.challenge_id, "1234")
-    elif frame.type == "confirm_required":       # a dangerous plan awaits approval
-        await stream.confirm(frame.token, accept=True)
-    elif frame.type == "pin_denied":
-        print("PIN rejected:", frame.reason)
-    elif frame.type == "done":
-        print("\n->", frame.text)
-
-# one-shot: drain to the final text
-text = await c.machines.ask(machine_id, "uptime").collect()
+async with Client(base_url="https://relay.example.com", token="...") as client:
+    snapshot = await client.machines.list()
 ```
 
-**Connection PIN.** If a machine requires a PIN, pass it **upfront** — the SDK is
-headless, so there's no prompt to answer:
+The equivalent environment variables are `CMDOP_BASE_URL` and `CMDOP_TOKEN`.
+A remote URL without a token fails closed. An explicit loopback URL can mint a
+local loopback token.
 
-```python
-text = await c.machines.ask(machine_id, "uptime", pin="1234").collect()
-```
+## Public API
 
-A wrong PIN raises `PinDeniedError`; an unverified one raises `PinTimeoutError`
-(both subclass `PermissionError`, non-retryable). The reactive `stream.pin(...)`
-callback above is for interactive use (a human at a prompt). The relay never
-stores the PIN — it forwards it once to the target, which verifies it locally.
-
-Frame types: `event · done · error · confirm_required · pin_required ·
-pin_denied`. An `error` outcome raises `AgentStreamError`.
-
-## Environment variables
-
-| Var | Meaning | Default |
+| Namespace | Method | Result |
 |---|---|---|
-| `CMDOP_TOKEN` | relay Bearer token (machines/fleets/…) | — (required for relay ops) |
-| `CMDOP_BASE_URL` | relay REST root — your relay's address (e.g. `https://<yours>.cmdop.dev`) | — (required for relay ops) |
-| `CMDOP_API_KEY` | platform `UserAPIKey` (for `skills`) | — (required for skills) |
-| `CMDOP_API_BASE_URL` | platform REST root | `https://api.cmdop.com` |
-| `CMDOP_FLEET_ID` | default fleet for fleet-scoped ops | none |
-| `CMDOP_TIMEOUT_MS` | per-call timeout | `30000` |
+| `system` | `await client.system.bootstrap()` | version, bundle, contract range, capabilities, update state |
+| `machines` | `await client.machines.list()` | authoritative `MachineRosterSnapshot` |
+| `machines` | `client.machines.ask(machine_id, prompt, ...)` | `AskStream` |
+| `machines` | `await client.machines.messages(machine_id, ...)` | durable `MachineMessageList` |
 
-**Where to get them.** Create a free account at [cmdop.com](https://cmdop.com) —
-it provisions your own relay domain, which becomes your `CMDOP_BASE_URL` (e.g.
-`https://<yours>.cmdop.dev`). `CMDOP_TOKEN` is a relay session token — copy it
-from your account's CLI-token page at [my.cmdop.com](https://my.cmdop.com) (or, if
-you run the relay yourself, mint one from its `/admin`); it's the same token the
-desktop/CLI saves when you enroll a machine. `CMDOP_API_KEY` is a platform
-`UserAPIKey` — create it in your account settings at
-[my.cmdop.com](https://my.cmdop.com). The SDK is a client: it does **not** enroll
-machines (that's `cmdop enroll <enrollment-password>` on the agent), so you never
-paste an enrollment password here.
+## Ask streaming and PIN
 
-Precedence is always explicit arg > env var > default.
-
-## Error handling
-
-Every failure surfaces as a typed exception carrying a stable `code` (all
-subclass `CmdopError`):
+Pass a connection PIN up front, before consuming the headless stream.
 
 ```python
-from cmdop import (
-    AuthError, PermissionError, NotFoundError, ConflictError,
-    ValidationError, RateLimitError, ServerError, ConnectionError,
-    TimeoutError, UnavailableError, AgentStreamError, CmdopError,
-)
+async with Client() as client:
+    stream = client.machines.ask(
+        machine_id,
+        "Summarize the current system load.",
+        pin="1234",
+        session="2",
+    )
+
+    async for frame in stream:
+        if frame.type == "event":
+            print(frame.payload)
+        elif frame.type == "error":
+            print(frame.code, frame.message)
+        elif frame.type == "done":
+            print(frame.success, frame.text)
+```
+
+For the common one-shot case, `collect()` drains the stream and returns final
+text. An unsuccessful `done` raises `AgentStreamError`.
+
+```python
+text = await client.machines.ask(machine_id, "Reply with: pong", pin="1234").collect()
+```
+
+`ask()` also accepts `attachment_ids`, `engine`, `working_dir`,
+`project_root_id`, and `model`. A stream is single-consumer and yields only
+typed `event`, `error`, and `done` frames.
+
+## Durable messages
+
+```python
+history = await client.machines.messages(machine_id, session="2", limit=100)
+for message in history.messages:
+    print(message.seq, message.role, message.content)
+```
+
+`limit` must be between 1 and 500.
+
+## Configuration
+
+| Setting | Constructor | Environment | Default |
+|---|---|---|---|
+| Relay URL | `base_url` | `CMDOP_BASE_URL` | local Cmdop config |
+| Bearer token | `token` | `CMDOP_TOKEN` | local Cmdop credentials |
+| Timeout | `timeout_ms` | `CMDOP_TIMEOUT_MS` | `30000` |
+| Development binary override | `binary_path` | `CMDOP_CORE_BINARY` | packaged host binary |
+
+Use `async with Client()` or call `await client.aclose()` when finished.
+
+## Typed errors
+
+Every protocol failure is a `CmdopError` with stable `code`, optional HTTP
+`status`, `retryable`, and redacted `details` fields. Common subclasses include
+`AuthError`, `PermissionError`, `ValidationError`, `NotFoundError`,
+`UnavailableError`, `TimeoutError`, `ConnectionError`, and `AgentStreamError`.
+
+```python
+from cmdop import CmdopError
 
 try:
-    await c.machines.get("missing-id")
-except NotFoundError:
-    ...
-except CmdopError as e:
-    if e.retryable:           # True on TimeoutError — safe to retry
-        ...
-    print(e.code, e.message)
+    await client.machines.messages("missing")
+except CmdopError as error:
+    print(error.code, error.status, error.retryable)
 ```
 
-`ConnectionError` covers a lost connection mid-call (pending calls reject);
-`TimeoutError` (a retryable subclass) is a deadline/handshake timeout;
-`UnavailableError` means the relay is up but the target agent/machine is offline.
-`AgentStreamError` is the streaming-`ask` error outcome.
-
-## Links
-
-- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
-- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
-  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
-  [cmdop.com/connect](https://cmdop.com/connect)
-- [`cmdop` on PyPI](https://pypi.org/project/cmdop/) ·
-  [source](https://github.com/commandoperator/cmdop-sdk)
+Documentation: [docs.cmdop.com](https://docs.cmdop.com) · Source:
+[commandoperator/cmdop-sdk](https://github.com/commandoperator/cmdop-sdk)

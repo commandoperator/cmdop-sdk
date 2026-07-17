@@ -1,7 +1,7 @@
 {
   "name": "@cmdop/sdk",
-  "version": "1.1.1",
-  "description": "Typed Node SDK for CMDOP \u2014 the messenger for machines. Manage your fleet, stream each machine's resident AI agent, zero dependencies (machines, fleets, tunnels, schedules, keys, and machine AI ask streaming).",
+  "version": "2.0.0",
+  "description": "Typed Node SDK for the current Cmdop machine roster, agent stream, and durable messages.",
   "license": "MIT",
   "homepage": "https://cmdop.com/sdk",
   "repository": {
@@ -50,6 +50,7 @@
   "devDependencies": {
     "@types/node": "^20.14.0",
     "tsup": "^8.3.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   },

@@ -1,172 +1,122 @@
-/**
- * `machines.ask` streaming: the typed frame union + {@link AskStream}.
- *
- * The Go core drives the relay's SSE `/ask` + the `/pin` + `/confirm`
- * side-channel POSTs and projects each onto an `Envelope` on the call's id
- * (report 13 §4.1). This module turns those envelopes into a typed discriminated
- * union and exposes the archived wrapper's ergonomics: `for await (const frame of
- * stream)`, `stream.pin(...)`, `stream.confirm(...)`, `stream.collect()`.
- *
- * The mid-stream answer (pin/confirm) writes an `ANSWER` envelope on the **same
- * id**; the core resumes the stream.
- */
-
-import { create } from "@bufbuild/protobuf";
-import { AgentStreamError, type CmdopError, mapCoreError } from "./errors";
 import {
+  AskStreamErrorCode,
   type Envelope,
   Envelope_Kind,
-  EnvelopeSchema,
-} from "./_proto/cmdop/core/v1/envelope_pb";
+} from "./_proto/cmdop/core/v2/contract_pb";
+import { AgentStreamError, TimeoutError } from "./errors";
 
-/** Discriminated union of frames surfaced by `machines.ask`. */
 export type AskFrame =
-  | { type: "event"; eventType: number; payload: unknown }
-  | { type: "done"; success: boolean; text: string; error: string; durationMs: number }
-  | { type: "confirm_required"; token: string; plan: string; dangerLevel: string }
-  | { type: "pin_required"; challengeId: string; label: string }
-  | { type: "pin_denied"; challengeId: string; reason: string }
-  | { type: "unknown"; raw: string };
+  | { type: "event"; eventType: number; payload: unknown; machineId?: string }
+  | { type: "error"; code: string; message: string }
+  | {
+      type: "done";
+      success: boolean;
+      text: string;
+      error?: string;
+      upstreamStatus?: number;
+      provider?: string;
+      detail?: string;
+      inputTokens?: bigint;
+      outputTokens?: bigint;
+      totalTokens?: bigint;
+      cacheReadTokens?: bigint;
+      cacheWriteTokens?: bigint;
+      costUsd?: number;
+      costSource?: string;
+      engine?: string;
+      model?: string;
+    };
 
-/** What `call_stream` registers a stream with: a transport-driven frame source. */
 export interface StreamSource {
-  /** Allocated correlation id (set once the stream is started). */
-  readonly id: number;
-  /** Async-iterate the raw envelopes for this stream (terminates on done). */
   envelopes(): AsyncGenerator<Envelope>;
-  /** Write an ANSWER envelope on this stream's id. */
-  answer(env: Envelope): Promise<void>;
 }
 
-/**
- * Stream-terminal `error` codes that surface as their typed exception (not the
- * generic {@link AgentStreamError}) — the connection-PIN gate's verdicts.
- * Everything else keeps the established AgentStreamError stream contract.
- */
-const TYPED_STREAM_ERROR_CODES = new Set(["pin_denied", "pin_required_timeout"]);
+const STREAM_ERROR_NAMES: Record<number, string> = {
+  [AskStreamErrorCode.UNSPECIFIED]: "unspecified",
+  [AskStreamErrorCode.MACHINE_OFFLINE]: "machine_offline",
+  [AskStreamErrorCode.NO_TARGETS]: "no_targets",
+  [AskStreamErrorCode.INTERNAL]: "internal",
+  [AskStreamErrorCode.PIN_DENIED]: "pin_denied",
+};
 
-/**
- * Build the error to throw for a stream-terminal ERROR frame: the typed PIN
- * exception for a PIN-gate verdict, else the generic {@link AgentStreamError}.
- */
-function streamError(code: string, message: string): CmdopError {
-  if (TYPED_STREAM_ERROR_CODES.has(code)) {
-    return mapCoreError(code, message);
-  }
-  return new AgentStreamError(code || "internal", message || "");
-}
-
-function frameFromEnvelope(env: Envelope): AskFrame {
-  switch (env.kind) {
-    case Envelope_Kind.DONE: {
-      const d = env.payload.case === "done" ? env.payload.value : undefined;
-      return {
-        type: "done",
-        success: d?.success ?? false,
-        text: d?.text ?? "",
-        error: d?.error ?? "",
-        durationMs: Number(d?.durationMs ?? 0),
-      };
-    }
-    case Envelope_Kind.CALLBACK: {
-      if (env.payload.case === "pinRequired") {
-        const pr = env.payload.value;
-        return { type: "pin_required", challengeId: pr.challengeId, label: pr.label };
-      }
-      if (env.payload.case === "confirmRequired") {
-        const cr = env.payload.value;
-        return {
-          type: "confirm_required",
-          token: cr.token,
-          plan: cr.plan,
-          dangerLevel: cr.dangerLevel || "medium",
-        };
-      }
-      return { type: "unknown", raw: env.payload.case ?? "" };
-    }
-    case Envelope_Kind.EVENT: {
-      if (env.payload.case !== "askFrame") return { type: "unknown", raw: env.payload.case ?? "" };
-      const f = env.payload.value.frame;
-      if (f.case === "event") {
-        let payload: unknown = undefined;
-        if (f.value.payloadJson) {
-          try {
-            payload = JSON.parse(f.value.payloadJson);
-          } catch {
-            payload = f.value.payloadJson;
-          }
-        }
-        return { type: "event", eventType: f.value.eventType, payload };
-      }
-      if (f.case === "pinDenied") {
-        return { type: "pin_denied", challengeId: f.value.challengeId, reason: f.value.reason };
-      }
-      return { type: "unknown", raw: f.case ?? "" };
-    }
-    default:
-      return { type: "unknown", raw: String(env.kind) };
-  }
-}
-
-/**
- * Async-iterable of {@link AskFrame} with `pin()` / `confirm()` / `collect()`.
- *
- * Iterating starts the streaming call; a terminal ERROR envelope is thrown as an
- * {@link AgentStreamError}.
- */
 export class AskStream implements AsyncIterable<AskFrame> {
-  constructor(private readonly source: StreamSource) {}
+  #consumed = false;
+
+  constructor(
+    private readonly source: StreamSource,
+    private readonly timeoutMs: number,
+  ) {}
 
   async *[Symbol.asyncIterator](): AsyncIterator<AskFrame> {
-    for await (const env of this.source.envelopes()) {
-      if (env.kind === Envelope_Kind.ERROR) {
-        const info = env.payload.case === "error" ? env.payload.value : undefined;
-        // PIN-gate verdicts surface as PinDeniedError / PinTimeoutError.
-        throw streamError(info?.code || "", info?.message || "");
+    if (this.#consumed) throw new Error("an AskStream can only be consumed once");
+    this.#consumed = true;
+    const iterator = this.source.envelopes();
+    for (;;) {
+      const result = await withTimeout(iterator.next(), this.timeoutMs);
+      if (result.done) return;
+      const env = result.value;
+      if (env.kind === Envelope_Kind.EVENT && env.payload.case === "askEvent") {
+        let payload: unknown = env.payload.value.payloadJson;
+        try {
+          payload = JSON.parse(env.payload.value.payloadJson);
+        } catch {
+          // Preserve a non-JSON payload verbatim.
+        }
+        yield {
+          type: "event",
+          eventType: env.payload.value.eventType,
+          payload,
+          machineId: env.payload.value.machineId,
+        };
+      } else if (env.kind === Envelope_Kind.EVENT && env.payload.case === "askStreamError") {
+        yield {
+          type: "error",
+          code: STREAM_ERROR_NAMES[env.payload.value.code] ?? "internal",
+          message: env.payload.value.message,
+        };
+      } else if (env.kind === Envelope_Kind.DONE && env.payload.case === "askDone") {
+        const value = env.payload.value;
+        yield { type: "done", ...value };
       }
-      yield frameFromEnvelope(env);
     }
   }
 
-  /** Answer a `pin_required` frame with the entered connection PIN. */
-  async pin(challengeId: string, pin: string): Promise<void> {
-    await this.source.answer(
-      create(EnvelopeSchema, {
-        id: this.source.id,
-        kind: Envelope_Kind.ANSWER,
-        payload: { case: "pinAnswer", value: { challengeId, pin } },
-      }),
-    );
-  }
-
-  /**
-   * Answer a `confirm_required` frame. `accept=true` resumes the stream onto the
-   * same id; `accept=false` ends it with a rejected `done`.
-   */
-  async confirm(token: string, accept: boolean): Promise<void> {
-    await this.source.answer(
-      create(EnvelopeSchema, {
-        id: this.source.id,
-        kind: Envelope_Kind.ANSWER,
-        payload: { case: "confirmAnswer", value: { token, accept } },
-      }),
-    );
-  }
-
-  /**
-   * Drain to the final text (the `done` frame's text, else accumulated event
-   * deltas). Throws {@link AgentStreamError} on an error outcome.
-   */
   async collect(): Promise<string> {
     let text = "";
-    for await (const f of this) {
-      if (f.type === "event") {
-        const p = f.payload as { delta?: string; text?: string } | undefined;
-        text += p?.delta ?? p?.text ?? "";
-      } else if (f.type === "done") {
-        return f.text || text;
+    let streamError: Extract<AskFrame, { type: "error" }> | undefined;
+    for await (const frame of this) {
+      if (frame.type === "event") {
+        const payload = frame.payload as { delta?: string; text?: string } | undefined;
+        text += payload?.delta ?? payload?.text ?? "";
+      } else if (frame.type === "error") {
+        streamError = frame;
+      } else if (!frame.success) {
+        throw new AgentStreamError(
+          frame.error ?? streamError?.message ?? "agent run failed",
+          streamError?.code ?? "internal",
+          frame.upstreamStatus,
+        );
+      } else {
+        return frame.text || text;
       }
     }
     return text;
+  }
+}
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new TimeoutError("agent stream timed out", "deadline_exceeded", undefined, true)),
+          timeoutMs,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
