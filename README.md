@@ -1,133 +1,79 @@
-# cmdop — the official SDK for CMDOP
+# Cmdop SDK 2.0
 
-![cmdop SDK — Python + Node](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/hero-cmdop-sdk.webp)
+Official typed SDK for the current Cmdop machine roster, agent stream, and
+durable messages. Python `cmdop` and Node `@cmdop/sdk` expose the same async v2
+surface.
 
-Programmatic access to your CMDOP fleet from **Python** and **Node** — manage
-machines, fleets, tunnels, and schedules, stream a machine's AI agent live, and
-drive the skills marketplace, all behind one typed client.
-
-CMDOP is a messenger for machines: every machine runs a resident AI agent you can
-message. **This repo is the open, MIT-licensed SDK** — typed Python and Node
-clients for the platform. The agent + relay ship as a separate, free-to-use
-binary. Same model as Telegram: an open client, a hosted service you sign in to.
-
-| | Install | Import |
+| Language | Install | Guide |
 |---|---|---|
-| **Python** | `pip install cmdop` | [`cmdop`](https://pypi.org/project/cmdop/) |
-| **Node** | `npm i @cmdop/sdk` | [`@cmdop/sdk`](https://www.npmjs.com/package/@cmdop/sdk) |
+| Python | `pip install cmdop` | [`sdk/python/README.md`](sdk/python/README.md) |
+| Node | `npm install @cmdop/sdk` | [`sdk/node/README.md`](sdk/node/README.md) |
 
-Both clients ship in lockstep at the **same version** and expose the **same
-surface** — snake_case in Python, camelCase in Node.
+Both packages include the `cmdop-core` process for supported macOS, Linux, and
+Windows hosts. The language client and core communicate using a private,
+length-delimited protobuf protocol over stdio.
 
-📚 **Full documentation: [docs.cmdop.com](https://docs.cmdop.com)** — guides, the
-complete API reference, and streaming details. Product pages:
-[SDK](https://cmdop.com/sdk) · [Bots](https://cmdop.com/bots) ·
-[Connect](https://cmdop.com/connect).
+## Local quick start
 
-## How it connects
-
-![How the CMDOP SDK connects your app to your machines](https://raw.githubusercontent.com/commandoperator/cmdop-sdk/main/assets/diagram-cmdop-sdk.webp)
-
-Your app uses the SDK to reach your machines — any hardware, anywhere — through
-**your CMDOP relay**. A free [cmdop.com](https://cmdop.com) account provisions your
-own isolated relay domain (self-hosting the relay is also supported). The relay
-links your fleet over gRPC and hosts the **fleet orchestrator**, a built-in AI
-that can drive those machines on its own.
-
-## Why it's easy to adopt
-
-- **One install, zero dependencies.** `pip install cmdop` / `npm i @cmdop/sdk` is
-  everything — no native build step, no extra runtime, nothing fetched on first
-  run.
-- **Runs on macOS, Linux, and Windows.** A single self-contained package;
-  nothing is fetched at install or first run. (The CMDOP agent your machines run
-  ships for macOS and Linux.)
-- **Typed end to end.** Every resource and response is fully typed, with one clean
-  async streaming API for live agent output.
-
-## Get your token
-
-The SDK is a client — you need a CMDOP account to point it at.
-
-1. Create a free account at **[cmdop.com](https://cmdop.com)**. It provisions your
-   own isolated **relay domain** — that's your `CMDOP_BASE_URL` (e.g.
-   `https://<yours>.cmdop.dev`). *(Or point at a relay you self-host / a LAN
-   address like `http://127.0.0.1:63141`.)*
-2. Copy your **`CMDOP_TOKEN`** (relay session token) from the CLI-token page at
-   **[my.cmdop.com](https://my.cmdop.com)**.
-3. For the `skills` marketplace, also grab a **`CMDOP_API_KEY`** (platform
-   `UserAPIKey`) from your account settings at [my.cmdop.com](https://my.cmdop.com).
-
-```bash
-export CMDOP_BASE_URL="https://<yours>.cmdop.dev"
-export CMDOP_TOKEN="cmdop_…"
-export CMDOP_API_KEY="…"        # only for skills
-```
-
-Then `Client.from_env()` / `Client.fromEnv()` picks these up. `CMDOP_BASE_URL` is
-required — there is no default relay host (each account gets its own domain).
-
-## Quick start
+`Client()` is the canonical configuration. It uses the active local Cmdop
+server and credentials, so application code does not need to collect setup
+fields that Cmdop already owns.
 
 ```python
-# pip install cmdop
 from cmdop import Client
 
-async with Client(token="...") as c:                 # or Client.from_env()
-    page = await c.machines.list(presence="online")
-    text = await c.machines.ask(machine_id, "uptime").collect()
+async with Client() as client:
+    bootstrap = await client.system.bootstrap()
+    snapshot = await client.machines.list()
+    for machine in snapshot.machines:
+        print(machine.machine_id, machine.display_name)
 ```
 
 ```ts
-// npm i @cmdop/sdk
 import { Client } from "@cmdop/sdk";
 
-const c = new Client({ token: "..." });              // or Client.fromEnv()
-const page = await c.machines.list({ presence: "online" });
-const text = await c.machines.ask(machineId, "uptime").collect();
-await c.close();
+const client = new Client();
+try {
+  const bootstrap = await client.system.bootstrap();
+  const snapshot = await client.machines.list();
+  for (const machine of snapshot.machines) {
+    console.log(machine.machineId, machine.displayName);
+  }
+} finally {
+  await client.close();
+}
 ```
 
-## What you can do
+To select an explicit remote relay, provide `CMDOP_BASE_URL` and
+`CMDOP_TOKEN`, or their matching constructor fields. A remote URL without a
+token fails closed.
 
-| Namespace | What |
+## Public surface
+
+| Capability | Python and Node |
 |---|---|
-| `machines` | list / inspect machines, stream their AI agent (`ask`), read & manage conversations |
-| `fleets` | create and manage fleets, members, and machine membership |
-| `tunnels` | open / close / inspect tunnels |
-| `schedules` | create, trigger, and review scheduled jobs |
-| `keys` | issue and revoke access keys |
-| `skills` | browse, install, publish, and review skills from the marketplace |
+| Bootstrap discovery | `client.system.bootstrap()` |
+| Authoritative machine snapshot | `client.machines.list()` |
+| One-machine agent stream | `client.machines.ask(...)` |
+| Durable machine history | `client.machines.messages(...)` |
 
-The headline feature is **`machines.ask()`** — stream a machine's AI agent as a
-clean async iterator of typed events. A connection PIN can be passed **upfront**
-(`ask(…, pin="…")`, the headless default) or answered reactively mid-stream, and
-dangerous plans surface as inline confirmation prompts.
+Ask accepts typed session, attachment, engine, working-directory, project-root,
+model, and connection-PIN options. Supply PIN before streaming begins. The
+single-consumer stream yields `event`, `error`, and terminal `done` frames;
+`collect()` returns final text or raises `AgentStreamError`.
 
-> **Two planes, one client.** `machines / fleets / tunnels / schedules / keys` use
-> your relay token (`CMDOP_TOKEN`); the **`skills`** marketplace uses your platform
-> API key (`CMDOP_API_KEY`). Set whichever you need — the client routes each call
-> to the right plane.
+## Development checks
 
-## Per-package docs
+```bash
+buf lint core/proto
+python3 core/parity/check.py --require-go
+cd sdk/python && uv run pytest -q
+cd ../node && pnpm exec vitest run
+cd ../.. && python3 scripts/check_docs.py
+```
 
-Full method reference, streaming details, environment variables, and error
-handling live in each package's README:
+The capability matrix at `core/parity/capabilities.v2.json` is the public API
+authority. Generated proto outputs are never edited by hand.
 
-- **Python** → [`python/README.md`](python/README.md)
-- **Node** → [`node/README.md`](node/README.md)
-
-## Links
-
-- **Docs** → [docs.cmdop.com](https://docs.cmdop.com)
-- **SDK** → [cmdop.com/sdk](https://cmdop.com/sdk) · **Bots** →
-  [cmdop.com/bots](https://cmdop.com/bots) · **Connect** →
-  [cmdop.com/connect](https://cmdop.com/connect)
-- [`cmdop` on PyPI](https://pypi.org/project/cmdop/) ·
-  [`@cmdop/sdk` on npm](https://www.npmjs.com/package/@cmdop/sdk)
-- [CMDOP](https://cmdop.com)
-
-## License
-
-The SDK (this repo) is **MIT** — see [LICENSE](LICENSE). The CMDOP agent/relay
-binary and cloud are separate products.
+Documentation: [docs.cmdop.com](https://docs.cmdop.com) · License:
+[MIT](LICENSE)

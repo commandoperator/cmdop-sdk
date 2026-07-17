@@ -1,17 +1,4 @@
-"""Typed resource namespaces driving the cmdop-core stdio transport."""
-
-from __future__ import annotations
-
-from cmdop.resources.fleets import FleetsResource
-from cmdop.resources.keys import KeysResource
 from cmdop.resources.machines import MachinesResource
-from cmdop.resources.schedules import SchedulesResource
-from cmdop.resources.tunnels import TunnelsResource
+from cmdop.resources.system import SystemResource
 
-__all__ = [
-    "FleetsResource",
-    "KeysResource",
-    "MachinesResource",
-    "SchedulesResource",
-    "TunnelsResource",
-]
+__all__ = ["MachinesResource", "SystemResource"]
