@@ -1,138 +1,120 @@
-"""Public error hierarchy + ``ErrorInfo.code`` -> exception mapping.
-
-The Go core emits a terminal ``ERROR`` frame carrying an ``ErrorInfo{code,
-message}``; the thin client maps that ``code`` to the right typed exception via
-:func:`map_core_error`. The ``code`` values are owned by the core
-(``internal/sdk/core/errmap.go``): ``auth / permission / not_found / conflict /
-validation / rate_limit / server / connection / timeout / unavailable`` (plus
-``internal``, ``unknown_op``, ``unsupported`` catch-alls).
-
-This mirrors the archived REST wrapper's :class:`CmdopError` tree exactly; only
-the source of the discriminator changed (an HTTP status became an
-``ErrorInfo.code``).
-"""
+"""Typed errors shared by every v2 SDK operation."""
 
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from cmdop._proto.cmdop.core.v2 import contract_pb2 as pb
 
 
 class CmdopError(Exception):
-    """Base class for every SDK error."""
-
-    #: True for transient failures worth retrying (timeouts). Subclasses override.
-    retryable: bool = False
+    retryable = False
 
     def __init__(
         self,
         message: str,
         *,
+        code: str = "internal",
         status: int | None = None,
-        code: str | None = None,
-        body: Any = None,
+        retryable: bool | None = None,
+        details: Any = None,
     ) -> None:
         super().__init__(message)
         self.message = message
-        self.status = status
         self.code = code
-        self.body = body
+        self.status = status
+        self.details = details
+        if retryable is not None:
+            self.retryable = retryable
 
 
 class AuthError(CmdopError):
-    """``auth`` — invalid/expired/missing token (401)."""
+    pass
 
 
-class PermissionError(CmdopError):  # noqa: A001 - intentional shadow within this ns
-    """``permission`` — role/api-key restriction (403)."""
+class PermissionError(CmdopError):  # noqa: A001
+    pass
 
 
 class NotFoundError(CmdopError):
-    """``not_found`` — resource not visible / not found (404)."""
+    pass
 
 
 class ConflictError(CmdopError):
-    """``conflict`` — slug taken, already linked, last-owner, etc. (409)."""
+    pass
 
 
 class ValidationError(CmdopError):
-    """``validation`` — bad request (422 / unprocessable / bad arg)."""
+    pass
 
 
 class RateLimitError(CmdopError):
-    """``rate_limit`` — too many requests (429)."""
-
-    def __init__(self, *args: Any, retry_after: int | None = None, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.retry_after = retry_after
+    pass
 
 
 class ServerError(CmdopError):
-    """``server`` — relay/agent internal error (5xx)."""
+    pass
 
 
-class ConnectionError(CmdopError):  # noqa: A001 - intentional shadow within this ns
-    """``connection`` — transport failure (DNS, refused, reset) or the core process died."""
+class ConnectionError(CmdopError):  # noqa: A001
+    pass
 
 
-class TimeoutError(ConnectionError):  # noqa: A001 - intentional shadow within this ns
-    """``timeout`` — a deadline/handshake timeout. Retryable; subclasses
-    :class:`ConnectionError` so existing ``except ConnectionError`` still catches it."""
-
+class TimeoutError(ConnectionError):  # noqa: A001
     retryable = True
 
 
 class UnavailableError(CmdopError):
-    """``unavailable`` — the relay is reachable but the target machine/agent has no
-    connected session (it's offline). Distinct from a transport failure."""
+    pass
 
 
-class PinDeniedError(PermissionError):  # noqa: A001 - intentional shadow within this ns
-    """``pin_denied`` — the connection PIN was rejected (wrong PIN, lockout).
-
-    Subclasses :class:`PermissionError` so existing ``except PermissionError``
-    still catches it. Non-retryable: a wrong PIN won't fix itself on retry."""
-
-    retryable = False
+class UnsupportedError(CmdopError):
+    pass
 
 
-class PinTimeoutError(PermissionError):  # noqa: A001 - intentional shadow within this ns
-    """``pin_required_timeout`` — no PIN supplied (or verified) within the gate
-    window. Subclasses :class:`PermissionError`. Non-retryable."""
-
-    retryable = False
+class ProtocolError(CmdopError):
+    pass
 
 
 class AgentStreamError(CmdopError):
-    """An ``error`` outcome from ``machines.ask`` (machine_offline/timeout/internal)."""
-
-    def __init__(self, code: str, message: str) -> None:
-        super().__init__(message, code=code)
+    pass
 
 
-# ErrorInfo.code -> exception class (codes owned by internal/sdk/core/errmap.go).
-_CODE_MAP: dict[str, type[CmdopError]] = {
-    "auth": AuthError,
-    "permission": PermissionError,
+_ERROR_TYPES: dict[str, type[CmdopError]] = {
+    "invalid_argument": ValidationError,
+    "unauthenticated": AuthError,
+    "permission_denied": PermissionError,
     "not_found": NotFoundError,
     "conflict": ConflictError,
-    "validation": ValidationError,
-    "server": ServerError,
-    "connection": ConnectionError,
-    "timeout": TimeoutError,
+    "rate_limited": RateLimitError,
+    "internal": ServerError,
     "unavailable": UnavailableError,
-    "pin_denied": PinDeniedError,
-    "pin_required_timeout": PinTimeoutError,
+    "deadline_exceeded": TimeoutError,
+    "transport": ConnectionError,
+    "unsupported": UnsupportedError,
+    "protocol": ProtocolError,
 }
 
 
-def map_core_error(code: str, message: str) -> CmdopError:
-    """Map a core ``ErrorInfo{code, message}`` to a typed exception."""
-    if code == "rate_limit":
-        return RateLimitError(message, code=code)
+def error_code_name(code: int) -> str:
+    name = pb.ErrorCode.Name(code)
+    return name.removeprefix("ERROR_CODE_").lower()
 
-    cls = _CODE_MAP.get(code)
-    if cls is not None:
-        return cls(message, code=code)
 
-    # internal / unknown_op / unsupported / anything new -> base error.
-    return CmdopError(message, code=code)
+def map_core_error(info: pb.ErrorInfo) -> CmdopError:
+    code = error_code_name(info.code)
+    details: Any = None
+    if info.HasField("details_json"):
+        try:
+            details = json.loads(info.details_json)
+        except ValueError:
+            details = info.details_json
+    error_type = _ERROR_TYPES.get(code, CmdopError)
+    return error_type(
+        info.message or code.replace("_", " "),
+        code=code,
+        status=info.http_status if info.HasField("http_status") else None,
+        retryable=info.retryable,
+        details=details,
+    )

@@ -1,0 +1,217 @@
+{
+  "$comment": "Single source of truth for the live SDK v2 surface. Go operation/path/auth/PIN values are validated against the generated relay OpenAPI; proto values are validated against the descriptor set.",
+  "schema_version": 2,
+  "wire_package": "cmdop.core.v2",
+  "envelope": "cmdop.core.v2.Envelope",
+  "universal_error": {
+    "type": "cmdop.core.v2.ErrorInfo",
+    "arm": "error"
+  },
+  "capabilities": [
+    {
+      "id": "system.bootstrap",
+      "status": "shipped",
+      "shape": "unary",
+      "go": {
+        "operation_id": "bootstrap_info",
+        "method": "GET",
+        "path": "/api/bootstrap",
+        "auth": "public",
+        "pin": "none"
+      },
+      "proto": {
+        "request": {
+          "type": "cmdop.core.v2.SystemBootstrapRequest",
+          "arm": "system_bootstrap_req"
+        },
+        "response": {
+          "type": "cmdop.core.v2.SystemBootstrapResponse",
+          "arm": "system_bootstrap_resp"
+        }
+      }
+    },
+    {
+      "id": "machines.list",
+      "status": "shipped",
+      "shape": "unary",
+      "go": {
+        "operation_id": "machines_snapshot",
+        "method": "GET",
+        "path": "/api/admin/machines/snapshot",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": {
+        "request": {
+          "type": "cmdop.core.v2.ListMachinesRequest",
+          "arm": "list_machines_req"
+        },
+        "response": {
+          "type": "cmdop.core.v2.MachineRosterSnapshot",
+          "arm": "machine_roster_snapshot"
+        }
+      }
+    },
+    {
+      "id": "machines.ask",
+      "status": "shipped",
+      "shape": "server_stream",
+      "go": {
+        "operation_id": "machines_ask_one",
+        "method": "POST",
+        "path": "/api/admin/machines/{id}/ask",
+        "auth": "bearer",
+        "pin": "header-or-body;header-wins"
+      },
+      "proto": {
+        "request": {
+          "type": "cmdop.core.v2.AskMachineRequest",
+          "arm": "ask_machine_req"
+        },
+        "stream": [
+          {
+            "type": "cmdop.core.v2.AskEvent",
+            "arm": "ask_event",
+            "kind": "EVENT"
+          },
+          {
+            "type": "cmdop.core.v2.AskStreamError",
+            "arm": "ask_stream_error",
+            "kind": "EVENT"
+          },
+          {
+            "type": "cmdop.core.v2.AskDone",
+            "arm": "ask_done",
+            "kind": "DONE"
+          }
+        ]
+      }
+    },
+    {
+      "id": "machines.messages",
+      "status": "shipped",
+      "shape": "unary",
+      "go": {
+        "operation_id": "machines_messages",
+        "method": "GET",
+        "path": "/api/admin/machines/{id}/messages",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": {
+        "request": {
+          "type": "cmdop.core.v2.ListMachineMessagesRequest",
+          "arm": "list_machine_messages_req"
+        },
+        "response": {
+          "type": "cmdop.core.v2.MachineMessageList",
+          "arm": "machine_message_list"
+        }
+      }
+    },
+    {
+      "id": "machines.info",
+      "status": "deferred",
+      "reason": "Outside the minimal v2 vertical slice; add only with its typed schema and adapter.",
+      "go": {
+        "operation_id": "machines_info",
+        "method": "GET",
+        "path": "/api/admin/machines/{id}/info",
+        "auth": "bearer",
+        "pin": "header"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.list",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_list",
+        "method": "GET",
+        "path": "/api/admin/conversations",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.get",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_get",
+        "method": "GET",
+        "path": "/api/admin/conversations/{id}",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.create",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_create",
+        "method": "POST",
+        "path": "/api/admin/conversations",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.add_members",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_add_members",
+        "method": "POST",
+        "path": "/api/admin/conversations/{id}/members",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.messages",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_messages",
+        "method": "GET",
+        "path": "/api/admin/conversations/{id}/messages",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.ask",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_ask",
+        "method": "POST",
+        "path": "/api/admin/conversations/{id}/ask",
+        "auth": "bearer",
+        "pin": "header-or-body;header-wins"
+      },
+      "proto": null
+    },
+    {
+      "id": "conversations.mark_read",
+      "status": "deferred",
+      "reason": "Conversation SDK semantics are not part of the P0 v2 contract.",
+      "go": {
+        "operation_id": "conversations_mark_read",
+        "method": "POST",
+        "path": "/api/conversations/{id}/read",
+        "auth": "bearer",
+        "pin": "none"
+      },
+      "proto": null
+    }
+  ]
+}
