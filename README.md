@@ -4,6 +4,15 @@ Official typed SDK for the current Cmdop machine roster, agent stream, and
 durable messages. Python `cmdop` and Node `@cmdop/sdk` expose the same async v2
 surface.
 
+<p align="center">
+  <img src="assets/sdk-overview.webp" alt="CMDOP SDK connects typed application clients through a secured relay to a healthy machine fleet" width="960" />
+</p>
+
+The SDK is the typed bridge from an application to the Cmdop relay: your Python
+or Node client discovers the active server, addresses the machine roster, and
+consumes the same streaming agent and durable-message contract without owning
+transport or process plumbing.
+
 | Language | Install | Guide |
 |---|---|---|
 | Python | `pip install cmdop` | [`python/README.md`](python/README.md) |
