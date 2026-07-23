@@ -1,0 +1,273 @@
+// Cmdop SDK v2 process contract.
+//
+// This package is the only live SDK wire. It intentionally exposes the minimum
+// vertical slice owned by the current Go relay: public bootstrap metadata, the
+// authoritative machine-roster snapshot, one-machine agent streaming, and the
+// durable transcript for a machine session.
+//
+// One Envelope is one varint-size-delimited frame on stdio. The correlation id
+// multiplexes calls. Unary calls terminate with RESPONSE or ERROR. Ask streams
+// emit EVENT frames (including a structured stream error), then a DONE frame;
+// protocol/transport failures use the universal ERROR arm.
+syntax = "proto3";
+
+package cmdop.core.v2;
+
+// Envelope is the language-neutral stdio frame shared by every thin client.
+message Envelope {
+  uint64 id = 1;
+
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    KIND_REQUEST = 1;
+    KIND_RESPONSE = 2;
+    KIND_EVENT = 3;
+    KIND_DONE = 4;
+    KIND_ERROR = 5;
+  }
+  Kind kind = 2;
+
+  oneof payload {
+    // system.bootstrap
+    SystemBootstrapRequest system_bootstrap_req = 10;
+    SystemBootstrapResponse system_bootstrap_resp = 11;
+
+    // machines.list
+    ListMachinesRequest list_machines_req = 20;
+    MachineRosterSnapshot machine_roster_snapshot = 21;
+
+    // machines.ask
+    AskMachineRequest ask_machine_req = 30;
+    AskEvent ask_event = 31;
+    AskDone ask_done = 32;
+    AskStreamError ask_stream_error = 33;
+
+    // machines.messages
+    ListMachineMessagesRequest list_machine_messages_req = 40;
+    MachineMessageList machine_message_list = 41;
+
+    // Universal unary/protocol failure. Ask application failures remain stream
+    // events followed by AskDone{success:false}, matching the live Go SSE wire.
+    ErrorInfo error = 100;
+  }
+}
+
+// --- system.bootstrap ----------------------------------------------------
+
+message SystemBootstrapRequest {}
+
+message WebContractRange {
+  int64 current = 1;
+  int64 min_client = 2;
+  int64 max_client = 3;
+}
+
+message BootstrapUpdate {
+  optional string phase = 1;
+  optional string current_version = 2;
+  optional string new_version = 3;
+}
+
+// Mirrors GET /api/bootstrap. version and update are omitted by the relay when
+// unavailable; bootstrap itself is public and contains no credentials/user data.
+message SystemBootstrapResponse {
+  optional string version = 1;
+  string bundle_id = 2;
+  WebContractRange web_contract = 3;
+  repeated string capabilities = 4;
+  optional BootstrapUpdate update = 5;
+}
+
+// --- machines.list -------------------------------------------------------
+
+// The current roster endpoint is an authoritative snapshot, not a pageable
+// legacy list. epoch+sequence are the cursor for folding newer WS roster and
+// presence pushes over the returned rows.
+message ListMachinesRequest {}
+
+message MachineRosterSnapshot {
+  string epoch = 1;
+  int64 sequence = 2;
+  repeated MachineListItem machines = 3;
+}
+
+message MachineListItem {
+  string machine_id = 1;
+  string display_name = 2;
+  string portable_name = 3;
+  string fleet_id = 4;
+  bool connected = 5;
+  bool requires_pin = 6;
+  string last_seen_at = 7; // RFC3339
+  int64 unread = 8;
+
+  optional bool last_message_failed = 9;
+  optional string os = 10;
+  optional string architecture = 11;
+  optional string agent_version = 12;
+  optional string public_key_fingerprint = 13;
+  optional string public_key_status = 14;
+  optional string presence = 15; // online | stale | offline
+  optional string model_alias = 16;
+
+  optional bool metrics_reported = 17;
+  optional string metrics_collected_at = 18; // RFC3339
+  optional float cpu_percent = 19;
+  optional float memory_percent = 20;
+  optional int64 memory_total_bytes = 21;
+  optional float disk_percent = 22;
+  optional int64 disk_total_bytes = 23;
+  optional string os_version = 24;
+  optional string ip_address = 25;
+  optional int64 uptime_seconds = 26;
+
+  optional bool virtual = 27;
+  optional bool is_coordinator = 28;
+  optional bool is_this_device = 29;
+}
+
+// --- machines.ask --------------------------------------------------------
+
+// Typed replacement for the v1 string options bag. The core maps these fields
+// to the live Go AskRequest body; pin is sent as X-Machine-Pin so it takes the
+// same precedence as the browser contract.
+message AskOptions {
+  optional string pin = 1;
+  optional string session = 2; // empty/"1" = base; "2", "3", ... = that session
+  repeated string attachment_ids = 3;
+  optional string engine = 4;
+  optional string working_dir = 5;
+  optional string project_root_id = 6;
+  optional string model = 7;
+}
+
+message AskMachineRequest {
+  string machine_id = 1;
+  string prompt = 2; // may be empty when attachment_ids is non-empty
+  AskOptions options = 3;
+}
+
+// Numeric values match cmdop.agent.v1.AgentEventType and the live SSE schema.
+enum AgentEventType {
+  AGENT_EVENT_TYPE_UNSPECIFIED = 0;
+  AGENT_EVENT_TYPE_TOKEN = 1;
+  AGENT_EVENT_TYPE_TOOL_START = 2;
+  AGENT_EVENT_TYPE_TOOL_END = 3;
+  AGENT_EVENT_TYPE_THINKING = 4;
+  AGENT_EVENT_TYPE_ERROR = 5;
+  reserved 6;
+  AGENT_EVENT_TYPE_CANCELLED = 7;
+  AGENT_EVENT_TYPE_MEDIA = 8;
+  AGENT_EVENT_TYPE_PLAN_UPDATE = 9;
+  AGENT_EVENT_TYPE_VERIFY = 10;
+  AGENT_EVENT_TYPE_SUB_AGENT = 11;
+  AGENT_EVENT_TYPE_DIFF = 12;
+  AGENT_EVENT_TYPE_NOTICE = 13;
+  AGENT_EVENT_TYPE_ASK_USER = 14;
+}
+
+// payload_json is the agent-native JSON passed through verbatim by the relay.
+message AskEvent {
+  AgentEventType event_type = 1;
+  string payload_json = 2;
+  optional string machine_id = 3; // absent on one-machine ask
+}
+
+message AskDone {
+  bool success = 1;
+  string text = 2;
+  optional string error = 3;
+  optional int32 upstream_status = 4;
+  optional string provider = 5;
+  optional string detail = 6;
+  optional string machine_id = 7;
+
+  optional int64 input_tokens = 8;
+  optional int64 output_tokens = 9;
+  optional int64 total_tokens = 10;
+  optional int64 cache_read_tokens = 11;
+  optional int64 cache_write_tokens = 12;
+  optional double cost_usd = 13;
+  optional string cost_source = 14;
+  optional string engine = 15;
+  optional string model = 16;
+}
+
+// Exact structured codes emitted by the current Go SSE contract.
+enum AskStreamErrorCode {
+  ASK_STREAM_ERROR_CODE_UNSPECIFIED = 0;
+  ASK_STREAM_ERROR_CODE_MACHINE_OFFLINE = 1;
+  ASK_STREAM_ERROR_CODE_NO_TARGETS = 2;
+  ASK_STREAM_ERROR_CODE_INTERNAL = 3;
+  ASK_STREAM_ERROR_CODE_PIN_DENIED = 4;
+}
+
+// An application-level SSE error is followed by AskDone{success:false}; it is
+// not the protocol-terminal universal ErrorInfo below.
+message AskStreamError {
+  AskStreamErrorCode code = 1;
+  string message = 2;
+}
+
+// --- machines.messages ---------------------------------------------------
+
+message ListMachineMessagesRequest {
+  string machine_id = 1;
+  optional string session = 2;
+  optional int32 limit = 3;
+}
+
+message MachineMessageList {
+  repeated ChatMessage messages = 1;
+}
+
+message ChatAttachment {
+  string id = 1;
+  string url = 2;
+  string name = 3;
+  string mime_type = 4; // JSON owner field: mimeType
+  int64 size_bytes = 5; // JSON owner field: sizeBytes
+  string type = 6;
+}
+
+message ChatMessage {
+  string id = 1;
+  int64 seq = 2;
+  string author_kind = 3;
+  string author_id = 4;
+  string role = 5;
+  string content = 6;
+  int64 created_at = 7; // Unix epoch milliseconds
+  optional string tool_call_id = 8;
+  optional int64 event_type = 9;
+  repeated ChatAttachment attachments = 10;
+}
+
+// --- universal errors ---------------------------------------------------
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_INVALID_ARGUMENT = 1;
+  ERROR_CODE_UNAUTHENTICATED = 2;
+  ERROR_CODE_PERMISSION_DENIED = 3;
+  ERROR_CODE_NOT_FOUND = 4;
+  ERROR_CODE_CONFLICT = 5;
+  ERROR_CODE_RATE_LIMITED = 6;
+  ERROR_CODE_INTERNAL = 7;
+  ERROR_CODE_UNAVAILABLE = 8;
+  ERROR_CODE_DEADLINE_EXCEEDED = 9;
+  ERROR_CODE_TRANSPORT = 10;
+  ERROR_CODE_UNSUPPORTED = 11;
+  ERROR_CODE_PROTOCOL = 12;
+}
+
+// ErrorInfo normalizes HTTP/problem, process, and protocol failures for every
+// unary call. details_json is optional redacted diagnostic context, never a raw
+// credential-bearing response body.
+message ErrorInfo {
+  ErrorCode code = 1;
+  string message = 2;
+  optional int32 http_status = 3;
+  bool retryable = 4;
+  optional string details_json = 5;
+}

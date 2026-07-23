@@ -1,28 +1,17 @@
-/**
- * Error hierarchy + `ErrorInfo.code` -> typed error mapper.
- *
- * Mirror of the Python `CmdopError` tree. The Go core emits a terminal `ERROR`
- * frame carrying an `ErrorInfo{code, message}`; {@link mapCoreError} maps that
- * `code` to the right typed exception. Codes are owned by the core
- * (`internal/sdk/core/errmap.go`): `auth / permission / not_found / conflict /
- * validation / rate_limit / server / connection / timeout / unavailable`
- * (+ catch-alls).
- */
+import { ErrorCode, type ErrorInfo } from "./_proto/cmdop/core/v2/contract_pb";
 
 export class CmdopError extends Error {
-  readonly status?: number;
-  readonly code?: string;
-  readonly body?: unknown;
-  /** True for transient failures worth retrying (timeouts). Subclasses override. */
-  readonly retryable: boolean = false;
-
-  constructor(message: string, status?: number, code?: string, body?: unknown) {
+  readonly retryable: boolean;
+  constructor(
+    message: string,
+    readonly code = "internal",
+    readonly status?: number,
+    retryable = false,
+    readonly details?: unknown,
+  ) {
     super(message);
     this.name = new.target.name;
-    this.status = status;
-    this.code = code;
-    this.body = body;
-    // Restore prototype chain for instanceof across transpile targets.
+    this.retryable = retryable;
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
@@ -32,86 +21,62 @@ export class PermissionError extends CmdopError {}
 export class NotFoundError extends CmdopError {}
 export class ConflictError extends CmdopError {}
 export class ValidationError extends CmdopError {}
-
-export class RateLimitError extends CmdopError {
-  readonly retryAfter?: number;
-  constructor(message: string, code?: string, retryAfter?: number, body?: unknown) {
-    super(message, undefined, code, body);
-    this.retryAfter = retryAfter;
-  }
-}
-
+export class RateLimitError extends CmdopError {}
 export class ServerError extends CmdopError {}
 export class ConnectionError extends CmdopError {}
-
-/**
- * `timeout` — a deadline/handshake timeout. Retryable; extends
- * {@link ConnectionError} so existing `instanceof ConnectionError` still catches it.
- */
-export class TimeoutError extends ConnectionError {
-  override readonly retryable = true;
-}
-
-/**
- * `unavailable` — the relay is reachable but the target machine/agent has no
- * connected session (it's offline). Distinct from a transport failure.
- */
+export class TimeoutError extends ConnectionError {}
 export class UnavailableError extends CmdopError {}
+export class UnsupportedError extends CmdopError {}
+export class ProtocolError extends CmdopError {}
+export class AgentStreamError extends CmdopError {}
 
-/**
- * `pin_denied` — the connection PIN was rejected (wrong PIN, lockout).
- * Extends {@link PermissionError} so existing `instanceof PermissionError`
- * still catches it. Non-retryable: a wrong PIN won't fix itself on retry.
- */
-export class PinDeniedError extends PermissionError {
-  override readonly retryable = false;
-}
-
-/**
- * `pin_required_timeout` — no PIN supplied (or verified) within the gate window.
- * Extends {@link PermissionError}. Non-retryable.
- */
-export class PinTimeoutError extends PermissionError {
-  override readonly retryable = false;
-}
-
-/** An `error` outcome from `machines.ask` (machine_offline/timeout/internal). */
-export class AgentStreamError extends CmdopError {
-  constructor(code: string, message: string) {
-    super(message, undefined, code);
-  }
-}
-
-type CmdopErrorCtor = new (
-  message: string,
-  status?: number,
-  code?: string,
-  body?: unknown,
-) => CmdopError;
-
-const CODE_MAP: Record<string, CmdopErrorCtor> = {
-  auth: AuthError,
-  permission: PermissionError,
-  not_found: NotFoundError,
-  conflict: ConflictError,
-  validation: ValidationError,
-  server: ServerError,
-  connection: ConnectionError,
-  timeout: TimeoutError,
-  unavailable: UnavailableError,
-  pin_denied: PinDeniedError,
-  pin_required_timeout: PinTimeoutError,
+const NAMES: Record<number, string> = {
+  [ErrorCode.UNSPECIFIED]: "unspecified",
+  [ErrorCode.INVALID_ARGUMENT]: "invalid_argument",
+  [ErrorCode.UNAUTHENTICATED]: "unauthenticated",
+  [ErrorCode.PERMISSION_DENIED]: "permission_denied",
+  [ErrorCode.NOT_FOUND]: "not_found",
+  [ErrorCode.CONFLICT]: "conflict",
+  [ErrorCode.RATE_LIMITED]: "rate_limited",
+  [ErrorCode.INTERNAL]: "internal",
+  [ErrorCode.UNAVAILABLE]: "unavailable",
+  [ErrorCode.DEADLINE_EXCEEDED]: "deadline_exceeded",
+  [ErrorCode.TRANSPORT]: "transport",
+  [ErrorCode.UNSUPPORTED]: "unsupported",
+  [ErrorCode.PROTOCOL]: "protocol",
 };
 
-/** Map a core `ErrorInfo{code, message}` to a typed {@link CmdopError}. */
-export function mapCoreError(code: string, message: string): CmdopError {
-  if (code === "rate_limit") {
-    return new RateLimitError(message, code);
+const TYPES: Record<string, typeof CmdopError> = {
+  invalid_argument: ValidationError,
+  unauthenticated: AuthError,
+  permission_denied: PermissionError,
+  not_found: NotFoundError,
+  conflict: ConflictError,
+  rate_limited: RateLimitError,
+  internal: ServerError,
+  unavailable: UnavailableError,
+  deadline_exceeded: TimeoutError,
+  transport: ConnectionError,
+  unsupported: UnsupportedError,
+  protocol: ProtocolError,
+};
+
+export function mapCoreError(info: ErrorInfo): CmdopError {
+  const code = NAMES[info.code] ?? "internal";
+  let details: unknown = info.detailsJson;
+  if (info.detailsJson) {
+    try {
+      details = JSON.parse(info.detailsJson);
+    } catch {
+      // Preserve the redacted diagnostic string.
+    }
   }
-  const Ctor = CODE_MAP[code];
-  if (Ctor) {
-    return new Ctor(message, undefined, code);
-  }
-  // internal / unknown_op / unsupported / anything new -> base error.
-  return new CmdopError(message, undefined, code);
+  const ErrorType = TYPES[code] ?? CmdopError;
+  return new ErrorType(
+    info.message || code.replaceAll("_", " "),
+    code,
+    info.httpStatus,
+    info.retryable,
+    details,
+  );
 }
