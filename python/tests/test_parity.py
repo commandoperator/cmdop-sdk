@@ -7,7 +7,7 @@ from pathlib import Path
 from cmdop.resources.machines import MachinesResource
 from cmdop.resources.system import SystemResource
 
-_MATRIX = Path(__file__).resolve().parents[3] / "core" / "parity" / "capabilities.v2.json"
+_MATRIX = Path(__file__).resolve().parents[2] / "core" / "parity" / "capabilities.v2.json"
 
 
 def _expected() -> dict[str, list[str]]:

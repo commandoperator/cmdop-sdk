@@ -6,8 +6,8 @@ surface.
 
 | Language | Install | Guide |
 |---|---|---|
-| Python | `pip install cmdop` | [`sdk/python/README.md`](sdk/python/README.md) |
-| Node | `npm install @cmdop/sdk` | [`sdk/node/README.md`](sdk/node/README.md) |
+| Python | `pip install cmdop` | [`python/README.md`](python/README.md) |
+| Node | `npm install @cmdop/sdk` | [`node/README.md`](node/README.md) |
 
 Both packages include the `cmdop-core` process for supported macOS, Linux, and
 Windows hosts. The language client and core communicate using a private,
@@ -66,10 +66,8 @@ single-consumer stream yields `event`, `error`, and terminal `done` frames;
 
 ```bash
 buf lint core/proto
-python3 core/parity/check.py --require-go
-cd sdk/python && uv run pytest -q
-cd ../node && pnpm exec vitest run
-cd ../.. && python3 scripts/check_docs.py
+cd python && uv run pytest -q
+cd ../node && pnpm install && pnpm exec vitest run
 ```
 
 The capability matrix at `core/parity/capabilities.v2.json` is the public API

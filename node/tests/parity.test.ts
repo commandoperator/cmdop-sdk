@@ -4,7 +4,7 @@ import { expect, it } from "vitest";
 import { actualSurface } from "../src/_parity";
 
 it("matches shipped v2 capabilities", () => {
-  const path = fileURLToPath(new URL("../../../core/parity/capabilities.v2.json", import.meta.url));
+  const path = fileURLToPath(new URL("../../core/parity/capabilities.v2.json", import.meta.url));
   const capabilities = JSON.parse(readFileSync(path, "utf8")).capabilities as Array<{
     id: string;
     status: string;
