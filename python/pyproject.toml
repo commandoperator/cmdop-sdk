@@ -1,5 +1,16 @@
 [build-system]
-requires = ["hatchling"]
+# PINNED, and the upper bound is load-bearing. An unpinned hatchling began
+# emitting `Metadata-Version: 2.5` (>=1.28), which PyPI's upload endpoint
+# REJECTS: `InvalidDistribution: '2.5' is not a valid metadata version`.
+# Measured here on 2026-08-18 — the 2.0.0 release failed at `twine upload`
+# with exactly that error, having built and staged cleanly. The promo fleet
+# hit the same wall on 2026-08-13 and pins the same range, as does every
+# package in cmdop_packaging.
+#
+# Note what does NOT protect you: `twine check --strict` PASSES a 2.5 wheel
+# when the local twine understands it. The pin is the protection; the check
+# is not.
+requires = ["hatchling>=1.21,<1.28"]
 build-backend = "hatchling.build"
 
 [project]
