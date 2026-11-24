@@ -1,51 +1,36 @@
-"""Async Python SDK for the current Cmdop relay."""
+"""cmdop: your machines' tools from a program, the same tools agents use through MCP.
 
-from cmdop import errors, types
-from cmdop.client import Client
-from cmdop.config import ClientConfig
-from cmdop.errors import (
-    AgentStreamError,
-    AuthError,
-    CmdopError,
-    ConflictError,
-    ConnectionError,
-    NotFoundError,
-    PermissionError,
-    ProtocolError,
-    RateLimitError,
-    ServerError,
-    TimeoutError,
-    UnavailableError,
-    UnsupportedError,
-    ValidationError,
-)
-from cmdop.streaming import AskFrame, AskStream, DoneFrame, EventFrame, StreamErrorFrame
+```python
+import cmdop
+with cmdop.connect() as c:            # CMDOP_TOKEN, CMDOP_URL
+    box = c.machine("box")
+    print(box.run("uptime").stdout)
+```
+"""
 
-__version__ = "2.0.0"
+from ._async import AsyncClient, AsyncMachine, AsyncRun, connect_async
+from ._client import Client, Machine, Piece, Run, connect
+from ._errors import CarrierError, CmdopError
+from .carriers import AsyncMemoryCarrier, MemoryCarrier
+from .generated.call import ENVELOPE_MAX_BYTES, ERROR_CODES, PIECE_MAX_BYTES
+from .generated.tools import TOOLS
 
 __all__ = [
-    "AgentStreamError",
-    "AskFrame",
-    "AskStream",
-    "AuthError",
+    "ENVELOPE_MAX_BYTES",
+    "ERROR_CODES",
+    "PIECE_MAX_BYTES",
+    "TOOLS",
+    "AsyncClient",
+    "AsyncMachine",
+    "AsyncMemoryCarrier",
+    "AsyncRun",
+    "CarrierError",
     "Client",
-    "ClientConfig",
     "CmdopError",
-    "ConflictError",
-    "ConnectionError",
-    "DoneFrame",
-    "EventFrame",
-    "NotFoundError",
-    "PermissionError",
-    "ProtocolError",
-    "RateLimitError",
-    "ServerError",
-    "StreamErrorFrame",
-    "TimeoutError",
-    "UnavailableError",
-    "UnsupportedError",
-    "ValidationError",
-    "__version__",
-    "errors",
-    "types",
+    "Machine",
+    "MemoryCarrier",
+    "Piece",
+    "Run",
+    "connect",
+    "connect_async",
 ]

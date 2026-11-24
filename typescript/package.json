@@ -1,0 +1,18 @@
+{
+  "name": "@cmdop/sdk",
+  "version": "3.0.0",
+  "description": "Your machines' tools from a program: the same tools agents use through MCP, typed from Rust.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

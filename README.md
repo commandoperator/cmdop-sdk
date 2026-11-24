@@ -1,86 +1,30 @@
-# Cmdop SDK 2.0
+# CMDOP SDK
 
-Official typed SDK for the current Cmdop machine roster, agent stream, and
-durable messages. Python `cmdop` and Node `@cmdop/sdk` expose the same async v2
-surface.
+Your machines' tools from a program, in TypeScript and Python: the same tools AI agents use through MCP, with the
+same rules and the same record of every call.
 
-<p align="center">
-  <img src="assets/sdk-overview.webp" alt="CMDOP SDK connects typed application clients through a secured relay to a healthy machine fleet" width="960" />
-</p>
-
-The SDK is the typed bridge from an application to the Cmdop relay: your Python
-or Node client discovers the active server, addresses the machine roster, and
-consumes the same streaming agent and durable-message contract without owning
-transport or process plumbing.
-
-| Language | Install | Guide |
+| Language | Install | Source |
 |---|---|---|
-| Python | `pip install cmdop` | [`python/README.md`](python/README.md) |
-| Node | `npm install @cmdop/sdk` | [`node/README.md`](node/README.md) |
-
-Both packages include the `cmdop-core` process for supported macOS, Linux, and
-Windows hosts. The language client and core communicate using a private,
-length-delimited protobuf protocol over stdio.
-
-## Local quick start
-
-`Client()` is the canonical configuration. It uses the active local Cmdop
-server and credentials, so application code does not need to collect setup
-fields that Cmdop already owns.
-
-```python
-from cmdop import Client
-
-async with Client() as client:
-    bootstrap = await client.system.bootstrap()
-    snapshot = await client.machines.list()
-    for machine in snapshot.machines:
-        print(machine.machine_id, machine.display_name)
-```
+| TypeScript / Node | `npm install @cmdop/sdk` | [`typescript/`](typescript/) |
+| Python | `pip install cmdop` | [`python/`](python/) |
 
 ```ts
-import { Client } from "@cmdop/sdk";
+import { connect } from "@cmdop/sdk";
 
-const client = new Client();
-try {
-  const bootstrap = await client.system.bootstrap();
-  const snapshot = await client.machines.list();
-  for (const machine of snapshot.machines) {
-    console.log(machine.machineId, machine.displayName);
-  }
-} finally {
-  await client.close();
-}
+const box = connect().machine("box");        // CMDOP_TOKEN, CMDOP_URL
+console.log((await box.run("uptime")).stdout);
 ```
 
-To select an explicit remote relay, provide `CMDOP_BASE_URL` and
-`CMDOP_TOKEN`, or their matching constructor fields. A remote URL without a
-token fails closed.
+```python
+import cmdop
 
-## Public surface
-
-| Capability | Python and Node |
-|---|---|
-| Bootstrap discovery | `client.system.bootstrap()` |
-| Authoritative machine snapshot | `client.machines.list()` |
-| One-machine agent stream | `client.machines.ask(...)` |
-| Durable machine history | `client.machines.messages(...)` |
-
-Ask accepts typed session, attachment, engine, working-directory, project-root,
-model, and connection-PIN options. Supply PIN before streaming begins. The
-single-consumer stream yields `event`, `error`, and terminal `done` frames;
-`collect()` returns final text or raises `AgentStreamError`.
-
-## Development checks
-
-```bash
-buf lint core/proto
-cd python && uv run pytest -q
-cd ../node && pnpm install && pnpm exec vitest run
+with cmdop.connect() as c:                   # CMDOP_TOKEN, CMDOP_URL
+    print(c.machine("box").run("uptime").stdout)
 ```
 
-The capability matrix at `core/parity/capabilities.v2.json` is the public API
-authority. Generated proto outputs are never edited by hand.
+Both packages are generated from one tool contract, so a tool, its arguments and its result are the same in each.
+[`vectors/carrier.json`](vectors/carrier.json) holds the cases every client must pass.
 
-Documentation: [docs.cmdop.com](https://docs.cmdop.com) · License:
-[MIT](LICENSE)
+This repository is the published source of each release (`v<version>` tags); issues are welcome here.
+
+Docs: https://docs.cmdop.ai · License: [MIT](LICENSE)

@@ -1,78 +1,34 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "cmdop"
-version = "2.0.0"
-description = "Async Python SDK for the current Cmdop machine roster, agent stream, and durable messages."
+version = "3.0.0"
+description = "Your machines' tools from a program: the same tools agents use through MCP, typed from Rust."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{ name = "CMDOP" }]
-keywords = ["cmdop", "sdk", "relay", "agents", "remote-control", "ai-agents", "automation"]
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Typing :: Typed",
+license-files = ["LICENSE"]
+# The core stays two libraries (developer SDK plan, section 3): a carrier needing a runtime of its own is an extra.
+dependencies = [
+    "httpx>=0.28,<1",
+    "pydantic>=2.10,<3",
+    "typing-extensions>=4.12",
 ]
-dependencies = ["protobuf>=7.35.1"]
 
-[project.urls]
-Homepage = "https://cmdop.com/sdk"
-Documentation = "https://docs.cmdop.com"
-Repository = "https://github.com/commandoperator/cmdop-sdk"
-"Bug Tracker" = "https://github.com/commandoperator/cmdop-sdk/issues"
-Bots = "https://cmdop.com/bots"
-Connect = "https://cmdop.com/connect"
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "pyright>=1.1.400", "cryptography>=44"]
 
-[dependency-groups]
-dev = [
-    "pytest>=8.0",
-    "pytest-asyncio>=0.23",
-    "ruff>=0.6",
-    "mypy>=1.10",
-    "types-protobuf>=5",
-]
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cmdop"]
-# Single fat wheel (py3-none-any): ALL 5 cmdop-core binaries are staged into
-# src/cmdop/_bin/ by scripts/stage_packages.py at build time, named
-# cmdop-core-<plat>-<arch>[.exe]. _bin/ is .gitignored (the binaries are build
-# artifacts, never committed), so hatchling's default VCS exclusion would drop
-# them from the wheel — force-include the whole dir as build artifacts. The
-# locator (cmdop/_locate.py) picks the host's binary via
-# importlib.resources.files("cmdop._bin"). The wheel is platform-neutral
-# (py3-none-any) — it carries every platform's binary, no wheel-tag matching.
-artifacts = ["src/cmdop/_bin/*"]
 
-[tool.hatch.build.targets.sdist]
-include = ["src/cmdop", "README.md"]
-# Never ship the per-platform binary in the sdist — the sdist is platform-neutral
-# source; only the per-platform wheels carry the baked binary.
-exclude = ["src/cmdop/_bin"]
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.10"
+# Generated models are checked by their own generator; the methods that use them are checked here.
+exclude = ["src/cmdop/generated/args.py", "src/cmdop/generated/models.py", "src/cmdop/generated/call.py"]
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
 testpaths = ["tests"]
-
-[tool.ruff]
-line-length = 100
-target-version = "py310"
-# Vendored, generated protobuf code — never lint it.
-extend-exclude = ["src/cmdop/_proto"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501"]
-
-[tool.mypy]
-python_version = "3.10"
-files = ["src/cmdop"]
-exclude = ["src/cmdop/_proto/"]
-ignore_missing_imports = true
-follow_imports = "silent"

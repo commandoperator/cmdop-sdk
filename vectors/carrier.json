@@ -1,0 +1,268 @@
+{
+  "$comment": "Generated from crates/tools/src/vectors.rs by `cargo xtask carrier-vectors`. Do not edit.",
+  "vectors": [
+    {
+      "about": "A one-shot call answers with the tool's result.",
+      "call": {
+        "args": {
+          "command": "printf hi"
+        },
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "ok": {
+            "cancelled": false,
+            "duration_ms": 1,
+            "exit_code": 0,
+            "stderr": "",
+            "stdout": "hi",
+            "timed_out": false,
+            "truncated": false
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "ok",
+        "result": {
+          "exit_code": 0,
+          "stdout": "hi"
+        }
+      },
+      "live": true,
+      "name": "call_ok",
+      "stream": false
+    },
+    {
+      "about": "A streamed call gives its pieces in order, then the same answer a one-shot call gives.",
+      "call": {
+        "args": {
+          "command": "printf a; sleep 0.3; printf b >&2"
+        },
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "chunk": {
+            "data": "a",
+            "stream": "stdout"
+          },
+          "seq": 0
+        },
+        {
+          "chunk": {
+            "data": "b",
+            "stream": "stderr"
+          },
+          "seq": 1
+        },
+        {
+          "ok": {
+            "cancelled": false,
+            "duration_ms": 1,
+            "exit_code": 0,
+            "stderr": "b",
+            "stdout": "a",
+            "timed_out": false,
+            "truncated": false
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "ok",
+        "pieces": [
+          {
+            "data": "a",
+            "stream": "stdout"
+          },
+          {
+            "data": "b",
+            "stream": "stderr"
+          }
+        ],
+        "result": {
+          "exit_code": 0,
+          "stderr": "b",
+          "stdout": "a"
+        }
+      },
+      "live": true,
+      "name": "stream_pieces",
+      "stream": true
+    },
+    {
+      "about": "A tool no machine has is refused with its code.",
+      "call": {
+        "args": {},
+        "tool": "no_such_tool"
+      },
+      "door": [
+        {
+          "error": {
+            "code": "unknown_tool",
+            "message": "no tool no_such_tool"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "unknown_tool"
+      },
+      "live": true,
+      "name": "unknown_tool",
+      "stream": false
+    },
+    {
+      "about": "A streamed call refused before it runs ends with the refusal and no pieces.",
+      "call": {
+        "args": {},
+        "tool": "no_such_tool"
+      },
+      "door": [
+        {
+          "error": {
+            "code": "unknown_tool",
+            "message": "no tool no_such_tool"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "unknown_tool"
+      },
+      "live": true,
+      "name": "stream_refused",
+      "stream": true
+    },
+    {
+      "about": "Arguments that do not match the tool's schema are refused with `bad_args`.",
+      "call": {
+        "args": {
+          "command": 5
+        },
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "error": {
+            "code": "bad_args",
+            "message": "invalid type: integer, expected a string"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "bad_args"
+      },
+      "live": true,
+      "name": "bad_args",
+      "stream": false
+    },
+    {
+      "about": "The caller's deadline, shorter than the tool's time, ends the call with `timed_out`.",
+      "call": {
+        "args": {
+          "command": "sleep 20"
+        },
+        "deadline_ms": 300,
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "error": {
+            "code": "timed_out",
+            "message": "no answer within 300 ms"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "timed_out"
+      },
+      "live": true,
+      "name": "deadline",
+      "stream": false
+    },
+    {
+      "about": "A call above `limits.envelope_max_bytes` is refused with `too_large`; nothing runs.",
+      "call": {
+        "args": {
+          "command": "true"
+        },
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "error": {
+            "code": "too_large",
+            "message": "the call is more than one call may hold"
+          }
+        }
+      ],
+      "expect": {
+        "outcome": "too_large"
+      },
+      "live": true,
+      "name": "too_large",
+      "pad_command_to": 17825792,
+      "stream": false
+    },
+    {
+      "about": "A caller who stops after the first piece ends the call with `cancelled`.",
+      "call": {
+        "args": {
+          "command": "echo started; sleep 20"
+        },
+        "tool": "exec_run"
+      },
+      "cancel_after_pieces": 1,
+      "door": [
+        {
+          "chunk": {
+            "data": "started\n",
+            "stream": "stdout"
+          },
+          "seq": 0
+        }
+      ],
+      "expect": {
+        "outcome": "cancelled",
+        "pieces": [
+          {
+            "data": "started\n",
+            "stream": "stdout"
+          }
+        ]
+      },
+      "live": false,
+      "name": "cancel",
+      "stream": true
+    },
+    {
+      "about": "A stream that ends without an answer is a broken channel, not a result.",
+      "call": {
+        "args": {
+          "command": "echo a"
+        },
+        "tool": "exec_run"
+      },
+      "door": [
+        {
+          "chunk": {
+            "data": "a\n",
+            "stream": "stdout"
+          },
+          "seq": 0
+        }
+      ],
+      "expect": {
+        "outcome": "carrier_error",
+        "pieces": [
+          {
+            "data": "a\n",
+            "stream": "stdout"
+          }
+        ]
+      },
+      "live": false,
+      "name": "dropped",
+      "stream": true
+    }
+  ]
+}
