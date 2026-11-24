@@ -12,13 +12,14 @@ import time
 from collections.abc import Callable, Iterator
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from ._errors import CarrierError, CmdopError
 from ._sealing import Sealing
 from .carriers import Carrier, HttpCarrier, Json
 from .carriers._carrier import is_answer
 from .generated.call import OutputChunk
+from .generated.server import ServerTools
 from .generated.tools import Tools
 
 T = TypeVar("T", bound=BaseModel)
@@ -160,8 +161,9 @@ class Machine(Tools):
         return self._client.stream(name, args, machine=self.name, deadline=deadline, out=out)
 
 
-class Client:
-    """Your machines. Use `cmdop.connect()`; close it, or use it as a context manager."""
+class Client(ServerTools):
+    """Your machines. Use `cmdop.connect()`; close it, or use it as a context manager. The tools the server answers
+    itself are its methods (`cmdop.showtime_guide()`, `cmdop.tasks_list()`), generated (`generated/server.py`)."""
 
     def __init__(self, carrier: Carrier, e2e: Sealing | None = None) -> None:
         self.carrier_impl = carrier
@@ -188,6 +190,10 @@ class Client:
             return settle(self.carrier_impl.call(req))
         sealed, replies = self._sealer.seal(req, self.machines(), time.time())
         return settle(self._sealer.open_answer(self.carrier_impl.call(sealed), replies))
+
+    def _server(self, name: str, args: dict[str, Any], out: Any, deadline: float | None) -> Any:
+        # The server reads these arguments and answers from its own records: there is no machine to seal for.
+        return TypeAdapter(out).validate_python(settle(self.carrier_impl.call(request(name, args, None, deadline))))
 
     def stream(
         self, tool: str, args: dict[str, Any], *, machine: str | None = None, deadline: float | None = None, out: type[T] | None = None

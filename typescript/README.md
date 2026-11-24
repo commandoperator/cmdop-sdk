@@ -23,6 +23,10 @@ its group (`box.fs.read({ path })`, `box.task.start({ command })`); `box.screens
 `cmdop.call(tool, args, { machine })` reaches any of them by name. A refused call throws `CmdopError` with its
 `code`; `deadline` and `signal` bound and cancel any call.
 
+The tools the server answers itself are methods of the client, with no machine: `cmdop.machines_list()`,
+`cmdop.tasks_list()`, `cmdop.history_search({ text })` and `cmdop.showtime_guide({ language })`, the guide for a
+short live demo of what your machines can do.
+
 ## The same tools over MCP
 
 CMDOP is an MCP server too: an agent reaches these tools at `$CMDOP_URL/mcp` (streamable HTTP) with an agent token

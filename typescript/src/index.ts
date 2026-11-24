@@ -17,5 +17,6 @@ export { memoryCarrier, type MemoryDoor } from "./carriers/memory.ts";
 export * from "./generated/tools.gen.ts";
 export * from "./generated/call.gen.ts";
 export { GROUPS, type GroupName } from "./generated/surface.gen.ts";
+export { SERVER_TOOLS, SERVER_TOOL_NAMES, type ServerToolMap, type ServerToolName } from "./generated/server.gen.ts";
 export { decodeImage, toScreenshot, type DecodedImage, type Screenshot } from "./screen.ts";
 export { anthropicToCalls, openaiToCalls, performCalls, UnsupportedAction, type Step, type VendorOptions } from "./vendor.ts";

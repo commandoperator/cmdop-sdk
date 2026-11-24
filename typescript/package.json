@@ -1,6 +1,6 @@
 {
   "name": "@cmdop/sdk",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Your machines' tools from a program: the same tools agents use through MCP, typed from Rust.",
   "license": "MIT",
   "type": "module",

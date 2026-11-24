@@ -5,6 +5,7 @@ import cmdop
 with cmdop.connect() as c:            # CMDOP_TOKEN, CMDOP_URL
     box = c.machine("box")
     print(box.run("uptime").stdout)
+    print(c.showtime_guide(language="en"))   # the server's own tools are client methods
 ```
 """
 
@@ -14,6 +15,7 @@ from ._errors import CarrierError, CmdopError
 from ._screen import DecodedImage, Screenshot
 from .carriers import AsyncMemoryCarrier, MemoryCarrier
 from .generated.call import ENVELOPE_MAX_BYTES, ERROR_CODES, PIECE_MAX_BYTES
+from .generated.server import SERVER_TOOLS
 from .generated.tools import GROUPS, TOOLS
 
 __all__ = [
@@ -21,6 +23,7 @@ __all__ = [
     "ERROR_CODES",
     "GROUPS",
     "PIECE_MAX_BYTES",
+    "SERVER_TOOLS",
     "TOOLS",
     "AsyncClient",
     "AsyncMachine",

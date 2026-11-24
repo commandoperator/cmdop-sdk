@@ -18,6 +18,7 @@
  */
 
 import type { Answer, CallRequest, ErrorCode, OutputChunk, StreamLine } from "./generated/call.gen.ts";
+import { SERVER_TOOL_NAMES, type ServerMethods, type ServerToolMap, type ServerToolName } from "./generated/server.gen.ts";
 import { FORMS, GROUPS, type Forms, type Groups } from "./generated/surface.gen.ts";
 import { TOOL_NAMES, type ExecRunOut, type ToolMap, type ToolName } from "./generated/tools.gen.ts";
 import { CarrierError, type Carrier, type MachineRow } from "./carriers/carrier.ts";
@@ -104,7 +105,12 @@ export type Machine = ToolMethods & Groups<Omit<CallOpts, "machine">> & Forms<Om
 /** What a short form's result becomes: the decoders, the one hand-written part of the forms. */
 const DECODE: Record<(typeof FORMS)[number]["result"], (out: never) => unknown> = { raw: (out) => out, screenshot: toScreenshot };
 
-export interface Client {
+/**
+ * The client: the contour's machines, and the tools the server answers itself as methods (`cmdop.showtime_guide()`,
+ * `cmdop.tasks_list()`), generated (`generated/server.gen.ts`). Those take no machine and are never sealed: the server
+ * answers them from its own records.
+ */
+export interface Client extends ServerMethods<Omit<CallOpts, "machine">> {
   /** Which carrier is in use (`"http"`, …): what `auto` picked. */
   readonly carrier: string;
   /** The machines of the contour: name, id, online, os, tools. */
@@ -302,10 +308,26 @@ export function connect(opts: ConnectOptions = {}): Client {
     return out as Machine;
   }
 
+  /** A server tool: no machine, and never sealed, since the server reads its arguments and answers it itself. */
+  async function server<N extends ServerToolName>(tool: N, args: ServerToolMap[N]["args"] | undefined, o: Omit<CallOpts, "machine"> = {}) {
+    const deadline = o.deadline === undefined ? {} : { deadline_ms: Math.max(0, Math.round(o.deadline)) };
+    const req: CallRequest = { tool, args: args ?? {}, ...deadline };
+    let a: Answer;
+    try {
+      a = await carrier.call(req, o.signal ? { signal: o.signal } : {});
+    } catch (e) {
+      throw cancelledOr(e, o.signal);
+    }
+    return settle<ServerToolMap[N]["out"]>(a);
+  }
+  const serverMethods = Object.fromEntries(
+    SERVER_TOOL_NAMES.map((t) => [t, (args?: never, o?: Omit<CallOpts, "machine">) => server(t, args, o)]),
+  ) as unknown as ServerMethods<Omit<CallOpts, "machine">>;
+
   async function publicKey(): Promise<string> {
     if (!opts.e2e) throw new CmdopError("bad_args", "this client was made without e2e");
     return opts.e2e.publicKey();
   }
 
-  return { carrier: carrier.name, machines, machine, call, stream, publicKey, close: () => carrier.close() };
+  return { ...serverMethods, carrier: carrier.name, machines, machine, call, stream, publicKey, close: () => carrier.close() };
 }

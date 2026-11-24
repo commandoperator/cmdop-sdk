@@ -1,6 +1,6 @@
 [project]
 name = "cmdop"
-version = "3.1.0"
+version = "3.2.0"
 description = "Your machines' tools from a program: the same tools agents use through MCP, typed from Rust."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -34,7 +34,10 @@ include = ["src", "tests"]
 typeCheckingMode = "strict"
 pythonVersion = "3.10"
 # Generated models are checked by their own generator; the methods that use them are checked here.
-exclude = ["src/cmdop/generated/args.py", "src/cmdop/generated/models.py", "src/cmdop/generated/call.py"]
+exclude = [
+  "src/cmdop/generated/args.py", "src/cmdop/generated/models.py", "src/cmdop/generated/call.py",
+  "src/cmdop/generated/server_args.py", "src/cmdop/generated/server_models.py",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -6,13 +6,14 @@ import time
 from collections.abc import AsyncIterator, Callable
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from ._client import Piece, carrier_name, piece, request, settle, token_of, url_of
 from ._errors import CarrierError, CmdopError
 from ._sealing import Sealing
 from .carriers import AsyncCarrier, AsyncHttpCarrier, Json
 from .carriers._carrier import is_answer
+from .generated.server import AsyncServerTools
 from .generated.tools import AsyncTools
 
 T = TypeVar("T", bound=BaseModel)
@@ -77,7 +78,9 @@ class AsyncMachine(AsyncTools):
         return self._client.stream(name, args, machine=self.name, deadline=deadline, out=out)
 
 
-class AsyncClient:
+class AsyncClient(AsyncServerTools):
+    """`Client`, awaited. The server's own tools are its methods (`await cmdop.showtime_guide()`)."""
+
     def __init__(self, carrier: AsyncCarrier, e2e: Sealing | None = None) -> None:
         self.carrier_impl = carrier
         self._sealer = e2e
@@ -99,6 +102,10 @@ class AsyncClient:
             return settle(await self.carrier_impl.call(req))
         sealed, replies = self._sealer.seal(req, await self.machines(), time.time())
         return settle(self._sealer.open_answer(await self.carrier_impl.call(sealed), replies))
+
+    async def _server(self, name: str, args: dict[str, Any], out: Any, deadline: float | None) -> Any:
+        # The server reads these arguments and answers from its own records: there is no machine to seal for.
+        return TypeAdapter(out).validate_python(settle(await self.carrier_impl.call(request(name, args, None, deadline))))
 
     def stream(
         self, tool: str, args: dict[str, Any], *, machine: str | None = None, deadline: float | None = None, out: type[T] | None = None

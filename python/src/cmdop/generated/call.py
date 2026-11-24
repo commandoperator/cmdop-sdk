@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 72ba780fabadfafb, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 d9aba5e354666f95, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
