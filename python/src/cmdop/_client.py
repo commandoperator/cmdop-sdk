@@ -13,14 +13,11 @@ from collections.abc import Callable, Iterator
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
-from typing_extensions import Unpack
 
 from ._errors import CarrierError, CmdopError
 from ._sealing import Sealing
 from .carriers import Carrier, HttpCarrier, Json
 from .carriers._carrier import is_answer
-from .generated import args as a
-from .generated import models as m
 from .generated.call import OutputChunk
 from .generated.tools import Tools
 
@@ -149,7 +146,8 @@ class Run(Generic[R]):
 
 
 class Machine(Tools):
-    """One machine: every tool as a method (`box.fs_read(path=...)`) and two short forms."""
+    """One machine: every tool as a method (`box.fs_read(path=...)`), under its group (`box.fs.read(path=...)`), and the
+    short forms (`run`, `stream`, `screenshot`), all generated (`generated/tools.py`)."""
 
     def __init__(self, client: Client, name: str | None) -> None:
         self._client = client
@@ -158,13 +156,8 @@ class Machine(Tools):
     def _tool(self, name: str, args: dict[str, Any], out: type[T], deadline: float | None) -> T:
         return out.model_validate(self._client.call(name, args, machine=self.name, deadline=deadline))
 
-    def run(self, command: str, /, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> m.ExecRunOut:
-        """`exec_run` with a shell command line."""
-        return self.exec_run(deadline=deadline, **{**args, "command": command})
-
-    def stream(self, command: str, /, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> Run[m.ExecRunOut]:
-        """`exec_run` with its output as it comes."""
-        return self._client.stream("exec_run", {**args, "command": command}, machine=self.name, deadline=deadline, out=m.ExecRunOut)
+    def _stream(self, name: str, args: dict[str, Any], out: type[T], deadline: float | None) -> Run[T]:
+        return self._client.stream(name, args, machine=self.name, deadline=deadline, out=out)
 
 
 class Client:

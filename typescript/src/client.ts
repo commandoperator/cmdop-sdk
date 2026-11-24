@@ -18,10 +18,11 @@
  */
 
 import type { Answer, CallRequest, ErrorCode, OutputChunk, StreamLine } from "./generated/call.gen.ts";
-import { TOOL_NAMES, type ExecRunArgs, type ExecRunOut, type ScreenCaptureArgs, type ToolMap, type ToolName } from "./generated/tools.gen.ts";
+import { FORMS, GROUPS, type Forms, type Groups } from "./generated/surface.gen.ts";
+import { TOOL_NAMES, type ExecRunOut, type ToolMap, type ToolName } from "./generated/tools.gen.ts";
 import { CarrierError, type Carrier, type MachineRow } from "./carriers/carrier.ts";
 import { httpCarrier } from "./carriers/http.ts";
-import { toScreenshot, type Screenshot } from "./screen.ts";
+import { toScreenshot } from "./screen.ts";
 
 /**
  * End-to-end calls: `connect({ e2e })` takes a sealer. It turns each call into the request to send and opens what
@@ -94,15 +95,14 @@ type ToolMethods = {
   [N in ToolName]: (args: ToolMap[N]["args"], opts?: Omit<CallOpts, "machine">) => Promise<ToolMap[N]["out"]>;
 };
 
-/** One machine: every tool as a method (`box.fs_read({ path })`) and three short forms. */
-export type Machine = ToolMethods & {
-  /** `exec_run` with a shell command line. */
-  run(command: string, args?: Omit<ExecRunArgs, "command" | "argv">, opts?: Omit<CallOpts, "machine">): Promise<ExecRunOut>;
-  /** `exec_run` with its output as it comes. Breaking out of the loop or aborting `signal` stops the command. */
-  stream(command: string, args?: Omit<ExecRunArgs, "command" | "argv">, opts?: Omit<CallOpts, "machine">): Run;
-  /** `screen_capture` with the picture decoded. Needs the `screen` grant and `screen` in the machine's ceiling. */
-  screenshot(args?: ScreenCaptureArgs, opts?: Omit<CallOpts, "machine">): Promise<Screenshot>;
-};
+/**
+ * One machine: every tool as a method (`box.fs_read({ path })`), under its group (`box.fs.read({ path })`), and the
+ * short forms (`run`, `stream`, `screenshot`), all generated (`generated/surface.gen.ts`).
+ */
+export type Machine = ToolMethods & Groups<Omit<CallOpts, "machine">> & Forms<Omit<CallOpts, "machine">>;
+
+/** What a short form's result becomes: the decoders, the one hand-written part of the forms. */
+const DECODE: Record<(typeof FORMS)[number]["result"], (out: never) => unknown> = { raw: (out) => out, screenshot: toScreenshot };
 
 export interface Client {
   /** Which carrier is in use (`"http"`, …): what `auto` picked. */
@@ -287,9 +287,18 @@ export function connect(opts: ConnectOptions = {}): Client {
     const at = (o?: Omit<CallOpts, "machine">): CallOpts => ({ ...o, ...(name === undefined ? {} : { machine: name }) });
     const out: Record<string, unknown> = {};
     for (const tool of TOOL_NAMES) out[tool] = (args: never, o?: Omit<CallOpts, "machine">) => call(tool, args, at(o));
-    out.run = (command: string, args = {}, o?: Omit<CallOpts, "machine">) => call("exec_run", { ...args, command }, at(o));
-    out.stream = (command: string, args = {}, o?: Omit<CallOpts, "machine">) => stream("exec_run", { ...args, command }, at(o));
-    out.screenshot = async (args: ScreenCaptureArgs = {}, o?: Omit<CallOpts, "machine">) => toScreenshot(await call("screen_capture", args, at(o)));
+    for (const [group, methods] of Object.entries(GROUPS)) {
+      out[group] = Object.fromEntries(Object.entries(methods).map(([method, tool]) => [method, out[tool]]));
+    }
+    for (const f of FORMS) {
+      out[f.name] = (...given: unknown[]) => {
+        const n = f.positional.length;
+        const rest = (given[n] ?? {}) as Record<string, unknown>;
+        const args = { ...rest, ...Object.fromEntries(f.positional.map((p, i) => [p, given[i]])) } as never;
+        const o = at(given[n + 1] as Omit<CallOpts, "machine"> | undefined);
+        return f.stream ? stream(f.tool, args, o) : call(f.tool, args, o).then((r) => DECODE[f.result](r as never));
+      };
+    }
     return out as Machine;
   }
 

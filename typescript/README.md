@@ -18,7 +18,8 @@ for await (const piece of run) process.stdout.write(piece.data);
 console.log((await run.result).exit_code);
 ```
 
-Every tool is a typed method on a machine (`box.fs_read({ path })`, `box.task_start({ command })`, …), and
+Every tool is a typed method on a machine (`box.fs_read({ path })`, `box.task_start({ command })`, …), also under
+its group (`box.fs.read({ path })`, `box.task.start({ command })`); `box.screenshot()` decodes the picture; and
 `cmdop.call(tool, args, { machine })` reaches any of them by name. A refused call throws `CmdopError` with its
 `code`; `deadline` and `signal` bound and cancel any call.
 

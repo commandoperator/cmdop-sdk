@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 459e32fe9bbff178, cmdop 0.1.9) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 72ba780fabadfafb, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -93,7 +93,8 @@ class ToolError(BaseModel):
     ] = Field(..., title="ErrorCode")
     """
     `denied`: The grant or the machine's ceiling does not allow it.
-    `unknown_tool`: This machine does not have the tool (an older program).
+    `unknown_tool`: This machine does not have the tool: its program is older, or a screen tool has no screen
+    there. A tool the machine's own limit leaves out is `denied` instead.
     `bad_args`: The arguments do not match the tool's schema.
     `not_found`: The path or the thing named does not exist.
     `busy`: The machine runs too many calls already.

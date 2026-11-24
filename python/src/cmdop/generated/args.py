@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 459e32fe9bbff178, cmdop 0.1.9) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 72ba780fabadfafb, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -51,7 +51,8 @@ class ExecRunArgs(TypedDict):
     """
     env: NotRequired[dict[str, str]]
     """
-    Extra environment variables for this command.
+    Extra environment variables for this command. It gets these and a small base (PATH, HOME,
+    USER, SHELL, the locale, the desktop session); nothing else of cmdop's own environment.
     """
     stdin: NotRequired[str | None]
     """
@@ -59,18 +60,21 @@ class ExecRunArgs(TypedDict):
     """
     timeout_secs: NotRequired[int | None]
     """
-    Seconds before the command is stopped (default 120, at most 600).
+    Seconds before the command and its whole process group are stopped (default 120, at most
+    600). Long work goes to `task_start`.
     """
 
 
 class FsDeleteArgs(TypedDict):
     path: str
     """
-    File or folder on the machine. Absolute, or relative to the user's home folder.
+    File or folder on the machine. Absolute, or relative to the user's home folder. The home
+    folder, the file system root and the machine's allowed roots themselves are refused.
     """
     permanent: NotRequired[bool]
     """
-    Remove for good instead of moving to the trash. Only where the trash cannot take it.
+    Remove for good instead of moving to the trash (macOS ~/.Trash, Linux the freedesktop
+    trash). Only where the trash cannot take it.
     """
     recursive: NotRequired[bool]
     """
@@ -81,7 +85,8 @@ class FsDeleteArgs(TypedDict):
 class FsEditArgs(TypedDict):
     expect_sha256: NotRequired[str | None]
     """
-    Refuse unless the file's SHA-256 is this.
+    Refuse unless the file's SHA-256 is this: from `fs_stat` with hash=true, or the sha256 the
+    last write of it returned.
     """
     new: str
     """
@@ -89,7 +94,8 @@ class FsEditArgs(TypedDict):
     """
     old: str
     """
-    The exact text to replace, whitespace included. Must occur once, unless `replace_all`.
+    The exact text to replace, whitespace included; no regular expressions, no fuzzy matching.
+    Must occur once, unless `replace_all`.
     """
     path: str
     """
@@ -160,7 +166,8 @@ class FsSearchArgs(TypedDict):
     """
     root: str
     """
-    Folder to search under. Absolute, or relative to the user's home folder.
+    Folder to search under. Absolute, or relative to the user's home folder. Symlinks are not
+    followed; folders holding keys and credentials are skipped.
     """
 
 
@@ -200,7 +207,8 @@ class FsWriteArgs(TypedDict):
     """
     path: str
     """
-    File on the machine. Absolute, or relative to the user's home folder.
+    File on the machine. Absolute, or relative to the user's home folder. An existing file
+    keeps its permissions.
     """
 
 

@@ -7,15 +7,12 @@ from collections.abc import AsyncIterator, Callable
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
-from typing_extensions import Unpack
 
 from ._client import Piece, carrier_name, piece, request, settle, token_of, url_of
 from ._errors import CarrierError, CmdopError
 from ._sealing import Sealing
 from .carriers import AsyncCarrier, AsyncHttpCarrier, Json
 from .carriers._carrier import is_answer
-from .generated import args as a
-from .generated import models as m
 from .generated.tools import AsyncTools
 
 T = TypeVar("T", bound=BaseModel)
@@ -76,13 +73,8 @@ class AsyncMachine(AsyncTools):
     async def _tool(self, name: str, args: dict[str, Any], out: type[T], deadline: float | None) -> T:
         return out.model_validate(await self._client.call(name, args, machine=self.name, deadline=deadline))
 
-    async def run(self, command: str, /, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> m.ExecRunOut:
-        """`exec_run` with a shell command line."""
-        return await self.exec_run(deadline=deadline, **{**args, "command": command})
-
-    def stream(self, command: str, /, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> AsyncRun[m.ExecRunOut]:
-        """`exec_run` with its output as it comes."""
-        return self._client.stream("exec_run", {**args, "command": command}, machine=self.name, deadline=deadline, out=m.ExecRunOut)
+    def _stream(self, name: str, args: dict[str, Any], out: type[T], deadline: float | None) -> AsyncRun[T]:
+        return self._client.stream(name, args, machine=self.name, deadline=deadline, out=out)
 
 
 class AsyncClient:

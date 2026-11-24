@@ -11,13 +11,15 @@ with cmdop.connect() as c:            # CMDOP_TOKEN, CMDOP_URL
 from ._async import AsyncClient, AsyncMachine, AsyncRun, connect_async
 from ._client import Client, Machine, Piece, Run, connect
 from ._errors import CarrierError, CmdopError
+from ._screen import DecodedImage, Screenshot
 from .carriers import AsyncMemoryCarrier, MemoryCarrier
 from .generated.call import ENVELOPE_MAX_BYTES, ERROR_CODES, PIECE_MAX_BYTES
-from .generated.tools import TOOLS
+from .generated.tools import GROUPS, TOOLS
 
 __all__ = [
     "ENVELOPE_MAX_BYTES",
     "ERROR_CODES",
+    "GROUPS",
     "PIECE_MAX_BYTES",
     "TOOLS",
     "AsyncClient",
@@ -27,10 +29,12 @@ __all__ = [
     "CarrierError",
     "Client",
     "CmdopError",
+    "DecodedImage",
     "Machine",
     "MemoryCarrier",
     "Piece",
     "Run",
+    "Screenshot",
     "connect",
     "connect_async",
 ]
