@@ -22,6 +22,10 @@ with cmdop.connect() as c:                   # CMDOP_TOKEN, CMDOP_URL
     print(c.machine("box").run("uptime").stdout)
 ```
 
+Every tool is a typed method on a machine (`box.fs_read`), also under its group (`box.fs.read`); the tools about the
+whole contour are methods of the client, with no machine: `machines_list`, `tasks_list`, `history_search`,
+`docs_read` (the documentation, contents first) and `showtime_guide`, the guide for a short live demo on your machines.
+
 Both packages are generated from one tool contract, so a tool, its arguments and its result are the same in each.
 [`vectors/carrier.json`](vectors/carrier.json) holds the cases every client must pass.
 

@@ -1,4 +1,4 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 d9aba5e354666f95, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
 
 export type ErrorCode = "other" | "denied" | "unknown_tool" | "bad_args" | "not_found" | "busy" | "permission_missing" | "screen_locked" | "stale_capture" | "element_gone" | "app_not_allowed" | "lease_paused" | "paused" | "offline" | "rate_limited" | "quota_exceeded" | "not_dispatched" | "display_gone" | "timed_out" | "cancelled" | "too_large" | "hash_required" | "failed" | "needs_presence" | "unauthorized";
 

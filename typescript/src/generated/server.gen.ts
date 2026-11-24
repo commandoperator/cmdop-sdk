@@ -1,4 +1,16 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 d9aba5e354666f95, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+
+/** Arguments of `docs_read`. */
+export type DocsReadArgs = {
+  /**
+   * The page: `guides/connect`, `/guides/connect`, its docs.cmdop.ai address or the `.md`
+   * link a page carries. Absent: the contents, every page with its path and title.
+   */
+  path?: string | null;
+};
+
+/** What `docs_read` returns. */
+export type DocsReadOut = string;
 
 /** Arguments of `history_search`. */
 export type HistorySearchArgs = {
@@ -274,6 +286,7 @@ export type TaskState = "running" | "starting" | "ended" | "failed" | "lost";
 
 /** Every tool the server answers itself: its arguments and its result. */
 export interface ServerToolMap {
+  docs_read: { args: DocsReadArgs; out: DocsReadOut };
   history_search: { args: HistorySearchArgs; out: HistorySearchOut };
   machines_list: { args: MachinesListArgs; out: MachinesListOut };
   showtime_guide: { args: ShowtimeGuideArgs; out: ShowtimeGuideOut };
@@ -284,21 +297,24 @@ export type ServerToolName = keyof ServerToolMap;
 
 /** Title and description of every server tool, as the server lists them. */
 export const SERVER_TOOLS = {
+  docs_read: { title: "Read the docs", description: "Call before answering how CMDOP works, is set up or is priced: no `path` lists every page of docs.cmdop.ai (path and title); a `path` returns that page as Markdown." },
   history_search: { title: "Search history", description: "Past tasks, tool calls and agent sessions by machine, author, task, time and text, newest first. Calls carry no arguments; journal_search on the machine has them." },
-  machines_list: { title: "List machines", description: "The owner's machines: name, id, `state` (online; stale = linked, not answering; paused; offline), `last_seen`, `activity`, `tools`, build, `behind` (newer release out). Only online ones take calls." },
-  showtime_guide: { title: "Showtime guide", description: "Call when the user asks to see what CMDOP can do (a demo or a show): returns a guide for a short live demonstration on their machines." },
+  machines_list: { title: "List machines", description: "The owner's machines: name, id, `state` (online; stale = not answering; paused; offline), `last_seen`, `activity`, `tools` (screen and control are here), build, `behind`. Only online ones take calls." },
+  showtime_guide: { title: "Showtime guide", description: "Call when the user asks to see what CMDOP can do (a demo or a show), or offer it to a user new to CMDOP: returns a guide for a short live demonstration on their machines." },
   tasks_list: { title: "List running work", description: "Everything running now, by author. `tasks`: started through cmdop. `outside`: other processes per machine, by agent:claude-code, agent:codex or user. Ended ones: history_search." },
 } as const satisfies Record<ServerToolName, { title: string; description: string }>;
 
-export const SERVER_TOOL_NAMES = ["history_search","machines_list","showtime_guide","tasks_list"] as const satisfies readonly ServerToolName[];
+export const SERVER_TOOL_NAMES = ["docs_read","history_search","machines_list","showtime_guide","tasks_list"] as const satisfies readonly ServerToolName[];
 
 /** The server tools as client methods (`cmdop.showtime_guide()`): no machine, never sealed. */
 export interface ServerMethods<O> {
+  /** Call before answering how CMDOP works, is set up or is priced: no `path` lists every page of docs.cmdop.ai (path and title); a `path` returns that page as Markdown. */
+  docs_read(args?: DocsReadArgs, opts?: O): Promise<DocsReadOut>;
   /** Past tasks, tool calls and agent sessions by machine, author, task, time and text, newest first. Calls carry no arguments; journal_search on the machine has them. */
   history_search(args?: HistorySearchArgs, opts?: O): Promise<HistorySearchOut>;
-  /** The owner's machines: name, id, `state` (online; stale = linked, not answering; paused; offline), `last_seen`, `activity`, `tools`, build, `behind` (newer release out). Only online ones take calls. */
+  /** The owner's machines: name, id, `state` (online; stale = not answering; paused; offline), `last_seen`, `activity`, `tools` (screen and control are here), build, `behind`. Only online ones take calls. */
   machines_list(args?: MachinesListArgs, opts?: O): Promise<MachinesListOut>;
-  /** Call when the user asks to see what CMDOP can do (a demo or a show): returns a guide for a short live demonstration on their machines. */
+  /** Call when the user asks to see what CMDOP can do (a demo or a show), or offer it to a user new to CMDOP: returns a guide for a short live demonstration on their machines. */
   showtime_guide(args?: ShowtimeGuideArgs, opts?: O): Promise<ShowtimeGuideOut>;
   /** Everything running now, by author. `tasks`: started through cmdop. `outside`: other processes per machine, by agent:claude-code, agent:codex or user. Ended ones: history_search. */
   tasks_list(args?: TasksListArgs, opts?: O): Promise<TasksListOut>;

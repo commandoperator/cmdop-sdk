@@ -24,8 +24,8 @@ its group (`box.fs.read({ path })`, `box.task.start({ command })`); `box.screens
 `code`; `deadline` and `signal` bound and cancel any call.
 
 The tools the server answers itself are methods of the client, with no machine: `cmdop.machines_list()`,
-`cmdop.tasks_list()`, `cmdop.history_search({ text })` and `cmdop.showtime_guide({ language })`, the guide for a
-short live demo of what your machines can do.
+`cmdop.tasks_list()`, `cmdop.history_search({ text })`, `cmdop.docs_read({ path })` (the docs, contents first) and
+`cmdop.showtime_guide({ language })`, the guide for a short live demo of what your machines can do.
 
 ## The same tools over MCP
 

@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 d9aba5e354666f95, cmdop 0.1.10) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -6,6 +6,14 @@ from __future__ import annotations
 from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired
+
+
+class DocsReadArgs(TypedDict):
+    path: NotRequired[str | None]
+    """
+    The page: `guides/connect`, `/guides/connect`, its docs.cmdop.ai address or the `.md`
+    link a page carries. Absent: the contents, every page with its path and title.
+    """
 
 
 class HistorySearchArgs(TypedDict):
