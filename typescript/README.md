@@ -22,4 +22,10 @@ Every tool is a typed method on a machine (`box.fs_read({ path })`, `box.task_st
 `cmdop.call(tool, args, { machine })` reaches any of them by name. A refused call throws `CmdopError` with its
 `code`; `deadline` and `signal` bound and cancel any call.
 
-Docs: https://docs.cmdop.ai · License: MIT
+## The same tools over MCP
+
+CMDOP is an MCP server too: an agent reaches these tools at `$CMDOP_URL/mcp` (streamable HTTP) with an agent token
+as `Authorization: Bearer`, the same kind of token this package takes, under the same grant and record. The
+command or settings for each client: https://docs.cmdop.ai/guides/connect
+
+Website: https://cmdop.ai · Docs: https://docs.cmdop.ai/reference/sdk/typescript · License: MIT

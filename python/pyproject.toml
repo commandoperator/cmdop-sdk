@@ -1,6 +1,6 @@
 [project]
 name = "cmdop"
-version = "3.0.0"
+version = "3.0.1"
 description = "Your machines' tools from a program: the same tools agents use through MCP, typed from Rust."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,6 +12,12 @@ dependencies = [
     "pydantic>=2.10,<3",
     "typing-extensions>=4.12",
 ]
+
+[project.urls]
+Homepage = "https://cmdop.ai"
+Documentation = "https://docs.cmdop.ai/reference/sdk/python"
+Source = "https://github.com/commandoperator/cmdop-sdk"
+Issues = "https://github.com/commandoperator/cmdop-sdk/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "pyright>=1.1.400", "cryptography>=44"]

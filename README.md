@@ -25,6 +25,12 @@ with cmdop.connect() as c:                   # CMDOP_TOKEN, CMDOP_URL
 Both packages are generated from one tool contract, so a tool, its arguments and its result are the same in each.
 [`vectors/carrier.json`](vectors/carrier.json) holds the cases every client must pass.
 
+## The same tools over MCP
+
+CMDOP is an MCP server too: an agent reaches these tools at `$CMDOP_URL/mcp` (streamable HTTP) with an agent token
+as `Authorization: Bearer`, the same kind of token this package takes, under the same grant and record. The
+command or settings for each client: https://docs.cmdop.ai/guides/connect
+
 This repository is the published source of each release (`v<version>` tags); issues are welcome here.
 
-Docs: https://docs.cmdop.ai · License: [MIT](LICENSE)
+Website: https://cmdop.ai · Docs: https://docs.cmdop.ai/reference/sdk · License: [MIT](LICENSE)
