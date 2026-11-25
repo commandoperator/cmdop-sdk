@@ -8,6 +8,7 @@
 import type { Answer, StreamLine } from "../generated/call.gen.ts";
 import { CarrierError, type CallOptions, type Carrier, type MachineRow } from "./carrier.ts";
 import { readNdjson } from "./ndjson.ts";
+import { VERSION } from "../version.ts";
 
 export interface HttpOptions {
   /** The contour's base URL, `https://<address>.cmdop.dev`, or a local server's. */
@@ -34,6 +35,8 @@ export function httpCarrier(opts: HttpOptions): Carrier {
     "content-type": "application/json",
     // The server takes writes under /api only with this header (a browser form cannot send it).
     "x-cmdop": "1",
+    // Which SDK and version made the call: the server keeps `node` and a semver only, never this text.
+    "x-cmdop-client": `node/${VERSION}`,
   };
   const fail = (m: string) => new CarrierError("http", m);
 

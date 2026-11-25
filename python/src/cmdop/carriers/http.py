@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import AsyncIterator, Iterator
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
 import httpx
@@ -20,9 +21,26 @@ SLACK_SECS = 10.0
 LONGEST_SECS = 620.0
 
 
+def _client() -> str:
+    """Which SDK and version make the calls, as `python/<version>`. The server keeps `python` and a semver only,
+    never this text. A copy that is not installed as a package says `python`."""
+    try:
+        return f"python/{version('cmdop')}"
+    except PackageNotFoundError:
+        return "python"
+
+
+CLIENT = _client()
+
+
 def _headers(token: str) -> dict[str, str]:
     # The server takes writes under /api only with `x-cmdop` (a browser form cannot send it).
-    return {"authorization": f"Bearer {token}", "content-type": "application/json", "x-cmdop": "1"}
+    return {
+        "authorization": f"Bearer {token}",
+        "content-type": "application/json",
+        "x-cmdop": "1",
+        "x-cmdop-client": CLIENT,
+    }
 
 
 def _timeout(req: Json) -> httpx.Timeout:

@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
 """Every machine tool as a method, on `Machine` and `AsyncMachine`. The clients implement `_tool`."""
 
 from __future__ import annotations

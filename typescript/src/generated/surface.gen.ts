@@ -1,4 +1,4 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
 
 /** Every tool under its group (`box.fs.read` is `fs_read`), and the short forms of `gen/forms.json`. */
 
