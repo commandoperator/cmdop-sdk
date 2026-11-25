@@ -1,4 +1,80 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
+
+/** Arguments of `agent_cancel`. */
+export type AgentCancelArgs = {
+  /** The `task` of an `agent_prompt` answer. */
+  task: number;
+};
+
+/** What `agent_cancel` returns. */
+export type AgentCancelOut = {
+  /** The run was asked to stop; `task_output` shows when it has. */
+  stopping: boolean;
+  task: number;
+};
+
+/** Arguments of `agent_list`. No arguments. */
+export type AgentListArgs = Record<string, never>;
+
+/** What `agent_list` returns. */
+export type AgentListOut = {
+  /** The agents this machine's owner lets be prompted, in catalog order. */
+  agents: AgentRow[];
+  /** The agent a prompt without `agent` goes to; absent when none is installed. */
+  default?: string | null;
+};
+
+/** Arguments of `agent_prompt`. */
+export type AgentPromptArgs = {
+  /** Catalog id from `agent_list`. Absent: the machine's default agent. */
+  agent?: string | null;
+  /**
+   * Folder the agent works in. Absent: the agent's own folder on the machine, the same for
+   * every prompt, so a `session` continues there.
+   */
+  cwd?: string | null;
+  /** What to ask, at most 16 KiB. The agent reads it as an instruction. */
+  prompt: string;
+  /** A `session` from an earlier answer, to continue that conversation. */
+  session?: string | null;
+  /** Ask for less than the machine allows; never more. */
+  tier?: Tier | null;
+  /**
+   * Seconds to wait for the answer (default 50, at most 240). A run still going then keeps
+   * going: follow it with `task_output` on `task`.
+   */
+  wait_secs?: number | null;
+};
+
+/** What `agent_prompt` returns. */
+export type AgentPromptOut = {
+  /** The agent that answered. */
+  agent: string;
+  /** Why there is no answer, when `state` is `failed`. */
+  error?: string | null;
+  /** Pass it back as `session` to continue. */
+  session?: string | null;
+  state: RunState;
+  /** The run's task: `task_output` reads it, `agent_cancel` stops it. */
+  task: number;
+  /** The agent's final answer. */
+  text?: string | null;
+  /** The tier the run had. */
+  tier: Tier;
+};
+
+/** Arguments of `agent_sessions`. */
+export type AgentSessionsArgs = {
+  /** Catalog id. Absent: every agent `agent_list` shows. */
+  agent?: string | null;
+  /** At most this many, newest first (default 20, at most 200). */
+  limit?: number | null;
+};
+
+/** What `agent_sessions` returns. */
+export type AgentSessionsOut = {
+  sessions: AgentSession[];
+};
 
 /** Arguments of `app_open`. */
 export type AppOpenArgs = {
@@ -30,6 +106,54 @@ export type ControlReleaseArgs = Record<string, never>;
 export type ControlReleaseOut = {
   /** A lease was held and is given back. */
   released: boolean;
+};
+
+/** Arguments of `disk_clean`. */
+export type DiskCleanArgs = {
+  /** Say what would be removed and remove nothing. */
+  dry_run?: boolean;
+  /**
+   * Remove only files unchanged for at least this many days. It can only raise an item's own
+   * age.
+   */
+  older_than_days?: number | null;
+  /** As in `disk_usage`: `agent:<id>` or `cache:<id>`. Absent: every one known. */
+  targets?: string[] | null;
+};
+
+/** What `disk_clean` returns. */
+export type DiskCleanOut = {
+  dry_run: boolean;
+  /** Bytes removed, or that would be on a dry run. */
+  freed_bytes: number;
+  targets: DiskCleaned[];
+  /** The walk stopped at its limit: run it again to go further. */
+  truncated: boolean;
+};
+
+/** Arguments of `disk_usage`. */
+export type DiskUsageArgs = {
+  /**
+   * Count only files unchanged for at least this many days. It can only raise an item's own
+   * age.
+   */
+  older_than_days?: number | null;
+  /**
+   * `agent:<id>` for one agent's own files (`agent:claude-code`), `cache:<id>` for a developer
+   * cache no agent owns (`cache:cargo`, `cache:npm`, `cache:pnpm`). Absent: every one known.
+   */
+  targets?: string[] | null;
+};
+
+/** What `disk_usage` returns. */
+export type DiskUsageOut = {
+  /** Bytes on disk of every item measured. */
+  bytes: number;
+  /** Of those, what a clean would free. */
+  cleanable_bytes: number;
+  targets: DiskTarget[];
+  /** The walk stopped at its limit of files or time: the numbers are a lower bound. */
+  truncated: boolean;
 };
 
 /** Arguments of `exec_run`. */
@@ -711,12 +835,61 @@ export type WindowListOut = {
   windows: WindowInfo[];
 };
 
+export type AgentRow = {
+  /** A run of it is going on; another prompt answers `busy` until it ends. */
+  busy: boolean;
+  /** Catalog id: pass it as `agent`. */
+  id: string;
+  /** Its program is installed on this machine. */
+  installed: boolean;
+  /** The product name. */
+  name: string;
+  protocol: Protocol;
+  /** A run can be continued by passing back its `session`. */
+  resume: boolean;
+  /** The most a prompt to it may do here. */
+  tier: Tier;
+};
+
+export type AgentSession = {
+  agent: string;
+  /** The folder it ran in, when known. */
+  cwd?: string | null;
+  /** Pass it as `session` to `agent_prompt`. */
+  session: string;
+  /** Last activity, unix seconds. */
+  updated: number;
+};
+
 export type Button = "left" | "right" | "middle";
 
 export type Disk = {
   available: number;
   mount: string;
   total: number;
+};
+
+export type DiskCleaned = {
+  /** Files removed: caches deleted, sessions moved to the Trash. */
+  files: number;
+  freed_bytes: number;
+  /** Why the whole target was left, when it was: its program is running. */
+  left?: string | null;
+  /** Files left because they changed since the count, or could not be removed. */
+  skipped: number;
+  /** `agent:<id>` or `cache:<id>`. */
+  target: string;
+};
+
+export type DiskTarget = {
+  bytes: number;
+  cleanable_bytes: number;
+  /** The items found on this machine; one that does not exist is left out. */
+  items: DiskItem[];
+  /** The agent's or the tool's name. */
+  label: string;
+  /** `agent:<id>` or `cache:<id>`. */
+  target: string;
 };
 
 export type DisplayInfo = {
@@ -819,6 +992,9 @@ export type Region = {
   y: number;
 };
 
+/** How a run stands when `agent_prompt` returns. */
+export type RunState = "running" | "done" | "failed" | "stopped" | "paused";
+
 export type SearchMatch = {
   kind: EntryKind;
   /** With `content`: the first matching line's number, from 1. */
@@ -829,6 +1005,16 @@ export type SearchMatch = {
   /** With `content`: that line, cut to 300 characters. */
   text?: string | null;
 };
+
+/**
+ * How far a prompted agent may act on the machine, lowest first. The ceiling's `agents.tier` is
+ * the most; a call may ask for less.
+ * 
+ * There is no tier that writes or runs commands (owner, 2026-11-25: "No, text only"): a shell
+ * can read the agent's own sign-in, and a written file in a project (`.claude/settings.json`,
+ * `.git/hooks`, `.mcp.json`) runs code in the owner's next session of their own.
+ */
+export type Tier = "text_only" | "read_only";
 
 export type TypeMethod = "auto" | "keys" | "paste";
 
@@ -852,10 +1038,36 @@ export type WindowInfo = {
   y: number;
 };
 
+export type DiskItem = {
+  /** Bytes on disk (blocks, a hard-linked file once). */
+  bytes: number;
+  class: DiskClass;
+  /**
+   * What a clean would free: old enough, not among the newest kept, not protected; 0
+   * for `user-data` and `secret`. Links are not followed and other volumes are not entered.
+   */
+  cleanable_bytes: number;
+  cleanable_files: number;
+  files: number;
+  path: string;
+};
+
+/** How the machine talks to an agent program (the manifest's `bridge.protocol`). */
+export type Protocol = "headless_json" | "acp" | "pty_only";
+
+/** What removing an item costs. */
+export type DiskClass = "cache" | "regenerable" | "feature" | "user-data" | "secret";
+
 /** Every machine tool: its arguments and its result. */
 export interface ToolMap {
+  agent_cancel: { args: AgentCancelArgs; out: AgentCancelOut };
+  agent_list: { args: AgentListArgs; out: AgentListOut };
+  agent_prompt: { args: AgentPromptArgs; out: AgentPromptOut };
+  agent_sessions: { args: AgentSessionsArgs; out: AgentSessionsOut };
   app_open: { args: AppOpenArgs; out: AppOpenOut };
   control_release: { args: ControlReleaseArgs; out: ControlReleaseOut };
+  disk_clean: { args: DiskCleanArgs; out: DiskCleanOut };
+  disk_usage: { args: DiskUsageArgs; out: DiskUsageOut };
   exec_run: { args: ExecRunArgs; out: ExecRunOut };
   fs_delete: { args: FsDeleteArgs; out: FsDeleteOut };
   fs_edit: { args: FsEditArgs; out: FsEditOut };
@@ -889,8 +1101,14 @@ export type ToolName = keyof ToolMap;
 
 /** Risk class, version and description of every tool, as the server lists them. */
 export const TOOLS = {
+  agent_cancel: { risk: "agent", added: "0.1.13", timeoutSecs: 15, description: "Stops a running agent_prompt by its task. What the agent did until then stays done." },
+  agent_list: { risk: "read", added: "0.1.13", timeoutSecs: 30, description: "The AI agent programs (Claude Code, Codex) installed on the machine that may be prompted, each with its id, how far it may act, and whether it is busy." },
+  agent_prompt: { risk: "agent", added: "0.1.13", timeoutSecs: 260, description: "Sends a prompt to an AI agent program on the machine and returns its answer and a session id to continue. Long runs return a task to follow." },
+  agent_sessions: { risk: "read", added: "0.1.13", timeoutSecs: 30, description: "Recent sessions of the AI agent programs on the machine, newest first, with the id agent_prompt takes to continue one." },
   app_open: { risk: "control", added: "0.0.2", timeoutSecs: 30, description: "Launch or focus an app, or open a file in it. The app has to be allowed for `control` on this machine. Opens in the background unless `background` is false." },
   control_release: { risk: "control", added: "0.0.2", timeoutSecs: 10, description: "Give control back: release held keys and buttons and end the lease, so the owner can use the machine at once. The lease also ends after 60 s without an input call." },
+  disk_clean: { risk: "destructive", added: "0.1.13", timeoutSecs: 120, description: "Frees what disk_usage counts as cleanable: old caches deleted, old sessions moved to the Trash. Settings and credentials stay. dry_run lists first." },
+  disk_usage: { risk: "read", added: "0.1.13", timeoutSecs: 90, description: "How much disk the AI agents and developer caches use, per folder, and how much a clean would free. Reads sizes and times only; changes nothing." },
   exec_run: { risk: "exec", added: "0.0.1", timeoutSecs: 620, description: "Run one command and wait for its exit code, stdout and stderr; a non-zero exit is a result, not an error. At most 600 s; long or interactive work goes to task_start. Output keeps its last 64 KiB." },
   fs_delete: { risk: "destructive", added: "0.0.1", timeoutSecs: 120, description: "Move a file or folder to the user's trash, where the owner can restore it; a non-empty one needs recursive=true. permanent=true cannot be undone. Home, the roots and credential paths are refused." },
   fs_edit: { risk: "write", added: "0.0.1", timeoutSecs: 60, description: "Replace exact text in a text file (up to 4 MiB), atomically: `old` must occur once, or set replace_all. Otherwise nothing changes and the error says how many times it occurs." },
@@ -920,4 +1138,4 @@ export const TOOLS = {
   window_list: { risk: "screen", added: "0.0.2", timeoutSecs: 10, description: "Windows of the apps on screen, front to back: id, app, title, bounds in screen points, focus, whether visible, and whether `control` is allowed for the app." },
 } as const satisfies Record<ToolName, { risk: string; added: string; timeoutSecs: number; description: string }>;
 
-export const TOOL_NAMES = ["app_open","control_release","exec_run","fs_delete","fs_edit","fs_list","fs_read","fs_search","fs_stat","fs_write","journal_search","key_press","pointer_click","pointer_drag","pointer_move","pointer_scroll","proc_kill","proc_list","screen_capture","screen_info","sys_info","task_output","task_start","task_stop","text_type","ui_act","ui_snapshot","ui_wait","window_list"] as const satisfies readonly ToolName[];
+export const TOOL_NAMES = ["agent_cancel","agent_list","agent_prompt","agent_sessions","app_open","control_release","disk_clean","disk_usage","exec_run","fs_delete","fs_edit","fs_list","fs_read","fs_search","fs_stat","fs_write","journal_search","key_press","pointer_click","pointer_drag","pointer_move","pointer_scroll","proc_kill","proc_list","screen_capture","screen_info","sys_info","task_output","task_start","task_stop","text_type","ui_act","ui_snapshot","ui_wait","window_list"] as const satisfies readonly ToolName[];

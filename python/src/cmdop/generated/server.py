@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 """The tools the server answers itself, as methods of `Client` and `AsyncClient`. No machine, never sealed."""
 
 from __future__ import annotations

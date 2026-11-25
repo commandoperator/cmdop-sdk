@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 """Every machine tool as a method, on `Machine` and `AsyncMachine`. The clients implement `_tool`."""
 
 from __future__ import annotations
@@ -26,8 +26,14 @@ class ToolInfo(NamedTuple):
 
 
 TOOLS: dict[str, ToolInfo] = {
+    "agent_cancel": ToolInfo("agent", "0.1.13", 15),
+    "agent_list": ToolInfo("read", "0.1.13", 30),
+    "agent_prompt": ToolInfo("agent", "0.1.13", 260),
+    "agent_sessions": ToolInfo("read", "0.1.13", 30),
     "app_open": ToolInfo("control", "0.0.2", 30),
     "control_release": ToolInfo("control", "0.0.2", 10),
+    "disk_clean": ToolInfo("destructive", "0.1.13", 120),
+    "disk_usage": ToolInfo("read", "0.1.13", 90),
     "exec_run": ToolInfo("exec", "0.0.1", 620),
     "fs_delete": ToolInfo("destructive", "0.0.1", 120),
     "fs_edit": ToolInfo("write", "0.0.1", 60),
@@ -58,8 +64,10 @@ TOOLS: dict[str, ToolInfo] = {
 }
 
 GROUPS: dict[str, dict[str, str]] = {
+    "agent": {"cancel": "agent_cancel", "list": "agent_list", "prompt": "agent_prompt", "sessions": "agent_sessions"},
     "app": {"open": "app_open"},
     "control": {"release": "control_release"},
+    "disk": {"clean": "disk_clean", "usage": "disk_usage"},
     "exec": {"run": "exec_run"},
     "fs": {"delete": "fs_delete", "edit": "fs_edit", "list": "fs_list", "read": "fs_read", "search": "fs_search", "stat": "fs_stat", "write": "fs_write"},
     "journal": {"search": "journal_search"},
@@ -77,6 +85,29 @@ GROUPS: dict[str, dict[str, str]] = {
 
 FORMS: tuple[str, ...] = ("run", "stream", "screenshot")
 """The short forms of `exports/sdk/gen/forms.json`."""
+
+
+class AgentGroup:
+    """The `agent_*` tools."""
+
+    def __init__(self, tools: Tools) -> None:
+        self._tools = tools
+
+    def cancel(self, *, deadline: float | None = None, **args: Unpack[a.AgentCancelArgs]) -> m.AgentCancelOut:
+        """`agent_cancel`."""
+        return self._tools.agent_cancel(deadline=deadline, **args)
+
+    def list(self, *, deadline: float | None = None, **args: Unpack[a.AgentListArgs]) -> m.AgentListOut:
+        """`agent_list`."""
+        return self._tools.agent_list(deadline=deadline, **args)
+
+    def prompt(self, *, deadline: float | None = None, **args: Unpack[a.AgentPromptArgs]) -> m.AgentPromptOut:
+        """`agent_prompt`."""
+        return self._tools.agent_prompt(deadline=deadline, **args)
+
+    def sessions(self, *, deadline: float | None = None, **args: Unpack[a.AgentSessionsArgs]) -> m.AgentSessionsOut:
+        """`agent_sessions`."""
+        return self._tools.agent_sessions(deadline=deadline, **args)
 
 
 class AppGroup:
@@ -99,6 +130,21 @@ class ControlGroup:
     def release(self, *, deadline: float | None = None, **args: Unpack[a.ControlReleaseArgs]) -> m.ControlReleaseOut:
         """`control_release`."""
         return self._tools.control_release(deadline=deadline, **args)
+
+
+class DiskGroup:
+    """The `disk_*` tools."""
+
+    def __init__(self, tools: Tools) -> None:
+        self._tools = tools
+
+    def clean(self, *, deadline: float | None = None, **args: Unpack[a.DiskCleanArgs]) -> m.DiskCleanOut:
+        """`disk_clean`."""
+        return self._tools.disk_clean(deadline=deadline, **args)
+
+    def usage(self, *, deadline: float | None = None, **args: Unpack[a.DiskUsageArgs]) -> m.DiskUsageOut:
+        """`disk_usage`."""
+        return self._tools.disk_usage(deadline=deadline, **args)
 
 
 class ExecGroup:
@@ -293,6 +339,29 @@ class WindowGroup:
         return self._tools.window_list(deadline=deadline, **args)
 
 
+class AsyncAgentGroup:
+    """The `agent_*` tools."""
+
+    def __init__(self, tools: AsyncTools) -> None:
+        self._tools = tools
+
+    async def cancel(self, *, deadline: float | None = None, **args: Unpack[a.AgentCancelArgs]) -> m.AgentCancelOut:
+        """`agent_cancel`."""
+        return await self._tools.agent_cancel(deadline=deadline, **args)
+
+    async def list(self, *, deadline: float | None = None, **args: Unpack[a.AgentListArgs]) -> m.AgentListOut:
+        """`agent_list`."""
+        return await self._tools.agent_list(deadline=deadline, **args)
+
+    async def prompt(self, *, deadline: float | None = None, **args: Unpack[a.AgentPromptArgs]) -> m.AgentPromptOut:
+        """`agent_prompt`."""
+        return await self._tools.agent_prompt(deadline=deadline, **args)
+
+    async def sessions(self, *, deadline: float | None = None, **args: Unpack[a.AgentSessionsArgs]) -> m.AgentSessionsOut:
+        """`agent_sessions`."""
+        return await self._tools.agent_sessions(deadline=deadline, **args)
+
+
 class AsyncAppGroup:
     """The `app_*` tools."""
 
@@ -313,6 +382,21 @@ class AsyncControlGroup:
     async def release(self, *, deadline: float | None = None, **args: Unpack[a.ControlReleaseArgs]) -> m.ControlReleaseOut:
         """`control_release`."""
         return await self._tools.control_release(deadline=deadline, **args)
+
+
+class AsyncDiskGroup:
+    """The `disk_*` tools."""
+
+    def __init__(self, tools: AsyncTools) -> None:
+        self._tools = tools
+
+    async def clean(self, *, deadline: float | None = None, **args: Unpack[a.DiskCleanArgs]) -> m.DiskCleanOut:
+        """`disk_clean`."""
+        return await self._tools.disk_clean(deadline=deadline, **args)
+
+    async def usage(self, *, deadline: float | None = None, **args: Unpack[a.DiskUsageArgs]) -> m.DiskUsageOut:
+        """`disk_usage`."""
+        return await self._tools.disk_usage(deadline=deadline, **args)
 
 
 class AsyncExecGroup:
@@ -515,6 +599,11 @@ class Tools:
         raise NotImplementedError
 
     @property
+    def agent(self) -> AgentGroup:
+        """The `agent_*` tools: `box.agent.<name>`."""
+        return AgentGroup(self)
+
+    @property
     def app(self) -> AppGroup:
         """The `app_*` tools: `box.app.<name>`."""
         return AppGroup(self)
@@ -523,6 +612,11 @@ class Tools:
     def control(self) -> ControlGroup:
         """The `control_*` tools: `box.control.<name>`."""
         return ControlGroup(self)
+
+    @property
+    def disk(self) -> DiskGroup:
+        """The `disk_*` tools: `box.disk.<name>`."""
+        return DiskGroup(self)
 
     @property
     def exec(self) -> ExecGroup:
@@ -596,6 +690,30 @@ class Tools:
         """`screen_capture` with the picture decoded. Needs the `screen` grant and `screen` in the machine's ceiling."""
         return to_screenshot(self._tool("screen_capture", dict(args), m.ScreenCaptureOut, deadline))
 
+    def agent_cancel(self, *, deadline: float | None = None, **args: Unpack[a.AgentCancelArgs]) -> m.AgentCancelOut:
+        """Stops a running agent_prompt by its task. What the agent did until then stays done.
+
+        Risk: agent. Waits up to 15 s."""
+        return self._tool("agent_cancel", dict(args), m.AgentCancelOut, deadline)
+
+    def agent_list(self, *, deadline: float | None = None, **args: Unpack[a.AgentListArgs]) -> m.AgentListOut:
+        """The AI agent programs (Claude Code, Codex) installed on the machine that may be prompted, each with its id, how far it may act, and whether it is busy.
+
+        Risk: read. Waits up to 30 s."""
+        return self._tool("agent_list", dict(args), m.AgentListOut, deadline)
+
+    def agent_prompt(self, *, deadline: float | None = None, **args: Unpack[a.AgentPromptArgs]) -> m.AgentPromptOut:
+        """Sends a prompt to an AI agent program on the machine and returns its answer and a session id to continue. Long runs return a task to follow.
+
+        Risk: agent. Waits up to 260 s."""
+        return self._tool("agent_prompt", dict(args), m.AgentPromptOut, deadline)
+
+    def agent_sessions(self, *, deadline: float | None = None, **args: Unpack[a.AgentSessionsArgs]) -> m.AgentSessionsOut:
+        """Recent sessions of the AI agent programs on the machine, newest first, with the id agent_prompt takes to continue one.
+
+        Risk: read. Waits up to 30 s."""
+        return self._tool("agent_sessions", dict(args), m.AgentSessionsOut, deadline)
+
     def app_open(self, *, deadline: float | None = None, **args: Unpack[a.AppOpenArgs]) -> m.AppOpenOut:
         """Launch or focus an app, or open a file in it. The app has to be allowed for `control` on this machine. Opens in the background unless `background` is false.
 
@@ -607,6 +725,18 @@ class Tools:
 
         Risk: control. Waits up to 10 s."""
         return self._tool("control_release", dict(args), m.ControlReleaseOut, deadline)
+
+    def disk_clean(self, *, deadline: float | None = None, **args: Unpack[a.DiskCleanArgs]) -> m.DiskCleanOut:
+        """Frees what disk_usage counts as cleanable: old caches deleted, old sessions moved to the Trash. Settings and credentials stay. dry_run lists first.
+
+        Risk: destructive. Waits up to 120 s."""
+        return self._tool("disk_clean", dict(args), m.DiskCleanOut, deadline)
+
+    def disk_usage(self, *, deadline: float | None = None, **args: Unpack[a.DiskUsageArgs]) -> m.DiskUsageOut:
+        """How much disk the AI agents and developer caches use, per folder, and how much a clean would free. Reads sizes and times only; changes nothing.
+
+        Risk: read. Waits up to 90 s."""
+        return self._tool("disk_usage", dict(args), m.DiskUsageOut, deadline)
 
     def exec_run(self, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> m.ExecRunOut:
         """Run one command and wait for its exit code, stdout and stderr; a non-zero exit is a result, not an error. At most 600 s; long or interactive work goes to task_start. Output keeps its last 64 KiB.
@@ -779,6 +909,11 @@ class AsyncTools:
         raise NotImplementedError
 
     @property
+    def agent(self) -> AsyncAgentGroup:
+        """The `agent_*` tools: `box.agent.<name>`."""
+        return AsyncAgentGroup(self)
+
+    @property
     def app(self) -> AsyncAppGroup:
         """The `app_*` tools: `box.app.<name>`."""
         return AsyncAppGroup(self)
@@ -787,6 +922,11 @@ class AsyncTools:
     def control(self) -> AsyncControlGroup:
         """The `control_*` tools: `box.control.<name>`."""
         return AsyncControlGroup(self)
+
+    @property
+    def disk(self) -> AsyncDiskGroup:
+        """The `disk_*` tools: `box.disk.<name>`."""
+        return AsyncDiskGroup(self)
 
     @property
     def exec(self) -> AsyncExecGroup:
@@ -860,6 +1000,30 @@ class AsyncTools:
         """`screen_capture` with the picture decoded. Needs the `screen` grant and `screen` in the machine's ceiling."""
         return to_screenshot(await self._tool("screen_capture", dict(args), m.ScreenCaptureOut, deadline))
 
+    async def agent_cancel(self, *, deadline: float | None = None, **args: Unpack[a.AgentCancelArgs]) -> m.AgentCancelOut:
+        """Stops a running agent_prompt by its task. What the agent did until then stays done.
+
+        Risk: agent. Waits up to 15 s."""
+        return await self._tool("agent_cancel", dict(args), m.AgentCancelOut, deadline)
+
+    async def agent_list(self, *, deadline: float | None = None, **args: Unpack[a.AgentListArgs]) -> m.AgentListOut:
+        """The AI agent programs (Claude Code, Codex) installed on the machine that may be prompted, each with its id, how far it may act, and whether it is busy.
+
+        Risk: read. Waits up to 30 s."""
+        return await self._tool("agent_list", dict(args), m.AgentListOut, deadline)
+
+    async def agent_prompt(self, *, deadline: float | None = None, **args: Unpack[a.AgentPromptArgs]) -> m.AgentPromptOut:
+        """Sends a prompt to an AI agent program on the machine and returns its answer and a session id to continue. Long runs return a task to follow.
+
+        Risk: agent. Waits up to 260 s."""
+        return await self._tool("agent_prompt", dict(args), m.AgentPromptOut, deadline)
+
+    async def agent_sessions(self, *, deadline: float | None = None, **args: Unpack[a.AgentSessionsArgs]) -> m.AgentSessionsOut:
+        """Recent sessions of the AI agent programs on the machine, newest first, with the id agent_prompt takes to continue one.
+
+        Risk: read. Waits up to 30 s."""
+        return await self._tool("agent_sessions", dict(args), m.AgentSessionsOut, deadline)
+
     async def app_open(self, *, deadline: float | None = None, **args: Unpack[a.AppOpenArgs]) -> m.AppOpenOut:
         """Launch or focus an app, or open a file in it. The app has to be allowed for `control` on this machine. Opens in the background unless `background` is false.
 
@@ -871,6 +1035,18 @@ class AsyncTools:
 
         Risk: control. Waits up to 10 s."""
         return await self._tool("control_release", dict(args), m.ControlReleaseOut, deadline)
+
+    async def disk_clean(self, *, deadline: float | None = None, **args: Unpack[a.DiskCleanArgs]) -> m.DiskCleanOut:
+        """Frees what disk_usage counts as cleanable: old caches deleted, old sessions moved to the Trash. Settings and credentials stay. dry_run lists first.
+
+        Risk: destructive. Waits up to 120 s."""
+        return await self._tool("disk_clean", dict(args), m.DiskCleanOut, deadline)
+
+    async def disk_usage(self, *, deadline: float | None = None, **args: Unpack[a.DiskUsageArgs]) -> m.DiskUsageOut:
+        """How much disk the AI agents and developer caches use, per folder, and how much a clean would free. Reads sizes and times only; changes nothing.
+
+        Risk: read. Waits up to 90 s."""
+        return await self._tool("disk_usage", dict(args), m.DiskUsageOut, deadline)
 
     async def exec_run(self, *, deadline: float | None = None, **args: Unpack[a.ExecRunArgs]) -> m.ExecRunOut:
         """Run one command and wait for its exit code, stdout and stderr; a non-zero exit is a result, not an error. At most 600 s; long or interactive work goes to task_start. Output keeps its last 64 KiB.

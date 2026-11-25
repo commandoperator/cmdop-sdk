@@ -27,6 +27,11 @@ The tools the server answers itself are methods of the client, with no machine: 
 `cmdop.tasks_list()`, `cmdop.history_search({ text })`, `cmdop.docs_read({ path })` (the docs, contents first) and
 `cmdop.showtime_guide({ language })`, the guide for a short live demo of what your machines can do.
 
+A machine also lets you ask the AI agent programs installed on it (Claude Code, Codex), the same way for each:
+`box.agent.list({})` names them, `box.agent.prompt({ prompt, session? })` returns the answer and a `session` to
+continue, `box.agent.sessions({})` and `box.agent.cancel({ task })`. The agents answer in words or read files, never
+run commands; the token needs the `agent` class and the machine's `ceiling.json` its `agents` key.
+
 ## The same tools over MCP
 
 CMDOP is an MCP server too: an agent reaches these tools at `$CMDOP_URL/mcp` (streamable HTTP) with an agent token

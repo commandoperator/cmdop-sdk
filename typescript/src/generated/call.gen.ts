@@ -1,6 +1,6 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 
-export type ErrorCode = "other" | "denied" | "unknown_tool" | "bad_args" | "not_found" | "busy" | "permission_missing" | "screen_locked" | "stale_capture" | "element_gone" | "app_not_allowed" | "lease_paused" | "paused" | "offline" | "rate_limited" | "quota_exceeded" | "not_dispatched" | "display_gone" | "timed_out" | "cancelled" | "too_large" | "hash_required" | "failed" | "needs_presence" | "unauthorized";
+export type ErrorCode = "other" | "denied" | "unknown_tool" | "bad_args" | "not_found" | "busy" | "permission_missing" | "screen_locked" | "stale_capture" | "element_gone" | "app_not_allowed" | "lease_paused" | "paused" | "offline" | "rate_limited" | "quota_exceeded" | "not_dispatched" | "display_gone" | "timed_out" | "cancelled" | "too_large" | "hash_required" | "failed" | "needs_presence" | "unauthorized" | "tool_refused" | "sandbox_unavailable";
 
 /**
  * One piece of a running command's output, as a streaming `exec_run` sends it (the payload of
@@ -79,7 +79,7 @@ export type ToolError = {
 };
 
 /** Every error code, in the order Rust declares them. */
-export const ERROR_CODES = ["other","denied","unknown_tool","bad_args","not_found","busy","permission_missing","screen_locked","stale_capture","element_gone","app_not_allowed","lease_paused","paused","offline","rate_limited","quota_exceeded","not_dispatched","display_gone","timed_out","cancelled","too_large","hash_required","failed","needs_presence","unauthorized"] as const satisfies readonly ErrorCode[];
+export const ERROR_CODES = ["other","denied","unknown_tool","bad_args","not_found","busy","permission_missing","screen_locked","stale_capture","element_gone","app_not_allowed","lease_paused","paused","offline","rate_limited","quota_exceeded","not_dispatched","display_gone","timed_out","cancelled","too_large","hash_required","failed","needs_presence","unauthorized","tool_refused","sandbox_unavailable"] as const satisfies readonly ErrorCode[];
 
 /** The size limits every carrier keeps. */
 export const LIMITS = { envelopeMaxBytes: 16777216, pieceMaxBytes: 65536 } as const;

@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -6,6 +6,59 @@ from __future__ import annotations
 from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired
+
+
+class AgentCancelArgs(TypedDict):
+    task: int
+    """
+    The `task` of an `agent_prompt` answer.
+    """
+
+
+class AgentListArgs(TypedDict):
+    """
+    No arguments.
+    """
+
+
+class AgentPromptArgs(TypedDict):
+    agent: NotRequired[str | None]
+    """
+    Catalog id from `agent_list`. Absent: the machine's default agent.
+    """
+    cwd: NotRequired[str | None]
+    """
+    Folder the agent works in. Absent: the agent's own folder on the machine, the same for
+    every prompt, so a `session` continues there.
+    """
+    prompt: str
+    """
+    What to ask, at most 16 KiB. The agent reads it as an instruction.
+    """
+    session: NotRequired[str | None]
+    """
+    A `session` from an earlier answer, to continue that conversation.
+    """
+    tier: NotRequired[Literal["text_only", "read_only"] | None]
+    """
+    Ask for less than the machine allows; never more.
+    """
+    wait_secs: NotRequired[int | None]
+    """
+    Seconds to wait for the answer (default 50, at most 240). A run still going then keeps
+    going: follow it with `task_output` on `task`.
+    """
+
+
+class AgentSessionsArgs(TypedDict):
+    agent: NotRequired[str | None]
+    """
+    Catalog id. Absent: every agent `agent_list` shows.
+    """
+    limit: NotRequired[int | None]
+    """
+    At most this many, newest first (default 20, at most 200).
+    """
 
 
 class AppOpenArgs(TypedDict):
@@ -33,6 +86,35 @@ class AppOpenArgs(TypedDict):
 class ControlReleaseArgs(TypedDict):
     """
     No arguments.
+    """
+
+
+class DiskCleanArgs(TypedDict):
+    dry_run: NotRequired[bool]
+    """
+    Say what would be removed and remove nothing.
+    """
+    older_than_days: NotRequired[int | None]
+    """
+    Remove only files unchanged for at least this many days. It can only raise an item's own
+    age.
+    """
+    targets: NotRequired[list[str]]
+    """
+    As in `disk_usage`: `agent:<id>` or `cache:<id>`. Absent: every one known.
+    """
+
+
+class DiskUsageArgs(TypedDict):
+    older_than_days: NotRequired[int | None]
+    """
+    Count only files unchanged for at least this many days. It can only raise an item's own
+    age.
+    """
+    targets: NotRequired[list[str]]
+    """
+    `agent:<id>` for one agent's own files (`agent:claude-code`), `cache:<id>` for a developer
+    cache no agent owns (`cache:cargo`, `cache:npm`, `cache:pnpm`). Absent: every one known.
     """
 
 

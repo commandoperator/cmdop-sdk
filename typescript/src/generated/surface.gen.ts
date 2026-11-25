@@ -1,4 +1,4 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 
 /** Every tool under its group (`box.fs.read` is `fs_read`), and the short forms of `gen/forms.json`. */
 
@@ -8,8 +8,10 @@ import type { ToolMap, ToolName } from "./tools.gen.ts";
 
 /** Group, then method, then the tool it calls. */
 export const GROUPS = {
+  agent: { cancel: "agent_cancel", list: "agent_list", prompt: "agent_prompt", sessions: "agent_sessions" },
   app: { open: "app_open" },
   control: { release: "control_release" },
+  disk: { clean: "disk_clean", usage: "disk_usage" },
   exec: { run: "exec_run" },
   fs: { delete: "fs_delete", edit: "fs_edit", list: "fs_list", read: "fs_read", search: "fs_search", stat: "fs_stat", write: "fs_write" },
   journal: { search: "journal_search" },

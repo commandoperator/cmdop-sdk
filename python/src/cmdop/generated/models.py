@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -6,6 +6,72 @@ from __future__ import annotations
 from typing import Literal
 
 from pydantic import BaseModel, Field, RootModel
+
+
+class AgentCancelOut(BaseModel):
+    stopping: bool
+    """
+    The run was asked to stop; `task_output` shows when it has.
+    """
+    task: int = Field(..., ge=0)
+
+
+class AgentPromptOut(BaseModel):
+    agent: str
+    """
+    The agent that answered.
+    """
+    error: str | None = None
+    """
+    Why there is no answer, when `state` is `failed`.
+    """
+    session: str | None = None
+    """
+    Pass it back as `session` to continue.
+    """
+    state: Literal["running", "done", "failed", "stopped", "paused"] = Field(
+        ..., title="RunState"
+    )
+    """
+    How a run stands when `agent_prompt` returns.
+    `running`: Still going after `wait_secs`.
+    `done`: Answered.
+    `failed`: The program ended without an answer; `error` says why.
+    `stopped`: Stopped by `agent_cancel`, `task_stop` or the deadline.
+    `paused`: The owner paused the machine.
+    """
+    task: int = Field(..., ge=0)
+    """
+    The run's task: `task_output` reads it, `agent_cancel` stops it.
+    """
+    text: str | None = None
+    """
+    The agent's final answer.
+    """
+    tier: Literal["text_only", "read_only"] = Field(..., title="Tier")
+    """
+    The tier the run had.
+    """
+
+
+class AgentSession(BaseModel):
+    agent: str
+    cwd: str | None = None
+    """
+    The folder it ran in, when known.
+    """
+    session: str
+    """
+    Pass it as `session` to `agent_prompt`.
+    """
+    updated: int = Field(..., ge=0)
+    """
+    Last activity, unix seconds.
+    """
+
+
+class AgentSessionsOut(BaseModel):
+    sessions: list[AgentSession]
 
 
 class Geometry(BaseModel):
@@ -81,6 +147,98 @@ class ControlReleaseOut(BaseModel):
     released: bool
     """
     A lease was held and is given back.
+    """
+
+
+class DiskCleaned(BaseModel):
+    files: int = Field(..., ge=0)
+    """
+    Files removed: caches deleted, sessions moved to the Trash.
+    """
+    freed_bytes: int = Field(..., ge=0)
+    left: str | None = None
+    """
+    Why the whole target was left, when it was: its program is running.
+    """
+    skipped: int = Field(..., ge=0)
+    """
+    Files left because they changed since the count, or could not be removed.
+    """
+    target: str
+    """
+    `agent:<id>` or `cache:<id>`.
+    """
+
+
+class DiskCleanOut(BaseModel):
+    dry_run: bool
+    freed_bytes: int = Field(..., ge=0)
+    """
+    Bytes removed, or that would be on a dry run.
+    """
+    targets: list[DiskCleaned]
+    truncated: bool
+    """
+    The walk stopped at its limit: run it again to go further.
+    """
+
+
+class DiskItem(BaseModel):
+    bytes: int = Field(..., ge=0)
+    """
+    Bytes on disk (blocks, a hard-linked file once).
+    """
+    class_: Literal["cache", "regenerable", "feature", "user-data", "secret"] = Field(
+        ..., alias="class", title="DiskClass"
+    )
+    """
+    What removing an item costs.
+    `cache`: Rebuilt by the agent itself.
+    `regenerable`: Rebuilt by a command, at a cost.
+    `feature`: Costs resume, history or rewind: only old files count, the newest are kept.
+    `user-data`: Kept: measured only.
+    `secret`: Credentials: kept, measured only.
+    """
+    cleanable_bytes: int = Field(..., ge=0)
+    """
+    What a clean would free: old enough, not among the newest kept, not protected; 0
+    for `user-data` and `secret`. Links are not followed and other volumes are not entered.
+    """
+    cleanable_files: int = Field(..., ge=0)
+    files: int = Field(..., ge=0)
+    path: str
+
+
+class DiskTarget(BaseModel):
+    bytes: int = Field(..., ge=0)
+    cleanable_bytes: int = Field(..., ge=0)
+    items: list[DiskItem]
+    """
+    The items found on this machine; one that does not exist is left out.
+    """
+    label: str
+    """
+    The agent's or the tool's name.
+    """
+    target: str
+    """
+    `agent:<id>` or `cache:<id>`.
+    """
+
+
+class DiskUsageOut(BaseModel):
+    bytes: int = Field(..., ge=0)
+    """
+    Bytes on disk of every item measured.
+    """
+    cleanable_bytes: int = Field(..., ge=0)
+    """
+    Of those, what a clean would free.
+    """
+    targets: list[DiskTarget]
+    truncated: bool
+    """
+    The walk stopped at its limit of files or time: the numbers are a lower bound.
     """
 
 
@@ -637,6 +795,51 @@ class WindowInfo(BaseModel):
 class WindowListOut(BaseModel):
     truncated: bool
     windows: list[WindowInfo]
+
+
+class AgentRow(BaseModel):
+    busy: bool
+    """
+    A run of it is going on; another prompt answers `busy` until it ends.
+    """
+    id: str
+    """
+    Catalog id: pass it as `agent`.
+    """
+    installed: bool
+    """
+    Its program is installed on this machine.
+    """
+    name: str
+    """
+    The product name.
+    """
+    protocol: Literal["headless_json", "acp", "pty_only"] = Field(..., title="Protocol")
+    """
+    How the machine talks to an agent program (the manifest's `bridge.protocol`).
+    `headless_json`: The prompt on standard input, an event stream of JSON lines back, with a session id.
+    `acp`: The Agent Client Protocol. Not driven yet.
+    `pty_only`: A terminal only: no events, sessions or resume. Not driven yet.
+    """
+    resume: bool
+    """
+    A run can be continued by passing back its `session`.
+    """
+    tier: Literal["text_only", "read_only"] = Field(..., title="Tier")
+    """
+    The most a prompt to it may do here.
+    """
+
+
+class AgentListOut(BaseModel):
+    agents: list[AgentRow]
+    """
+    The agents this machine's owner lets be prompted, in catalog order.
+    """
+    default: str | None = None
+    """
+    The agent a prompt without `agent` goes to; absent when none is installed.
+    """
 
 
 class Entry(BaseModel):

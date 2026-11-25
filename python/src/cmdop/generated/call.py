@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 53ac9daa3bb73c83, cmdop 0.1.11) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.13) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -90,6 +90,8 @@ class ToolError(BaseModel):
         "failed",
         "needs_presence",
         "unauthorized",
+        "tool_refused",
+        "sandbox_unavailable",
     ] = Field(..., title="ErrorCode")
     """
     `denied`: The grant or the machine's ceiling does not allow it.
@@ -131,6 +133,10 @@ class ToolError(BaseModel):
     seconds), or `second_factor` (an owner token while the owner's second factor is on: use an
     agent token). Do not retry: an expired token works again only once the owner extends it.
     Sent by the server, never by a machine.
+    `tool_refused`: The agent program tried something its run may not do (a tool on a text-only run, a step
+    the sandbox denied), so the run was stopped. What it said until then is in the result.
+    `sandbox_unavailable`: This machine cannot fence the agent program as its tier needs (no sandbox for this
+    system, or the kernel is too old), so nothing was started.
     """
     details: Any | None = None
     """
@@ -216,6 +222,8 @@ ERROR_CODES: tuple[str, ...] = (
     "failed",
     "needs_presence",
     "unauthorized",
+    "tool_refused",
+    "sandbox_unavailable",
 )
 """Every error code, in the order Rust declares them."""
 
