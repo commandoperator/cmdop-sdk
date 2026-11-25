@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 7128f6bbae917b61, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
 """Every machine tool as a method, on `Machine` and `AsyncMachine`. The clients implement `_tool`."""
 
 from __future__ import annotations
@@ -52,6 +52,7 @@ TOOLS: dict[str, ToolInfo] = {
     "proc_list": ToolInfo("read", "0.0.1", 15),
     "screen_capture": ToolInfo("screen", "0.0.2", 20),
     "screen_info": ToolInfo("screen", "0.0.2", 10),
+    "stage_show": ToolInfo("control", "0.1.16", 55),
     "sys_info": ToolInfo("read", "0.0.1", 15),
     "task_output": ToolInfo("read", "0.0.1", 10),
     "task_start": ToolInfo("exec", "0.0.1", 10),
@@ -75,6 +76,7 @@ GROUPS: dict[str, dict[str, str]] = {
     "pointer": {"click": "pointer_click", "drag": "pointer_drag", "move": "pointer_move", "scroll": "pointer_scroll"},
     "proc": {"kill": "proc_kill", "list": "proc_list"},
     "screen": {"capture": "screen_capture", "info": "screen_info"},
+    "stage": {"show": "stage_show"},
     "sys": {"info": "sys_info"},
     "task": {"output": "task_output", "start": "task_start", "stop": "task_stop"},
     "text": {"type": "text_type"},
@@ -266,6 +268,17 @@ class ScreenGroup:
     def info(self, *, deadline: float | None = None, **args: Unpack[a.ScreenInfoArgs]) -> m.ScreenInfoOut:
         """`screen_info`."""
         return self._tools.screen_info(deadline=deadline, **args)
+
+
+class StageGroup:
+    """The `stage_*` tools."""
+
+    def __init__(self, tools: Tools) -> None:
+        self._tools = tools
+
+    def show(self, *, deadline: float | None = None, **args: Unpack[a.StageShowArgs]) -> m.StageShowOut:
+        """`stage_show`."""
+        return self._tools.stage_show(deadline=deadline, **args)
 
 
 class SysGroup:
@@ -520,6 +533,17 @@ class AsyncScreenGroup:
         return await self._tools.screen_info(deadline=deadline, **args)
 
 
+class AsyncStageGroup:
+    """The `stage_*` tools."""
+
+    def __init__(self, tools: AsyncTools) -> None:
+        self._tools = tools
+
+    async def show(self, *, deadline: float | None = None, **args: Unpack[a.StageShowArgs]) -> m.StageShowOut:
+        """`stage_show`."""
+        return await self._tools.stage_show(deadline=deadline, **args)
+
+
 class AsyncSysGroup:
     """The `sys_*` tools."""
 
@@ -652,6 +676,11 @@ class Tools:
     def screen(self) -> ScreenGroup:
         """The `screen_*` tools: `box.screen.<name>`."""
         return ScreenGroup(self)
+
+    @property
+    def stage(self) -> StageGroup:
+        """The `stage_*` tools: `box.stage.<name>`."""
+        return StageGroup(self)
 
     @property
     def sys(self) -> SysGroup:
@@ -846,6 +875,12 @@ class Tools:
         Risk: screen. Waits up to 10 s."""
         return self._tool("screen_info", dict(args), m.ScreenInfoOut, deadline)
 
+    def stage_show(self, *, deadline: float | None = None, **args: Unpack[a.StageShowArgs]) -> m.StageShowOut:
+        """Plays CMDOP's opening on the machine's screens, then shows your text and question as buttons. Waits up to 45 s for a pick; returns it and the machine's details.
+
+        Risk: control. Waits up to 55 s."""
+        return self._tool("stage_show", dict(args), m.StageShowOut, deadline)
+
     def sys_info(self, *, deadline: float | None = None, **args: Unpack[a.SysInfoArgs]) -> m.SysInfoOut:
         """What the machine is: host name, OS and version, architecture, CPUs, memory, disks with free space, uptime, the user cmdop runs as and its home folder. Call it before choosing commands for a machine.
 
@@ -962,6 +997,11 @@ class AsyncTools:
     def screen(self) -> AsyncScreenGroup:
         """The `screen_*` tools: `box.screen.<name>`."""
         return AsyncScreenGroup(self)
+
+    @property
+    def stage(self) -> AsyncStageGroup:
+        """The `stage_*` tools: `box.stage.<name>`."""
+        return AsyncStageGroup(self)
 
     @property
     def sys(self) -> AsyncSysGroup:
@@ -1155,6 +1195,12 @@ class AsyncTools:
 
         Risk: screen. Waits up to 10 s."""
         return await self._tool("screen_info", dict(args), m.ScreenInfoOut, deadline)
+
+    async def stage_show(self, *, deadline: float | None = None, **args: Unpack[a.StageShowArgs]) -> m.StageShowOut:
+        """Plays CMDOP's opening on the machine's screens, then shows your text and question as buttons. Waits up to 45 s for a pick; returns it and the machine's details.
+
+        Risk: control. Waits up to 55 s."""
+        return await self._tool("stage_show", dict(args), m.StageShowOut, deadline)
 
     async def sys_info(self, *, deadline: float | None = None, **args: Unpack[a.SysInfoArgs]) -> m.SysInfoOut:
         """What the machine is: host name, OS and version, architecture, CPUs, memory, disks with free space, uptime, the user cmdop runs as and its home folder. Call it before choosing commands for a machine.

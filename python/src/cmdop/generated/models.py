@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 7128f6bbae917b61, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -672,6 +672,23 @@ class SysInfoOut(BaseModel):
     user: str | None = None
     """
     The user the machine program runs as.
+    """
+
+
+class StageShowOut(BaseModel):
+    answer: str | None = None
+    """
+    The `id` of the option the person picked; null unless `outcome` is `answered`.
+    """
+    machine: SysInfoOut | None = None
+    """
+    The machine, as `sys_info` reports it; null when this caller may not read it.
+    """
+    outcome: Literal["answered", "closed", "timeout", "paused"] = Field(
+        ..., title="StageOutcome"
+    )
+    """
+    How the stage ended.
     """
 
 

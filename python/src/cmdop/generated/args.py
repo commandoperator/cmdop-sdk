@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 7128f6bbae917b61, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -552,6 +552,33 @@ class ScreenCaptureArgs(TypedDict):
 class ScreenInfoArgs(TypedDict):
     """
     No arguments.
+    """
+
+
+class StageOption(TypedDict):
+    id: str
+    """
+    Returned as `answer` when the person picks it: 1 to 32 of `a-z`, `0-9`, `_`, `-`.
+    """
+    label: str
+    """
+    The button's words, at most 40 characters.
+    """
+
+
+class StageShowArgs(TypedDict):
+    options: NotRequired[list[StageOption]]
+    """
+    The answers the person can pick, 2 to 4, shown as buttons in this order. Needs `question`.
+    """
+    question: NotRequired[str | None]
+    """
+    A question for the person at the machine, at most 120 characters. Needs `options`.
+    """
+    text: NotRequired[str | None]
+    """
+    Your words, shown under the logo once the opening ends: plain text, at most 160
+    characters, one or two short sentences.
     """
 
 

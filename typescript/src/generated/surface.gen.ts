@@ -1,4 +1,4 @@
-// Generated from cmdop/crates/tools/tools.schema.json (sha256 6e1a72817fe1ae37, cmdop 0.1.15) by exports/sdk/gen/gen.ts. Do not edit.
+// Generated from cmdop/crates/tools/tools.schema.json (sha256 7128f6bbae917b61, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
 
 /** Every tool under its group (`box.fs.read` is `fs_read`), and the short forms of `gen/forms.json`. */
 
@@ -19,6 +19,7 @@ export const GROUPS = {
   pointer: { click: "pointer_click", drag: "pointer_drag", move: "pointer_move", scroll: "pointer_scroll" },
   proc: { kill: "proc_kill", list: "proc_list" },
   screen: { capture: "screen_capture", info: "screen_info" },
+  stage: { show: "stage_show" },
   sys: { info: "sys_info" },
   task: { output: "task_output", start: "task_start", stop: "task_stop" },
   text: { type: "text_type" },
