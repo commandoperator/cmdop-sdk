@@ -166,6 +166,24 @@ An empty flight list means the search completed with no matching fares. A failed
 exits with an error. The pinned local package runs offline from the uv cache while Fli
 uses the target machine's network to request current fares.
 
+### Save the latest fare report on the selected machine
+
+The Python example prints JSON on the computer running the SDK. To leave a report
+on the traveler's Mac, use the same machine ID for a second call after a successful
+search. Format the returned search time, travel date and fares as Markdown. Include
+a booking link only when Fli supplies one.
+
+Call [`fs_write`](https://docs.cmdop.ai/reference/tools/fs_write) with the traveler's chosen path as
+`path` and the formatted report as `data`. For example, use
+`Desktop/Bangkok flights.md` when the Mac's Desktop is in the user's home folder.
+The caller needs write access on that machine.
+
+- On the first run, pass `create_only: true` and save the returned `sha256`.
+- On later runs, pass the previous successful write's hash as `expect_sha256`.
+  If someone edited the report, inspect the change before replacing it.
+- If the search fails, keep the last successful report. A successful empty result
+  can replace it with the check time and “No matching flights.”
+
 ## Build an integration
 
 Use a dedicated token for each application. Discover machines, select an explicit id and call the
