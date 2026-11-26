@@ -39,9 +39,9 @@ Try that scenario with Spotify installed and application control enabled on your
 
 | Ask your AI to… | What happens on your computer |
 |---|---|
-| “Show me what's in this project.” | It reads the files you allow it to access. |
-| “Run the tests and show me the failures.” | It runs your command and reads the output. |
-| “Start the build. I'll check it later.” | It starts a persistent task you can revisit. |
+| “Find nonstop flights from Bali to Bangkok and save them on my Mac.” | A local flight search returned two fares. CMDOP saved them in a report on the Desktop. [See the flight search](showcase/google-flights.md). |
+| “Ask the Codex on my Mac and bring back its answer.” | CMDOP selected the installed Codex and followed its task until the reply arrived. [See the Codex example](showcase/prompt-codex.md). |
+| “Start the build. I'll check it later.” | It starts a task you can revisit. [See a remote test run](showcase/remote-test-run.md). |
 
 Each workflow needs the corresponding access. You choose the computer and the permissions.
 Persistent tasks can outlive the call or chat; retained output is bounded and does not survive

@@ -2,7 +2,9 @@
 import asyncio
 import json
 import math
+import os
 import shutil
+import signal
 import sys
 from datetime import date, datetime, timezone
 
@@ -45,6 +47,9 @@ def summarize(payload, departure_date):
 
 
 async def main():
+    # Give stdio_client a chance to stop and reap its server when exec_run stops us.
+    if os.name == "posix":
+        asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, asyncio.current_task().cancel)
     departure_date = date.fromisoformat(sys.argv[1])
     if departure_date < date.today():
         raise ValueError("Choose today or a future departure date")
@@ -65,4 +70,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except asyncio.CancelledError:
+        raise SystemExit(128 + signal.SIGTERM) from None
