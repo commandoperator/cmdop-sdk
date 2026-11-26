@@ -34,13 +34,17 @@ updates the baseline used when a container is replaced.
 
 ## Recover a client that exits at startup
 
-If a runtime update leaves the client unable to start, use the local image that
-last ran successfully. In the same Compose project, first confirm its client
-version, then replace the container and check its connection:
+If a runtime update leaves the client unable to start, the existing container
+records the exact image it started from. From the reference directory, recover
+that baseline even if a later build moved the local image tag. Keep the failed
+container until you have retrieved its image ID.
 
 ```sh
-docker run --pull never --rm --network none cmdop-report-app:local --version
-docker compose up -d --no-build --force-recreate --no-deps report-app
+container_id=$(docker compose ps -a -q report-app)
+image_id=$(docker inspect --format '{{.Image}}' "$container_id")
+docker run --pull never --rm --network none "$image_id" --version
+printf 'services:\n  report-app:\n    image: %s\n' "$image_id" |
+  docker compose -f compose.yaml -f - up -d --pull never --no-build --force-recreate --no-deps report-app
 docker compose exec -T report-app python /opt/report/wait_online.py
 ```
 
