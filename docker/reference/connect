@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+docker compose build report-app
+docker compose run --rm --no-deps --entrypoint python report-app /opt/report/connect.py "$@"
+docker compose up -d --no-build report-app
+docker compose exec -T report-app python /opt/report/wait_online.py
+machine_id=$(docker compose exec -T report-app cmdop key)
+printf 'SDK machine ID: %s\n' "$machine_id"

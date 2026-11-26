@@ -1,0 +1,41 @@
+name: Sync Docker reference
+on:
+  schedule:
+    - cron: '27 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: docker-reference-sync
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+      - run: tools/sync-docker.sh
+      - name: Validate and propose changed application files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git diff --cached --quiet && exit 0
+          docker compose -f docker/reference/compose.yaml config --quiet
+          test -x docker/reference/connect
+          sha=$(cat docker/SOURCE)
+          branch="sync/docker-${sha}"
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          if ! git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            git switch -c "$branch"
+            git commit -m "Sync Docker reference from ${sha:0:12}"
+            git push origin "HEAD:refs/heads/$branch"
+          fi
+          if [[ -z "$(gh pr list --state all --head "$branch" --base main --json number --jq '.[0].number // empty')" ]]; then
+            gh pr create --base main --head "$branch" --title "Update Docker reference to ${sha:0:12}" \
+              --body "Review upstream changes at https://github.com/commandoperator/cmdop-docker/tree/$sha/reference and its native image checks."
+          fi
