@@ -31,14 +31,14 @@ protocol messages with the server. This example runs locally without a CMDOP acc
 
 ## Connect a container to your contour
 
-The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/0b9971aea6bc392acfbef945806c656d08b17945/reference)
+The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/88de73c872e0a882f8d65a94a6a294b3ce4e1934/reference)
 packages the application, local MCP server, Python SDK and CMDOP machine client together.
 To try this revision with Docker Compose, run:
 
 ```sh
 git clone https://github.com/commandoperator/cmdop-docker.git
 cd cmdop-docker
-git checkout 0b9971aea6bc392acfbef945806c656d08b17945
+git checkout 88de73c872e0a882f8d65a94a6a294b3ce4e1934
 cd reference
 ./connect --name my-product-demo
 ```
@@ -46,11 +46,15 @@ cd reference
 The command builds the image with the latest stable CMDOP client and prompts for
 your existing account email and sign-in code. It waits for the registered machine
 to connect. Compose saves the machine identity in a named volume. On subsequent
-starts, run `docker compose up -d report-app` from the same project.
+starts, run `./connect` from the same project to rebuild and reconnect using the
+saved link and machine name. If the server refuses a machine you want to enroll
+again, run `docker compose stop report-app && ./connect --sign-in`. The home
+volume retains its identity. If the contour has reached its machine limit,
+review the limit in the dashboard.
 
 This revision built successfully on native Linux amd64 and arm64. Each runner
-started CMDOP and read the sample report with the network disabled.
-[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45805255059).
+checked the CMDOP version and read the sample report with the network disabled.
+[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45809518167).
 Hosted sign-in and the external agent call still need end-to-end verification.
 The preview is distributed as source.
 
