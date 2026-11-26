@@ -57,3 +57,29 @@ hand-editing the snapshot. Public editorial content survives subsequent SDK rele
 or package dependencies. `node tools/content-check.mjs --audit` audits current editorial text and
 links without claiming to validate an editorial diff. Maintainers use separate source, example
 and snapshot checks for code changes and generated documentation publication.
+
+### Run the SDK contract checks locally
+
+Use the same development runtimes as the public CI workflow. The tests replay
+the shared contract cases in `vectors/` and run without a CMDOP account or a
+connected machine. Start each block at the repository root.
+
+With Node.js 24 and its bundled npm, check TypeScript:
+
+```sh
+cd typescript
+npm install --no-audit --no-fund
+npm run typecheck
+npm exec -- vitest run test/conformance.test.ts
+```
+
+With Python 3.12 in an activated virtual environment, check Python:
+
+```sh
+python -m pip install './python[dev]' build
+python -m build python
+python -m pytest -q python/tests/test_conformance.py
+pyright --project python/pyproject.toml python/src
+```
+
+[Public CI workflow](.github/workflows/sdk-checks.yml)
