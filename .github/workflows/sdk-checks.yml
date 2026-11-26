@@ -40,3 +40,17 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run typecheck
       - run: npm exec -- vitest run test/conformance.test.ts
+      - name: Compile and run the JavaScript SDK
+        run: |
+          npm exec -- tsc --noEmit false --module NodeNext --moduleResolution NodeNext --declaration --rewriteRelativeImportExtensions --rootDir src --outDir dist
+          test -s dist/index.d.ts
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import { connect, memoryCarrier } from "./dist/index.js";
+          const client = connect({ carrier: memoryCarrier({ machines: [], async *serve() {} }) });
+          try {
+            assert.deepEqual(await client.machines(), []);
+          } finally {
+            await client.close();
+          }
+          JS
