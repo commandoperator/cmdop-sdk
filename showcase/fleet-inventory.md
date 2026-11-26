@@ -19,9 +19,9 @@ each display name. When the user selects a computer, check its state and
 whether it offers `sys_info` before requesting details. Availability and
 free memory describe the instant of the call.
 
-For a report covering every available computer, the SDK repository has
-[Python](../examples/python/fleet.py) and [TypeScript](../examples/typescript/fleet.ts)
-examples. With read access configured, run `ONLY=fleet bash examples/run.sh`
-from the checkout root. The command queries each available computer.
+To inspect a whole fleet, try the [Python fleet example](https://github.com/commandoperator/cmdop-sdk/blob/a9f856edeba61e18d09c1f20e500b44b7ad054b0/examples/python/fleet.py)
+or its [TypeScript counterpart](https://github.com/commandoperator/cmdop-sdk/blob/a9f856edeba61e18d09c1f20e500b44b7ad054b0/examples/typescript/fleet.ts).
+Both select by ID and report availability per machine. From an SDK checkout at
+that revision, run `ONLY=fleet bash examples/run.sh` with read access configured.
 
 [Configure the SDK](../docs/quickstart.md) · [More things to build](README.md)

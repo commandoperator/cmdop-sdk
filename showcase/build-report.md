@@ -23,8 +23,8 @@ The report travels over the process's standard input and output. Its result is:
 
 ## Ask from a connected chat
 
-Enroll the [Docker reference application](https://github.com/commandoperator/cmdop-docker/tree/1f6ed2e/reference)
-in your contour and give the caller command execution access on that machine.
+Follow the [Docker enrollment guide](https://github.com/commandoperator/cmdop-sdk/blob/09543b0/docs/docker/connect.md)
+to add the reference application to your contour. Give the caller command execution access on that machine.
 Use the name you chose at enrollment in this prompt:
 
 > On my CMDOP machine named my-product-demo, run
@@ -40,6 +40,6 @@ A caller with file-read access can also ask, “Read `/opt/report/build.json`
 on my-product-demo and summarize it.” In the same run, that request returned the
 same report and appeared separately as `fs_read` in Activity.
 
-[Application and setup](../examples/python/local_mcp/README.md) ·
+[SDK and chat setup for this container](https://github.com/commandoperator/cmdop-sdk/blob/09543b0/docs/docker/call.md) ·
 [Python caller](../examples/python/local-mcp.py) ·
 [TypeScript caller](../examples/typescript/local-mcp.ts)
