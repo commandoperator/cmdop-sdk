@@ -62,6 +62,8 @@ The caller needs write access on that machine.
 
 - On the first run, pass `create_only: true` and save the returned `sha256`.
 - On later runs, pass the previous successful write's hash as `expect_sha256`.
-  If someone edited the report, inspect the change before replacing it.
+  A hash mismatch can mean a later check has already saved its fares. Read the
+  current report and compare search timestamps. Discard an older result and
+  preserve any manual edits. Send a fare alert only after the write succeeds.
 - If the search fails, keep the last successful report. A successful empty result
   can replace it with the check time and “No matching flights.”
