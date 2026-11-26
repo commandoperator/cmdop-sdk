@@ -7,10 +7,20 @@ CMDOP, ask a Mac with Fli installed:
 > on December 10, 2026, for one adult. Show the cheapest options in USD and their
 > local departure times.
 
-In a recorded CMDOP MCP call for that date, the search returned Thai Airways
-TG432 departing at 16:10 and TG440 at 19:00, both arriving at Suvarnabhumi
-(BKK). Each was quoted at US$341 during that search. Choose a future travel date
-for your own run to get current fares.
+On November 26 at 19:02 Bali time, a manual search through CMDOP returned
+Thai Airways TG432 for US$309 and TG440 for US$340. Both were nonstop flights
+to Suvarnabhumi (BKK). Choose a future travel date to check current fares.
+
+## Leave the result on your Desktop
+
+Add one sentence to the request: “Save the results as Bangkok flights.md on
+my Desktop.” In the recorded run, CMDOP created the file on the Mac and read
+it back to verify that its contents matched the search.
+
+With a US$320 threshold, a local alert helper submitted one macOS notification
+for TG432. Replaying the same result kept the Mac quiet. The notification
+request was verified during a manual run. A visible banner and an hourly
+trigger from a cloud chat still need a recorded demonstration.
 
 ## Where the answer comes from
 
