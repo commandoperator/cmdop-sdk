@@ -57,7 +57,11 @@ review the limit in the dashboard.
 This revision built successfully on native Linux amd64 and arm64. Each runner
 matched the packaged binary to the stable release checksum and read the sample report with the network disabled.
 [View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45821128991).
-Hosted sign-in and the external agent call still need end-to-end verification.
+On November 26, 2026, an owner enrolled the Linux ARM64 preview in a hosted
+contour. An external MCP client selected the online container, read the report
+with `fs_read`, and used `exec_run` to call its local `latest_build` tool.
+Both calls appeared in the container's Activity view. Both returned the packaged
+report for `demo-build` with three passed tests and zero failures.
 The preview is distributed as source.
 
 ## Read the report with the Python SDK
