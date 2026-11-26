@@ -2,6 +2,8 @@
 
 **In short:** Build the SDK's sample application and read a build report over MCP inside a container. The example runs offline after the image is built.
 
+For an enrolled application, see [Client updates and container recreation](docker/updates.md).
+
 ## Try the report application
 
 With Docker running, build the application from the
