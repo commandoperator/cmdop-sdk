@@ -10,6 +10,11 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 
+# Fli 0.11.1 normally serializes each endpoint as its airport display name.
+ORIGINS = {"DPS", "Ngurah Rai (Bali) International Airport"}
+DESTINATIONS = {"BKK", "DMK", "Suvarnabhumi Airport", "Don Mueang International Airport"}
+
+
 def summarize(payload, departure_date):
     if not isinstance(payload, dict) or payload.get("success") is not True:
         raise ValueError("Fli could not complete the search")
@@ -22,6 +27,8 @@ def summarize(payload, departure_date):
         if len(legs) != 1 or option["currency"] != "USD":
             raise ValueError("Unexpected route or currency")
         leg = legs[0]
+        if leg.get("departure_airport") not in ORIGINS or leg.get("arrival_airport") not in DESTINATIONS:
+            raise ValueError("Unexpected airport in flight result")
         if datetime.fromisoformat(leg["departure_time"]).date() != departure_date:
             raise ValueError("Unexpected departure date")
         price = option["price"]
