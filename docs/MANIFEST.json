@@ -2,7 +2,7 @@
   "schema": 1,
   "source": {
     "repository": "cmdop_web",
-    "revision": "33147dd787ec63befa0a7c811fed9486fa676855",
+    "revision": "8c579e7b43c3b41bcc9ff4c1a0cd7c471f45be20",
     "dirty": false,
     "inputs": {
       "content/reference/sdk/agents.mdx": "5d4388ae05ce3e0e51bc0626fc067bb85b4aee4ec4db4b21d465ea555582fb7e",
@@ -10,7 +10,7 @@
       "content/reference/sdk/commands-and-tasks.mdx": "29cba0923f36b2f67859812f6f8741b6a8072829dcf157c86176e2418f75ad6e",
       "content/reference/sdk/docker/call.mdx": "422cc65f992f59615c858074c04a9116768cd88ba57e4a477b7dd8e23c36d37d",
       "content/reference/sdk/docker/connect.mdx": "27e3fac67d2e8969185e3cc8847a42149af9b61146ed801bdf96a7c778f2b132",
-      "content/reference/sdk/docker/index.mdx": "b5ef2c8d564d4671921b0476f61f2598491fac567eb110bdcdd799c778c9da86",
+      "content/reference/sdk/docker/index.mdx": "b175832a28b3ebbb0b1daf2d8faa6762021d419582e50e6329bd32c61775e151",
       "content/reference/sdk/docker/updates.mdx": "8a9cb9d577d618b328dae5468d7caed66e1dc991500fbecd30b49785870171d5",
       "content/reference/sdk/errors-and-cancellation.mdx": "682564d4292e373c46103fe21ea600df1c55039884a4b4afeeeb51a39c97d615",
       "content/reference/sdk/examples/catalog.mdx": "a4b86b7e3e390ba75b85286c8fa0e055f18275073a25269576aa0c4a2b6cb000",
@@ -46,7 +46,7 @@
     "agents.md": "dc52d203c11e17e30fcadba9e9918eb3a78e7d98b91660fcb632802815c45eeb",
     "authentication.md": "00fc124bd539b267f481b1ff851c702100f70b6bd8df4483588072b8d16db979",
     "commands-and-tasks.md": "4575857f15fcdea48db2e24e00d15e2214d87c709982028506fb0bd0e83cf2ca",
-    "docker.md": "54fc4296e5be15a670c1f1c2351240db11fdb2b19ca6a22ed71554af406bc4e9",
+    "docker.md": "60d024047c36cb6cc78e909ea1054c044cfbeb14ee72cd92762f1daab1316ec0",
     "docker/call.md": "813239584e9bfc80530c527f1337596a40e379bc20eb2ecd867313ccaf8a3cee",
     "docker/connect.md": "7183a911fc5fb9fef8f1ef58e21b4c8af16b58666f45f14f7a9e11453a6b67b8",
     "docker/updates.md": "ab2ef4cee528732bb902efdcd5ba2f8714e3a1a9a550e38134a337505c38bdf2",
@@ -61,7 +61,7 @@
     "machines-and-tools.md": "73c691b9108dfb74724cb06340e6d27f7a33cffb25ecc6e17274bd62b0de1960",
     "python.md": "c3ea1040daff19f64bdcbf8db9b75a8fbef49cabf7a9741564995b8c623de134",
     "quickstart.md": "d2543494bdcf806c0ab1fc4f79ec8215e3836d6e27a9e722b059663c1d399ed3",
-    "README.md": "9e642391711a0f1b61517746322cadda1fb9ef90b6f8aec3d1f1f78e5fc6139f",
+    "README.md": "fef632270a7876fbac152dc3f431bcb3d91421a73fb9dee5609539c44d718eef",
     "typescript.md": "58baf1d25bd483b85b6fb744cef7135d801a1ed61b4de2f1979c2dc4aa438aaa",
     "versions-and-support.md": "f0462a69a39a4bb2c6452541874473b2946fbaac0d5c433291246bf57d6a8b35"
   }

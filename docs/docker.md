@@ -2,13 +2,6 @@
 
 **In short:** Build the SDK's sample application and read a build report over MCP inside a container. The example runs offline after the image is built.
 
-| What you want to do | Start here |
-|---|---|
-| Try the local MCP tool without an account | [Run the offline demo](#try-the-report-application) |
-| Add a container to your existing contour | [Connect a container](docker/connect.md) |
-| Read its report from code or chat | [Call from the SDK or MCP](docker/call.md) |
-| Replace the container and keep its registration | [Update and recover the client](docker/updates.md) |
-
 ## Try the report application
 
 With Docker running, build the application from the
@@ -35,3 +28,19 @@ command as `docker` with these arguments:
 
 Keep stdin open with `-i` and leave TTY allocation off so the client can exchange
 protocol messages with the server. This example runs locally without a CMDOP account.
+
+## Connect a container to your contour
+
+[Enroll the container](docker/connect.md) to see it as an online machine in your CMDOP account.
+
+## Read the report with the Python SDK
+
+[Read the report using a scoped token](docker/call.md) and the registered container’s machine ID.
+
+## Read the container's report from your agent
+
+[Try the connected-chat prompt](docker/call.md#read-the-containers-report-from-your-agent) to call the container’s local MCP tool and see the request in Activity.
+
+## Update or recover the container
+
+[Rebuild or restore the client](docker/updates.md) and keep the existing registration.
