@@ -1,0 +1,60 @@
+name: SDK checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+
+jobs:
+  python:
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install build
+      - run: python -m build python
+      - name: Install the built SDK with its test dependencies
+        run: |
+          wheels=(python/dist/*.whl)
+          test "${#wheels[@]}" -eq 1
+          python -m pip install "${wheels[0]}[dev]"
+      - run: python -m pytest -q python/tests/test_conformance.py
+      - run: pyright --project python/pyproject.toml python/src
+
+  typescript:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm exec -- vitest run test/conformance.test.ts
+      - name: Compile and run the JavaScript SDK
+        run: |
+          npm exec -- tsc --noEmit false --module NodeNext --moduleResolution NodeNext --declaration --rewriteRelativeImportExtensions --rootDir src --outDir dist
+          test -s dist/index.d.ts
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          import { VERSION } from "./dist/version.js";
+          import { connect, memoryCarrier } from "./dist/index.js";
+          const manifest = JSON.parse(readFileSync("package.json", "utf8"));
+          assert.equal(VERSION, manifest.version, "HTTP client version must match the package");
+          const client = connect({ carrier: memoryCarrier({ machines: [], async *serve() {} }) });
+          try {
+            assert.deepEqual(await client.machines(), []);
+          } finally {
+            await client.close();
+          }
+          JS
