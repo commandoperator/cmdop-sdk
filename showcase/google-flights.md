@@ -7,7 +7,7 @@ CMDOP, ask a Mac with Fli installed:
 > on December 10, 2026, for one adult. Show the cheapest options in USD and their
 > local departure times.
 
-In a recorded SDK experiment for that date, the search returned Thai Airways
+In a recorded CMDOP MCP call for that date, the search returned Thai Airways
 TG432 departing at 16:10 and TG440 at 19:00, both arriving at Suvarnabhumi
 (BKK). Each was quoted at US$341 during that search. Choose a future travel date
 for your own run to get current fares.
