@@ -116,7 +116,7 @@ SDKs are published on PyPI and npm. The machine program is available for **macOS
 see [feature status](https://docs.cmdop.ai/help/feature-status) for other platforms.
 
 Bring your existing AI account and your computers. CMDOP offers a free core;
-see [pricing](https://cmdop.ai/prices) for current plan terms and limits.
+see [pricing](https://cmdop.ai/pricing) for current plan terms and limits.
 
 ## Go further
 
