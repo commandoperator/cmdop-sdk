@@ -1,0 +1,11 @@
+{
+  "name": "cmdop-named-agent-examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test build/shared.test.js"
+  },
+  "dependencies": { "@cmdop/sdk": "3.6.0" },
+  "devDependencies": { "typescript": "6.0.3", "@types/node": "22.20.5" }
+}

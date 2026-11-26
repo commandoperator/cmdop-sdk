@@ -1,19 +1,17 @@
 # SDK examples
 
-Start with a read: find an online computer and print its OS, architecture and CPU count.
-Follow the [setup and execution guide](../docs/examples.md#run-the-executable-examples)
-for requirements, installation and expected output.
+Generated from `examples/catalog.json`; edit the inventory, not this index.
 
-| Program | TypeScript | Python | Access |
-|---|---|---|---|
-| First read | [hello.ts](typescript/hello.ts) | [hello.py](python/hello.py) | `read` |
-| Inspect every online computer | [fleet.ts](typescript/fleet.ts) | [fleet.py](python/fleet.py) | `read` |
-| List files on a computer | [files.ts](typescript/files.ts) | [files.py](python/files.py) | `read` |
-| Read the demo guide and task list | [showtime.ts](typescript/showtime.ts) | [showtime.py](python/showtime.py) | agent token |
-| Run and stream a command | [command.ts](typescript/command.ts) | [command.py](python/command.py) | `exec` |
+[Setup and execution guide](../docs/examples.md#run-the-executable-examples).
+Source availability does not establish live integration verification.
 
-[Quickstart](../docs/quickstart.md) · [Workflows](../docs/examples.md) ·
-[Connect your AI](https://docs.cmdop.ai/guides/connect)
-
-Technical instructions are maintained in the public docs site's source and exported to `docs/`.
-This page indexes the executable source files.
+| Example | Python | TypeScript | Access | Local check |
+|---|---|---|---|---|
+| [Read a machine's OS and CPU](../docs/quickstart.md) | [hello.py](python/hello.py) | [hello.ts](typescript/hello.ts) | `read` | smoke |
+| [Inspect online computers](../docs/examples.md) | [fleet.py](python/fleet.py) | [fleet.ts](typescript/fleet.ts) | `read` | smoke |
+| [List a machine's files](../docs/files-and-screen.md) | [files.py](python/files.py) | [files.ts](typescript/files.ts) | `read` | smoke |
+| [Read the demo guide and task summary](../docs/examples.md) | [showtime.py](python/showtime.py) | [showtime.ts](typescript/showtime.ts) | `read` | smoke |
+| [Discover installed agents without prompting](../docs/agents.md) | [agents.py](python/agents.py) | [agents.ts](typescript/agents.ts) | `read` | smoke |
+| [Run and verify a bounded command](../docs/commands-and-tasks.md) | [command.py](python/command.py) | [command.ts](typescript/command.ts) | `exec` | outcome |
+| [Ask Codex explicitly](../docs/agents.md) | [prompt-codex.py](python/agents/codex.py) | [prompt-codex.ts](typescript/agents/codex.ts) | `read`, `agent` | outcome |
+| [Ask Claude Code explicitly](../docs/agents.md) | [prompt-claude-code.py](python/agents/claude-code.py) | [prompt-claude-code.ts](typescript/agents/claude-code.ts) | `read`, `agent` | outcome |
