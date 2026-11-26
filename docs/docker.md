@@ -33,21 +33,21 @@ protocol messages with the server. This example runs locally without a CMDOP acc
 
 ## Connect a container to your contour
 
-The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/d0ead2f22baaf17610a9c7a94c3236865e913f21/reference)
+The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/0e7e352fe56cf2849c7a449427afbae97e3968ab/reference)
 packages the application, local MCP server, Python SDK and CMDOP machine client together.
 To try this revision with Docker Compose, run:
 
 ```sh
 git clone https://github.com/commandoperator/cmdop-docker.git
 cd cmdop-docker
-git checkout d0ead2f22baaf17610a9c7a94c3236865e913f21
+git checkout 0e7e352fe56cf2849c7a449427afbae97e3968ab
 cd reference
 ./connect --name my-product-demo
 ```
 
 The command builds the image with the latest stable CMDOP client and prompts for
 your existing account email and sign-in code. It waits for the registered machine
-to connect. Compose saves the machine identity in a named volume. On subsequent
+to connect and prints the contour URL when the server supplies it. Compose saves the machine identity in a named volume. On subsequent
 starts, run `./connect` from the same project to rebuild and reconnect using the
 saved link and machine name. If the server refuses a machine you want to enroll
 again, run `docker compose stop report-app && ./connect --sign-in`. The home
@@ -56,9 +56,26 @@ review the limit in the dashboard.
 
 This revision built successfully on native Linux amd64 and arm64. Each runner
 matched the packaged binary to the stable release checksum and read the sample report with the network disabled.
-[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45814615613).
+[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45821128991).
 Hosted sign-in and the external agent call still need end-to-end verification.
 The preview is distributed as source.
+
+## Read the report with the Python SDK
+
+For an application that only needs the report, give its agent token the
+`read` grant. Set `CMDOP_URL` to your contour URL, `CMDOP_TOKEN` to that token
+and `CMDOP_MACHINE` to the registered container's machine ID in your shell.
+From the same `reference/` directory, run:
+
+```sh
+docker compose exec -T -e CMDOP_URL -e CMDOP_TOKEN -e CMDOP_MACHINE report-app \
+  python /opt/report/read_via_sdk.py
+```
+
+The bundled SDK sends `fs_read` to that machine for `/opt/report/build.json`.
+It prints the sample JSON shown above after checking that the response is complete.
+If you configured filesystem roots on the machine, include `/opt/report` in the
+allowed directories. The next example exercises the application's MCP server.
 
 ## Read the container's report from your agent
 
