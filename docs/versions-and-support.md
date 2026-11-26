@@ -29,9 +29,8 @@ public contract changes are additive; see the [changelog](https://docs.cmdop.ai/
 
 ## Docker (planned)
 
-A Docker image for the CMDOP machine program is planned and is not available for general use;
-see [feature status](https://docs.cmdop.ai/help/feature-status). Docker setup and SDK examples will be documented
-when support is available. For the current supported setup, use the
+The SDK includes a [runnable Docker example](docker.md) for a local MCP report
+server. The CMDOP machine image is in development. For the supported machine setup, use the
 [SDK quickstart](quickstart.md).
 
 ## Public source

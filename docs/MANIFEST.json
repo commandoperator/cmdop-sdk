@@ -2,24 +2,25 @@
   "schema": 1,
   "source": {
     "repository": "cmdop_web",
-    "revision": "8690da0fb8c849a8af0ae00e0679e1f117e1e747",
+    "revision": "1add5aa0ccf378291e26042ac5491ab7aaf8c855",
     "dirty": false,
     "inputs": {
       "content/reference/sdk/agents.mdx": "5d4388ae05ce3e0e51bc0626fc067bb85b4aee4ec4db4b21d465ea555582fb7e",
       "content/reference/sdk/authentication.mdx": "a97767b4a8e32eb637354a5380b5470e339a4473d1155b65e56dc7c7eccfc421",
       "content/reference/sdk/commands-and-tasks.mdx": "29cba0923f36b2f67859812f6f8741b6a8072829dcf157c86176e2418f75ad6e",
+      "content/reference/sdk/docker.mdx": "c3d46b4ce35a3b02d44498a7e645b8a44182e39e9a2828c2b9a893a6f45e52ec",
       "content/reference/sdk/errors-and-cancellation.mdx": "682564d4292e373c46103fe21ea600df1c55039884a4b4afeeeb51a39c97d615",
       "content/reference/sdk/examples/catalog.mdx": "51b653b179e73ce335b60a7422d2fb01053e86b7bbc138c1a528bce31b7e4051",
       "content/reference/sdk/examples/google-flights.mdx": "543debc2c4e114b0352b339860fb6747a4d6bc4543f0038ea2454f1817dcb773",
       "content/reference/sdk/examples/index.mdx": "3406de0c9860c83846becf61003c3a26da32c617be8abe1a81073ed92e8033fb",
       "content/reference/sdk/examples/run.mdx": "f57d56e3d36a94e4bff8bbdd557c81a6ddb42d748ac449b7c8e14c3943518605",
       "content/reference/sdk/files-and-screen.mdx": "4c5d8be9acefd4e8cd7680aaffa6568bf93a27adb75a43d71b910ef1d8293ba3",
-      "content/reference/sdk/index.mdx": "384a504761a22fbe92ba4491df5f5119aa13d04781fcb7ddc6ba6df4e1f72de7",
+      "content/reference/sdk/index.mdx": "f6c32ab4eb9dfd91d685cf2375fa262387f87f8d8d6a3753751dea2ae5f93da5",
       "content/reference/sdk/machines-and-tools.mdx": "da83a6420a80a5f72a5d64c034f5b1aec8d9dc2f6d4e4b17e4d4d35d023d6ee5",
       "content/reference/sdk/python.mdx": "a54c216b0685fa9e181920c962306d47d78b14199449913fb29a5fd7281e37c8",
       "content/reference/sdk/quickstart.mdx": "ebbf8f25c38fb53e2a32444d2e5199b1e701cb169efc9e9cece6e065a72534d9",
       "content/reference/sdk/typescript.mdx": "b809661a3f271621207f76a1e7d8efe83078b10aa0b1d05319784752bf6a2724",
-      "content/reference/sdk/versions-and-support.mdx": "9d9017b589c5f0f42f05edb81fcb00f5e1585b814b8c7999e1f9d9cd905d09fe"
+      "content/reference/sdk/versions-and-support.mdx": "57020acea6c8cd81a59db1178df3db7e9c61d95b8daf8ca485f680141d0a7a75"
     }
   },
   "exporter": {
@@ -33,13 +34,14 @@
       "scripts/twins/markdown.ts": "d82be019b095fb32aa5c7c45ce00f7d518e25ebd263bf2469b18c210fabe4e5a",
       "scripts/lib/frontmatter.ts": "7962474f2e05e00db020c3f71351065a964594d232df9cb921e6056d4c5c7b2b",
       "scripts/lib/content.ts": "a0ab487827150ed28425e396663255b9c6568410bee6d0942f1469d952635a59",
-      "content/reference/sdk/_meta.ts": "bc40c98214d5d00a8128682e21a622cbdf83f0cfa2eaa6b81c8dda3054280a38"
+      "content/reference/sdk/_meta.ts": "1f1171d55b2d1f550bf9e617effb95bd0f8c0e45ca5733d34ff8ca12a1c14b56"
     }
   },
   "outputs": {
     "agents.md": "dc52d203c11e17e30fcadba9e9918eb3a78e7d98b91660fcb632802815c45eeb",
     "authentication.md": "00fc124bd539b267f481b1ff851c702100f70b6bd8df4483588072b8d16db979",
     "commands-and-tasks.md": "4575857f15fcdea48db2e24e00d15e2214d87c709982028506fb0bd0e83cf2ca",
+    "docker.md": "b3166877060d268dcf828f68efeddb0ca2f100735dcd0eb364f672ece725dc6b",
     "errors-and-cancellation.md": "fc2aeffc9f3e2ac90bad1d05a980ab7ba89ea5a2e47abb44e13435b3b2dbaf20",
     "examples.md": "4a7ea9551c09435867af007f7036fc8ba766804304b49ca3b7e3b51028440a36",
     "examples/catalog.md": "7f9fcf075b88fd41d7d7d7b0989cbd2d2cb4adeb7201001cb056737b56cb5341",
@@ -49,8 +51,8 @@
     "machines-and-tools.md": "73c691b9108dfb74724cb06340e6d27f7a33cffb25ecc6e17274bd62b0de1960",
     "python.md": "c3ea1040daff19f64bdcbf8db9b75a8fbef49cabf7a9741564995b8c623de134",
     "quickstart.md": "d2543494bdcf806c0ab1fc4f79ec8215e3836d6e27a9e722b059663c1d399ed3",
-    "README.md": "eccf0530ed8146e85caeb4643062b4208f3e0d3f6242d1e4dd9357198dce69d7",
+    "README.md": "db53b246c451cf13a12f90699ccf5480ab3ba135f29aff3c97ec1ecc90aeb70c",
     "typescript.md": "58baf1d25bd483b85b6fb744cef7135d801a1ed61b4de2f1979c2dc4aa438aaa",
-    "versions-and-support.md": "016bea97265cee6ee03c897722c7e8faadda43654326f023eae9f1a1b236c595"
+    "versions-and-support.md": "f0462a69a39a4bb2c6452541874473b2946fbaac0d5c433291246bf57d6a8b35"
   }
 }
