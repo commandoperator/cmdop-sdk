@@ -3,6 +3,7 @@
 Start with a small result on a computer you control:
 
 - [Inspect a computer without running a shell command](first-read.md): a first step for your own automation.
+- [Give an assistant read access](agent-permissions.md). See a successful read and a refused command in the same agent’s activity.
 - [See which of your computers is online](fleet-inventory.md). Inspect the Mac you choose before sending it a job.
 - [Ask your Mac about flights from Bali to Bangkok](google-flights.md). Compare nonstop fares across both Bangkok airports using a local MCP server.
 - [Ask the Codex installed on your Mac](prompt-codex.md). Select the agent by name and follow its answer from a connected chat.
