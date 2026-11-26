@@ -21,6 +21,35 @@ The short forms `run`, `stream` and `screenshot` provide convenient command and 
 Use `client.call("sys_info", {}, { machine: "<machine>" })` in TypeScript or
 `client.call("sys_info", {}, machine="<machine>")` in Python for a call by tool name.
 
+## Ask the person at a machine to choose
+
+When someone requests an on-screen demo, select their online machine and check its
+advertised tools for `stage_show`. This control operation plays the CMDOP opening and
+displays two to four buttons. Give each option a stable ID so changing its label preserves
+the meaning of the response. Here `box` is the selected machine from the quickstart.
+
+```python
+reply = box.stage.show(
+    question="Which demo would you like?",
+    options=[{"id": "files", "label": "Files"}, {"id": "apps", "label": "Apps"}],
+)
+print(reply.answer if reply.outcome == "answered" else reply.outcome)
+```
+
+```typescript
+const reply = await box.stage.show({
+  question: "Which demo would you like?",
+  options: [{ id: "files", label: "Files" }, { id: "apps", label: "Apps" }],
+});
+console.log(reply.outcome === "answered" ? reply.answer : reply.outcome);
+```
+
+A connected MCP caller supplies the same question and options in `tools/call`,
+using `params.name = "stage_show"` and the selected `machine` in `params.arguments`.
+The stage waits up to 45 seconds. Handle `closed`, `timeout` and `paused` as outcomes
+without a selection. An answer records the button ID. The identity of the person at
+the screen is unknown.
+
 ## Client methods
 
 These tools have no machine argument: `machines_list`, `tasks_list`, `history_search`,
