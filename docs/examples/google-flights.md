@@ -8,6 +8,20 @@ both Bangkok airports for one adult, then returns up to three distinct flights o
 fare, with local departure times and booking links when available. Prices reflect the time
 of the search. The example only searches.
 
+## From a connected chat
+
+Ask your connected agent: “Use Fli on my Mac through CMDOP to find nonstop flights
+from Bali to Bangkok on my travel date. Show the cheapest options in USD.” Include
+your date and, if you have several Macs connected, the machine name.
+
+For the agent: call `docs_read` with path `reference/mcp` and follow
+[Call a local MCP tool from a connected chat](https://docs.cmdop.ai/reference/mcp#call-a-local-mcp-tool-from-a-connected-chat).
+Select the requested online machine, resolve its `uvx` executable, and pass the
+provided Python client to `exec_run` on stdin. The command runs against the prepared
+Fli environment on that machine. Check the command result before reporting fares.
+
+## From Python or TypeScript
+
 On the target machine, install uv and prepare the Fli environment once:
 
 ```bash
@@ -34,7 +48,7 @@ An empty flight list means the search completed with no matching fares. A failed
 exits with an error. The pinned local package runs offline from the uv cache while Fli
 uses the target machine's network to request current fares.
 
-### Save the latest fare report on the selected machine
+## Save the latest fare report on the selected machine
 
 The Python example prints JSON on the computer running the SDK. To leave a report
 on the traveler's Mac, use the same machine ID for a second call after a successful

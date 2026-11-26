@@ -2,7 +2,7 @@
   "schema": 1,
   "source": {
     "repository": "cmdop_web",
-    "revision": "65bc0ff18bf96b92ed716a2bacbedf06b44bf6b7",
+    "revision": "8690da0fb8c849a8af0ae00e0679e1f117e1e747",
     "dirty": false,
     "inputs": {
       "content/reference/sdk/agents.mdx": "5d4388ae05ce3e0e51bc0626fc067bb85b4aee4ec4db4b21d465ea555582fb7e",
@@ -10,7 +10,7 @@
       "content/reference/sdk/commands-and-tasks.mdx": "29cba0923f36b2f67859812f6f8741b6a8072829dcf157c86176e2418f75ad6e",
       "content/reference/sdk/errors-and-cancellation.mdx": "682564d4292e373c46103fe21ea600df1c55039884a4b4afeeeb51a39c97d615",
       "content/reference/sdk/examples/catalog.mdx": "51b653b179e73ce335b60a7422d2fb01053e86b7bbc138c1a528bce31b7e4051",
-      "content/reference/sdk/examples/google-flights.mdx": "fcd223fb096fb219fae5abe0129468466517ca41629baed13a457927ec788552",
+      "content/reference/sdk/examples/google-flights.mdx": "543debc2c4e114b0352b339860fb6747a4d6bc4543f0038ea2454f1817dcb773",
       "content/reference/sdk/examples/index.mdx": "3406de0c9860c83846becf61003c3a26da32c617be8abe1a81073ed92e8033fb",
       "content/reference/sdk/examples/run.mdx": "f57d56e3d36a94e4bff8bbdd557c81a6ddb42d748ac449b7c8e14c3943518605",
       "content/reference/sdk/files-and-screen.mdx": "4c5d8be9acefd4e8cd7680aaffa6568bf93a27adb75a43d71b910ef1d8293ba3",
@@ -43,13 +43,13 @@
     "errors-and-cancellation.md": "fc2aeffc9f3e2ac90bad1d05a980ab7ba89ea5a2e47abb44e13435b3b2dbaf20",
     "examples.md": "4a7ea9551c09435867af007f7036fc8ba766804304b49ca3b7e3b51028440a36",
     "examples/catalog.md": "7f9fcf075b88fd41d7d7d7b0989cbd2d2cb4adeb7201001cb056737b56cb5341",
-    "examples/google-flights.md": "67219df3a70c85ff3f497999e8f7be52b1bba598026847ce0381cd228a52af8f",
+    "examples/google-flights.md": "025e3c3ee92f319f90bc7d6105eea2a3229d964ed7160297f0c725e0337e9580",
     "examples/run.md": "daf2f7c163220665dd412f259739ab662c46afa4847bda686a8eec101a2311e7",
     "files-and-screen.md": "933f052c49c057ec892eecf3a876401495216e840f5dc84f08cb65e1a95e232f",
     "machines-and-tools.md": "73c691b9108dfb74724cb06340e6d27f7a33cffb25ecc6e17274bd62b0de1960",
     "python.md": "c3ea1040daff19f64bdcbf8db9b75a8fbef49cabf7a9741564995b8c623de134",
     "quickstart.md": "d2543494bdcf806c0ab1fc4f79ec8215e3836d6e27a9e722b059663c1d399ed3",
-    "README.md": "e57cdd4ea9b17d037cb8a7955d9da551f74bfc7709c511f827e99e90f7fed1fa",
+    "README.md": "eccf0530ed8146e85caeb4643062b4208f3e0d3f6242d1e4dd9357198dce69d7",
     "typescript.md": "58baf1d25bd483b85b6fb744cef7135d801a1ed61b4de2f1979c2dc4aa438aaa",
     "versions-and-support.md": "016bea97265cee6ee03c897722c7e8faadda43654326f023eae9f1a1b236c595"
   }
