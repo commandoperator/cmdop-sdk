@@ -21,12 +21,24 @@ The report travels over the process's standard input and output. Its result is:
 {"job": "demo-build", "tests_passed": 3, "tests_failed": 0}
 ```
 
-## Try it on a connected machine
+## Ask from a connected chat
 
-For a product integration, package the helper with the application that owns the
-report. Give a CMDOP agent execution access on that machine and select its ID.
-The Python and TypeScript callers run the helper there and validate the returned
-report. The local Docker run above verifies the application side independently.
+Enroll the [Docker reference application](https://github.com/commandoperator/cmdop-docker/tree/1f6ed2e/reference)
+in your contour and give the caller command execution access on that machine.
+Use the name you chose at enrollment in this prompt:
+
+> On my CMDOP machine named my-product-demo, run
+> `/usr/local/bin/python /opt/report/read_report.py` and tell me the job name
+> and how many tests passed or failed.
+
+In a hosted run on November 26, 2026, the external MCP client selected the online
+Linux ARM64 container and ran the helper. The container's local `latest_build`
+tool returned `demo-build`, three passed and zero failed. The owner could see
+the successful `exec_run` on that machine's Activity tab.
+
+A caller with file-read access can also ask, “Read `/opt/report/build.json`
+on my-product-demo and summarize it.” In the same run, that request returned the
+same report and appeared separately as `fs_read` in Activity.
 
 [Application and setup](../examples/python/local_mcp/README.md) ·
 [Python caller](../examples/python/local-mcp.py) ·
