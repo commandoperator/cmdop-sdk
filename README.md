@@ -116,7 +116,7 @@ see [pricing](https://cmdop.ai/prices) for current plan terms and limits.
 
 ## Go further
 
-[SDK documentation](docs/README.md) · [Examples](docs/examples.md) ·
+[SDK documentation](docs/README.md) · [Workflow showcase](showcase/README.md) · [Examples](docs/examples.md) ·
 [TypeScript](docs/typescript.md) · [Python](docs/python.md) ·
 [Versions and support](docs/versions-and-support.md) ·
 [Releases](https://github.com/commandoperator/cmdop-sdk/releases)
