@@ -76,4 +76,4 @@ program answers a tool it does not have yet with `unknown_tool`.
 ---
 
 Documentation snapshot from the [CMDOP documentation](https://docs.cmdop.ai/reference/sdk).
-Source revision: ebfd871033f10fefde78d71f0651ab7639d7565c. The live site may contain newer changes.
+Source revision: f0418e129248dc9c3b305f59f9134917f55411ad. The live site may contain newer changes.
