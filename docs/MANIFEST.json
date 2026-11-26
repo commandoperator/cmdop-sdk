@@ -2,12 +2,12 @@
   "schema": 1,
   "source": {
     "repository": "cmdop_web",
-    "revision": "a3fbbda6b54804d27901bc90c42de71ebbbd4b3c",
+    "revision": "4b5471f41eeab47633ad148c39d5c62c31126ae4",
     "dirty": false,
     "inputs": {
       "content/reference/sdk/agents.mdx": "5d4388ae05ce3e0e51bc0626fc067bb85b4aee4ec4db4b21d465ea555582fb7e",
       "content/reference/sdk/authentication.mdx": "a97767b4a8e32eb637354a5380b5470e339a4473d1155b65e56dc7c7eccfc421",
-      "content/reference/sdk/commands-and-tasks.mdx": "ec3d5b697bf497f6bd075e91b5fa7bf0e5f12a281e1dd801e03a44ca42d08f90",
+      "content/reference/sdk/commands-and-tasks.mdx": "29cba0923f36b2f67859812f6f8741b6a8072829dcf157c86176e2418f75ad6e",
       "content/reference/sdk/errors-and-cancellation.mdx": "682564d4292e373c46103fe21ea600df1c55039884a4b4afeeeb51a39c97d615",
       "content/reference/sdk/examples.mdx": "258bfa31f7529e8feeac1533c1f67c766f698d40229cdc390e9915fce396c890",
       "content/reference/sdk/files-and-screen.mdx": "4c5d8be9acefd4e8cd7680aaffa6568bf93a27adb75a43d71b910ef1d8293ba3",
@@ -34,14 +34,14 @@
   "outputs": {
     "agents.md": "dc52d203c11e17e30fcadba9e9918eb3a78e7d98b91660fcb632802815c45eeb",
     "authentication.md": "00fc124bd539b267f481b1ff851c702100f70b6bd8df4483588072b8d16db979",
-    "commands-and-tasks.md": "f0240c22f7f6a3c0744ace595a1fb8bac02e742d45b4f572462673b6fbf65b42",
+    "commands-and-tasks.md": "4575857f15fcdea48db2e24e00d15e2214d87c709982028506fb0bd0e83cf2ca",
     "errors-and-cancellation.md": "fc2aeffc9f3e2ac90bad1d05a980ab7ba89ea5a2e47abb44e13435b3b2dbaf20",
     "examples.md": "4b3507b147002e0da5a2bdd6e98702a99066f7fc172d112beacb3b23852312b0",
     "files-and-screen.md": "933f052c49c057ec892eecf3a876401495216e840f5dc84f08cb65e1a95e232f",
     "machines-and-tools.md": "1cfff136c02d15eb863edeea7e4d5a8b07566d991fa63d7172e416d1a004149e",
     "python.md": "c3ea1040daff19f64bdcbf8db9b75a8fbef49cabf7a9741564995b8c623de134",
     "quickstart.md": "d2543494bdcf806c0ab1fc4f79ec8215e3836d6e27a9e722b059663c1d399ed3",
-    "README.md": "b790aee652cf747f57e7dc47a0f62d82369ad5da5acd597accea730ab9a5cf15",
+    "README.md": "f4bb741158884c2d11fe713e4fcc66b203ce81eaa8c48b27098718fee5fc2421",
     "typescript.md": "58baf1d25bd483b85b6fb744cef7135d801a1ed61b4de2f1979c2dc4aa438aaa",
     "versions-and-support.md": "016bea97265cee6ee03c897722c7e8faadda43654326f023eae9f1a1b236c595"
   }

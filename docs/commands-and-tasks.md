@@ -30,6 +30,24 @@ hello from my computer
 
 Check the exit code; a nonzero program exit is different from a refused tool call.
 
+## Call a local MCP tool
+
+Suppose your application needs an airport code from Fli, an MCP server installed on a Mac.
+Select that Mac by its machine ID. Through either SDK, call `exec_run` with the argument list
+for a small MCP client on the selected machine. You can also send a fixed Python helper through
+`stdin` with `python -`. The machine needs the interpreter and the MCP server's dependencies.
+
+For a stdio server, the helper starts its own server process, initializes the session, lists
+the tools and calls the selected tool. For example, a caller using CMDOP SDK 3.6.0 in Python
+or TypeScript reached Fli 0.11.1 and called `find_airports` with query `DPS`. The same call
+through CMDOP's MCP endpoint returned the same airport. The helper checked that one airport
+record contained both the exact IATA code and the name “Ngurah Rai (Bali) International Airport”.
+
+This pattern requires command execution permission on the target. Give the helper a timeout,
+check the command's exit status and truncation flag, then validate the MCP tool's success
+and structured result before using it. The permission applies to the outer command. Launching
+a fresh stdio server creates a separate session from the one an agent may already be using.
+
 ## Streaming
 
 ```ts
