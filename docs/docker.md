@@ -63,11 +63,12 @@ The preview is distributed as source.
 ## Read the report with the Python SDK
 
 For an application that only needs the report, give its agent token the
-`read` grant. Set `CMDOP_URL` to your contour URL, `CMDOP_TOKEN` to that token
-and `CMDOP_MACHINE` to the registered container's machine ID in your shell.
-From the same `reference/` directory, run:
+`read` grant. Set `CMDOP_URL` to your contour URL, `CMDOP_TOKEN` to that token.
+From the same `reference/` directory, read the registered container's public
+machine ID and pass it directly to the caller:
 
 ```sh
+CMDOP_MACHINE=$(docker compose exec -T report-app cmdop key) && export CMDOP_MACHINE
 docker compose exec -T -e CMDOP_URL -e CMDOP_TOKEN -e CMDOP_MACHINE report-app \
   python /opt/report/read_via_sdk.py
 ```
