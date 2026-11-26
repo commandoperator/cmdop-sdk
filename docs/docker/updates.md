@@ -32,4 +32,20 @@ and a client release that recognizes that supervisor. Keep the app and the
 surrounding system directories read-only to that user. Rebuilding the image also
 updates the baseline used when a container is replaced.
 
+## Recover a client that exits at startup
+
+If a runtime update leaves the client unable to start, use the local image that
+last ran successfully. In the same Compose project, first confirm its client
+version, then replace the container and check its connection:
+
+```sh
+docker run --pull never --rm --network none cmdop-report-app:local --version
+docker compose up -d --no-build --force-recreate --no-deps report-app
+docker compose exec -T report-app python /opt/report/wait_online.py
+```
+
+Recreation restores the executable from the image and reattaches the existing
+machine-home volume. Files kept only in the container's writable layer are
+discarded. Confirm the same machine ID is online in your contour.
+
 [Docker overview and enrollment](../docker.md)
