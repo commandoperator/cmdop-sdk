@@ -22,8 +22,9 @@ application can still read the report after the container reconnects.
 The published reference with CMDOP 0.1.16 needs the rebuild procedure above.
 Its foreground client can check for a release, but its supervisor detection
 recognizes launchd and systemd. Docker restart policies need explicit client
-support. The reference revision linked from the overview also places the
-executable in a directory owned by root.
+support. The reference keeps the executable in a directory owned by the service user,
+runs CMDOP as PID 1 and sets `CMDOP_RESTARTED_BY_CONTAINER=1` alongside
+`restart: unless-stopped`. A client release that supports this setting is required.
 
 For runtime updates an integrating image needs a writable executable directory
 for the service user, a supervisor that restarts the client after installation,

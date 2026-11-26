@@ -33,14 +33,14 @@ protocol messages with the server. This example runs locally without a CMDOP acc
 
 ## Connect a container to your contour
 
-The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/88de73c872e0a882f8d65a94a6a294b3ce4e1934/reference)
+The [reference application preview](https://github.com/commandoperator/cmdop-docker/tree/d0ead2f22baaf17610a9c7a94c3236865e913f21/reference)
 packages the application, local MCP server, Python SDK and CMDOP machine client together.
 To try this revision with Docker Compose, run:
 
 ```sh
 git clone https://github.com/commandoperator/cmdop-docker.git
 cd cmdop-docker
-git checkout 88de73c872e0a882f8d65a94a6a294b3ce4e1934
+git checkout d0ead2f22baaf17610a9c7a94c3236865e913f21
 cd reference
 ./connect --name my-product-demo
 ```
@@ -55,8 +55,8 @@ volume retains its identity. If the contour has reached its machine limit,
 review the limit in the dashboard.
 
 This revision built successfully on native Linux amd64 and arm64. Each runner
-checked the CMDOP version and read the sample report with the network disabled.
-[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45809518167).
+matched the packaged binary to the stable release checksum and read the sample report with the network disabled.
+[View both Docker checks](https://github.com/commandoperator/cmdop-docker/actions/runs/45814615613).
 Hosted sign-in and the external agent call still need end-to-end verification.
 The preview is distributed as source.
 
