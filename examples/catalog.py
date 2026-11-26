@@ -50,7 +50,7 @@ def load(root: Path) -> dict:
             raise CatalogError("effectful_example_needs_explicit_selection_and_target")
         if row.get("assertion") not in ("smoke", "outcome"):
             raise CatalogError("invalid_assertion_kind")
-        if not re.fullmatch(r"/(reference/sdk|guides/use-cases)/[a-z0-9-]+", row.get("docsRoute", "")):
+        if not re.fullmatch(r"/(reference/sdk(?:/examples)?|guides/use-cases)/[a-z0-9-]+", row.get("docsRoute", "")):
             raise CatalogError("invalid_docs_route")
         if row.get("agentId") and "agent" not in effects:
             raise CatalogError("agent_example_missing_effect")
@@ -81,13 +81,13 @@ def select(data: dict, only: str | None, env: Mapping[str, str]) -> list[dict]:
 
 def public_index(data: dict) -> str:
     lines = ["# SDK examples", "", "Generated from `examples/catalog.json`; edit the inventory, not this index.",
-             "", "[Setup and execution guide](../docs/examples.md#run-the-executable-examples).",
+             "", "[Setup and execution guide](../docs/examples/run.md).",
              "Source availability does not establish live integration verification.", "",
              "| Example | Python | TypeScript | Access | Local check |", "|---|---|---|---|---|"]
     for row in data["examples"]:
         title = row["title"].replace("|", "\\|").replace("\n", " ")
         route = row["docsRoute"]
-        guide = "../docs/" + route.split("/")[-1] + ".md" if route.startswith("/reference/sdk/") else "https://docs.cmdop.ai" + route
+        guide = "../docs/" + route.removeprefix("/reference/sdk/") + ".md" if route.startswith("/reference/sdk/") else "https://docs.cmdop.ai" + route
         lines.append(f"| [{title}]({guide}) | [{row['id']}.py]({row['python']}) | [{row['id']}.ts]({row['typescript']}) | "
                      + ", ".join(f"`{effect}`" for effect in row["effects"]) + f" | {row['assertion']} |")
     return "\n".join(lines) + "\n"
