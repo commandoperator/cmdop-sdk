@@ -27,6 +27,13 @@ An older machine may not provide a tool added by a newer SDK.
 Check its advertised tools and handle `unknown_tool`. Within a major SDK release,
 public contract changes are additive; see the [changelog](https://docs.cmdop.ai/help/changelog).
 
+## Docker (planned)
+
+A Docker image for the CMDOP machine program is planned and is not available for general use;
+see [feature status](https://docs.cmdop.ai/help/feature-status). Docker setup and SDK examples will be documented
+when support is available. For the current supported setup, use the
+[SDK quickstart](quickstart.md).
+
 ## Public source
 
 The SDK is MIT-licensed. Its public repository contains the language packages and documentation;

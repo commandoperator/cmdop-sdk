@@ -27,6 +27,7 @@ Source: [github.com/commandoperator/cmdop-sdk](https://github.com/commandoperato
 - [Errors and cancellation](errors-and-cancellation.md): deadlines, codes and safe recovery.
 - [Examples](examples.md): choose a workflow by required access.
 - [Versions and support](versions-and-support.md): compatibility and reproducible issues.
+- [Docker (planned)](versions-and-support.md#docker-planned): availability of the future CMDOP machine image.
 
 ## Shared capabilities
 
@@ -75,4 +76,4 @@ program answers a tool it does not have yet with `unknown_tool`.
 ---
 
 Documentation snapshot from the [CMDOP documentation](https://docs.cmdop.ai/reference/sdk).
-Source revision: 0bec8889cdf7b6f8e0142f8d2c11b95255639f35. The live site may contain newer changes.
+Source revision: a3fbbda6b54804d27901bc90c42de71ebbbd4b3c. The live site may contain newer changes.
