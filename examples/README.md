@@ -9,6 +9,7 @@ Source availability does not establish live integration verification.
 |---|---|---|---|---|
 | [Read a machine's OS and CPU](../docs/quickstart.md) | [hello.py](python/hello.py) | [hello.ts](typescript/hello.ts) | `read` | smoke |
 | [Inspect online computers](../docs/examples.md) | [fleet.py](python/fleet.py) | [fleet.ts](typescript/fleet.ts) | `read` | smoke |
+| [Check free space on one mount](../docs/quickstart.md) | [disk-space.py](python/disk-space.py) | [disk-space.ts](typescript/disk-space.ts) | `read` | outcome |
 | [List a machine's files](../docs/files-and-screen.md) | [files.py](python/files.py) | [files.ts](typescript/files.ts) | `read` | smoke |
 | [Read the demo guide and task summary](../docs/examples.md) | [showtime.py](python/showtime.py) | [showtime.ts](typescript/showtime.ts) | `read` | smoke |
 | [Discover installed agents without prompting](../docs/agents.md) | [agents.py](python/agents.py) | [agents.ts](typescript/agents.ts) | `read` | smoke |

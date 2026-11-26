@@ -4,6 +4,7 @@
   "examples": [
     {"id":"hello","title":"Read a machine's OS and CPU","python":"python/hello.py","typescript":"typescript/hello.ts","effects":["read"],"default":true,"requiresMachine":false,"assertion":"smoke","docsRoute":"/reference/sdk/quickstart"},
     {"id":"fleet","title":"Inspect online computers","python":"python/fleet.py","typescript":"typescript/fleet.ts","effects":["read"],"default":true,"requiresMachine":false,"assertion":"smoke","docsRoute":"/reference/sdk/examples"},
+    {"id":"disk-space","title":"Check free space on one mount","python":"python/disk-space.py","typescript":"typescript/disk-space.ts","effects":["read"],"default":false,"requiresMachine":true,"assertion":"outcome","docsRoute":"/reference/sdk/quickstart"},
     {"id":"files","title":"List a machine's files","python":"python/files.py","typescript":"typescript/files.ts","effects":["read"],"default":true,"requiresMachine":false,"assertion":"smoke","docsRoute":"/reference/sdk/files-and-screen"},
     {"id":"showtime","title":"Read the demo guide and task summary","python":"python/showtime.py","typescript":"typescript/showtime.ts","effects":["read"],"default":true,"requiresMachine":false,"assertion":"smoke","docsRoute":"/reference/sdk/examples"},
     {"id":"agents","title":"Discover installed agents without prompting","python":"python/agents.py","typescript":"typescript/agents.ts","effects":["read"],"default":true,"requiresMachine":false,"assertion":"smoke","docsRoute":"/reference/sdk/agents"},
