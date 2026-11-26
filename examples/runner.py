@@ -13,6 +13,29 @@ import tempfile
 from catalog import CatalogError, load, public_index, select
 
 
+# Agent examples emit bounded JSON diagnostics. Display only our own messages.
+AGENT_HINTS = {
+    "target_unavailable": "Check CMDOP_MACHINE and the machine's online status.",
+    "agent_tools_unavailable": "Check that the machine offers agent_list and agent_prompt.",
+    "requested_agent_unavailable": "Check the named agent's installation on the selected machine.",
+    "requested_agent_busy": "Wait for the named agent to finish its current task.",
+    "unsupported_tier": "Check that the installed agent supports a text-only prompt.",
+}
+
+
+def agent_hint(errors) -> str:
+    errors.seek(0)
+    try:
+        report = json.loads(errors.read(4097))
+    except (ValueError, RecursionError):
+        return ""
+    if isinstance(report, dict) and report.get("state") == "failed":
+        reason = report.get("reason")
+        if isinstance(reason, str) and reason in AGENT_HINTS:
+            return f" {reason}: {AGENT_HINTS[reason]}"
+    return ""
+
+
 def execute(root: Path, chosen: list[dict], version: str, build_only: bool = False) -> int:
     for key in (() if build_only else ("CMDOP_URL", "CMDOP_TOKEN")):
         if not os.environ.get(key, "").strip():
@@ -59,6 +82,7 @@ def execute(root: Path, chosen: list[dict], version: str, build_only: bool = Fal
                 else:
                     args = ["uv", "run", "--isolated", "--no-project", "--quiet", "--with",
                             f"cmdop=={version}", "python", str(root / row[language])]
+                detail = ""
                 handle = None
                 with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:
                     try:
@@ -71,15 +95,17 @@ def execute(root: Path, chosen: list[dict], version: str, build_only: bool = Fal
                             value = json.loads(output.read(16385))
                             if value.get("agent") == row["agentId"] and value.get("state") == "running" and type(value.get("task")) is int:
                                 handle = value["task"]
+                                detail = f" task={handle}"
                         except (ValueError, AttributeError):
                             pass
+                    elif code == 1 and row.get("agentId"):
+                        detail = agent_hint(errors)
                 if code == 0:
                     status = "PASS" if row["assertion"] == "outcome" else "SMOKE"
                 else:
                     status = "RUNNING" if handle is not None else "UNKNOWN" if code == -1 else "FAIL"
                     failed += 1
                     stop_pair = bool(set(row["effects"]) - {"read"})
-                detail = f" task={handle}" if handle is not None else ""
                 print(f"{status} {language} {row['id']}{detail}", flush=True)
         print("SMOKE is process completion only; workflow proof requires its own receipt.")
         return int(failed != 0)

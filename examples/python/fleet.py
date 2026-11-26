@@ -1,13 +1,26 @@
-"""Every machine of the contour, and what each online one is: the first thing a program does."""
-
+"""Inspect available computers and show why others could not be inspected."""
 import cmdop
 
-with cmdop.connect() as c:  # CMDOP_TOKEN, CMDOP_URL
-    machines = c.machines()
-    online = [m for m in machines if m["online"]]
-    print(f"{len(machines)} machines, {len(online)} online")
-    for m in online:
-        info = c.machine(m["name"]).sys.info()
-        gb = lambda b: f"{b / 2**30:.1f} GB"  # noqa: E731
-        print(f"  {m['name']}: {info.os} {info.os_version or ''} {info.arch}, {info.cpus} cpus, "
-              f"{gb(info.memory_available)} of {gb(info.memory_total)} free")
+failed = False
+with cmdop.connect() as client:
+    machines = client.machines_list(deadline=15)
+    print(f"{len(machines)} machines")
+    for machine in machines:
+        label = f"{machine.name} ({machine.id})"
+        if machine.state != "online":
+            print(f"  {label}: {machine.state}")
+            continue
+        if "sys_info" not in machine.tools:
+            print(f"  {label}: sys_info unavailable")
+            continue
+        try:
+            info = client.machine(machine.id).sys.info(deadline=15)
+        except (cmdop.CmdopError, cmdop.CarrierError) as error:
+            reason = error.code if isinstance(error, cmdop.CmdopError) else "connection error"
+            print(f"  {label}: {reason}")
+            failed = True
+            continue
+        print(f"  {label}: {info.os} {info.arch}, {info.cpus} CPUs, "
+              f"{info.memory_available / 2**30:.1f} of {info.memory_total / 2**30:.1f} GiB available")
+if failed:
+    raise SystemExit(1)
