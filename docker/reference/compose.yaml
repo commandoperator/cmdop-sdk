@@ -1,0 +1,32 @@
+name: cmdop-report
+
+services:
+  machine-base:
+    scale: 0
+    build: ./machine
+
+  report-fixture:
+    scale: 0
+    build:
+      context: https://github.com/commandoperator/cmdop-sdk.git#b1e820e9df3c202da3723172c96a3dc4d6e518c9:examples/python/local_mcp
+
+  report-app:
+    build:
+      context: ./report-app
+      additional_contexts:
+        machine_base: service:machine-base
+        report_fixture: service:report-fixture
+      args:
+        MACHINE_IMAGE: machine_base
+        FIXTURE_IMAGE: report_fixture
+    image: cmdop-report-app:local
+    restart: unless-stopped
+    environment:
+      CMDOP_RESTARTED_BY_CONTAINER: "1"
+    volumes:
+      - machine-home:/home/cmdop
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+volumes:
+  machine-home:
