@@ -3,4 +3,4 @@
  * record shows which SDK made a call. The release tool rewrites it together with `package.json`; a test keeps the two
  * equal.
  */
-export const VERSION = "3.5.0";
+export const VERSION = "3.6.0";

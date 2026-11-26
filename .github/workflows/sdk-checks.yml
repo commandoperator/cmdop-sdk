@@ -46,7 +46,11 @@ jobs:
           test -s dist/index.d.ts
           node --input-type=module <<'JS'
           import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          import { VERSION } from "./dist/version.js";
           import { connect, memoryCarrier } from "./dist/index.js";
+          const manifest = JSON.parse(readFileSync("package.json", "utf8"));
+          assert.equal(VERSION, manifest.version, "HTTP client version must match the package");
           const client = connect({ carrier: memoryCarrier({ machines: [], async *serve() {} }) });
           try {
             assert.deepEqual(await client.machines(), []);
