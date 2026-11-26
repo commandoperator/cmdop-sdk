@@ -107,6 +107,8 @@ with cmdop.connect() as client:
 
 [Run the executable examples](examples/README.md) · [Complete quickstart](docs/quickstart.md)
 
+To send a prompt to an agent installed on your machine, follow the [Codex](docs/examples/codex.md) or [Claude Code](docs/examples/claude-code.md) example.
+
 </details>
 
 ## Bring the tools you already use

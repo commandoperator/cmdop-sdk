@@ -31,10 +31,16 @@ protocol messages with the server. This example runs locally without a CMDOP acc
 
 ## Connect a container to your contour
 
-An image that includes the CMDOP machine client is in development. A locally
-built preview has run on Linux arm64. Public registry distribution and a hosted
-end-to-end enrollment of the example are pending. The report fixture above runs
-the application side only.
+[Enroll the container](docker/connect.md) to see it as an online machine in your CMDOP account.
 
-For a machine already connected to your contour, follow the
-[local MCP example](commands-and-tasks.md#call-a-local-mcp-tool).
+## Read the report with the Python SDK
+
+[Read the report using a scoped token](docker/call.md) and the registered container’s machine ID.
+
+## Read the container's report from your agent
+
+[Try the connected-chat prompt](docker/call.md#read-the-containers-report-from-your-agent) to call the container’s local MCP tool and see the request in Activity.
+
+## Update or recover the container
+
+[Rebuild or restore the client](docker/updates.md) and keep the existing registration.

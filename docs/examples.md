@@ -13,7 +13,8 @@ From an MCP connection, call `docs_read` with path `reference/sdk/examples` to o
 | Run a command and print its exit code | `exec` | [Commands](commands-and-tasks.md#commands) |
 | Follow output as it arrives | `exec` | [Streaming](commands-and-tasks.md#streaming) |
 | Start work and read it after reconnecting | `exec`, `read` | [Tasks](commands-and-tasks.md#tasks-that-outlive-the-call) |
-| Ask an installed AI program | `agent` | [Installed agents](agents.md) |
+| Prompt Codex on a selected machine | `read`, `agent` | [Codex example](examples/codex.md) |
+| Prompt Claude Code on a selected machine | `read`, `agent` | [Claude Code example](examples/claude-code.md) |
 | Capture the computer's screen | `screen`, OS permission | [Screenshots](files-and-screen.md#capture-a-screen) |
 
 The language references cover [TypeScript](typescript.md) and

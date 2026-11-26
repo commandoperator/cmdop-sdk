@@ -88,6 +88,6 @@ def public_index(data: dict) -> str:
         title = row["title"].replace("|", "\\|").replace("\n", " ")
         route = row["docsRoute"]
         guide = "../docs/" + route.removeprefix("/reference/sdk/") + ".md" if route.startswith("/reference/sdk/") else "https://docs.cmdop.ai" + route
-        lines.append(f"| [{title}]({guide}) | [{row['id']}.py]({row['python']}) | [{row['id']}.ts]({row['typescript']}) | "
+        lines.append(f"| [{title}]({guide}) | [{Path(row['python']).name}]({row['python']}) | [{Path(row['typescript']).name}]({row['typescript']}) | "
                      + ", ".join(f"`{effect}`" for effect in row["effects"]) + f" | {row['assertion']} |")
     return "\n".join(lines) + "\n"
