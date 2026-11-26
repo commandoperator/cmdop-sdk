@@ -15,5 +15,5 @@ Source availability does not establish live integration verification.
 | [Read a build report from a machine-local MCP server](../docs/commands-and-tasks.md) | [local-mcp.py](python/local-mcp.py) | [local-mcp.ts](typescript/local-mcp.ts) | `exec` | outcome |
 | [Find nonstop Bali to Bangkok flights through local Fli MCP](../docs/examples/google-flights.md) | [google-flights.py](python/google-flights.py) | [google-flights.ts](typescript/google-flights.ts) | `exec`, `network` | outcome |
 | [Run and verify a bounded command](../docs/commands-and-tasks.md) | [command.py](python/command.py) | [command.ts](typescript/command.ts) | `exec` | outcome |
-| [Ask Codex explicitly](../docs/agents.md) | [prompt-codex.py](python/agents/codex.py) | [prompt-codex.ts](typescript/agents/codex.ts) | `read`, `agent` | outcome |
-| [Ask Claude Code explicitly](../docs/agents.md) | [prompt-claude-code.py](python/agents/claude-code.py) | [prompt-claude-code.ts](typescript/agents/claude-code.ts) | `read`, `agent` | outcome |
+| [Ask Codex explicitly](../docs/examples/codex.md) | [prompt-codex.py](python/agents/codex.py) | [prompt-codex.ts](typescript/agents/codex.ts) | `read`, `agent` | outcome |
+| [Ask Claude Code explicitly](../docs/examples/claude-code.md) | [prompt-claude-code.py](python/agents/claude-code.py) | [prompt-claude-code.ts](typescript/agents/claude-code.ts) | `read`, `agent` | outcome |
