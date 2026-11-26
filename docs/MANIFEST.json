@@ -2,7 +2,7 @@
   "schema": 1,
   "source": {
     "repository": "cmdop_web",
-    "revision": "929eb127b1ae209d4ec671845616390fa736a3a5",
+    "revision": "b12873d9d5252b5eb5e8f0545266752140bd1ea7",
     "dirty": false,
     "inputs": {
       "content/reference/sdk/agents.mdx": "5d4388ae05ce3e0e51bc0626fc067bb85b4aee4ec4db4b21d465ea555582fb7e",
@@ -15,7 +15,7 @@
       "content/reference/sdk/examples/codex.mdx": "3b680d646fda3f5aa170ea7a706e0b04bc8b4895d628b445f6558d32eead6c6d",
       "content/reference/sdk/examples/google-flights.mdx": "543debc2c4e114b0352b339860fb6747a4d6bc4543f0038ea2454f1817dcb773",
       "content/reference/sdk/examples/index.mdx": "7a476225d07020da2c575c07f0e0259c75c93315abd527569741ed09a9efcddf",
-      "content/reference/sdk/examples/run.mdx": "9b3ea41e52802a49a51ddd0358796c84a4e3340f7bd845b3544d68329e82d35d",
+      "content/reference/sdk/examples/run.mdx": "02ac50a347ba3a0f36342dedd2dc46082b9d4fb1413e365a5f4f6568e8191f23",
       "content/reference/sdk/files-and-screen.mdx": "4c5d8be9acefd4e8cd7680aaffa6568bf93a27adb75a43d71b910ef1d8293ba3",
       "content/reference/sdk/index.mdx": "f6c32ab4eb9dfd91d685cf2375fa262387f87f8d8d6a3753751dea2ae5f93da5",
       "content/reference/sdk/machines-and-tools.mdx": "da83a6420a80a5f72a5d64c034f5b1aec8d9dc2f6d4e4b17e4d4d35d023d6ee5",
@@ -50,12 +50,12 @@
     "examples/claude-code.md": "f14e59e0d26e886ca88ed60d66cef6053df11586f71acbf3f783f65272193805",
     "examples/codex.md": "16cde4a3dead7e366ddd045b0fe86f2853eab19f334928dd3394a52c3d9c7cfc",
     "examples/google-flights.md": "025e3c3ee92f319f90bc7d6105eea2a3229d964ed7160297f0c725e0337e9580",
-    "examples/run.md": "eeca493acf492a10ae2925123e74385d31abafa11689412ad6e0ae94db41292f",
+    "examples/run.md": "a51830856ccdf9e47ec838691ea4a825efb6842d13d18b1edeac5dcb671b87a5",
     "files-and-screen.md": "933f052c49c057ec892eecf3a876401495216e840f5dc84f08cb65e1a95e232f",
     "machines-and-tools.md": "73c691b9108dfb74724cb06340e6d27f7a33cffb25ecc6e17274bd62b0de1960",
     "python.md": "c3ea1040daff19f64bdcbf8db9b75a8fbef49cabf7a9741564995b8c623de134",
     "quickstart.md": "d2543494bdcf806c0ab1fc4f79ec8215e3836d6e27a9e722b059663c1d399ed3",
-    "README.md": "5cfe5981f1dd455576b39c09336e22a32ee0ca9993818ff92b2cab9d785a7b1e",
+    "README.md": "f59460fa20016d19cf4542474d3164eebab4ff286b8dd322b9dd4af377fa5665",
     "typescript.md": "58baf1d25bd483b85b6fb744cef7135d801a1ed61b4de2f1979c2dc4aa438aaa",
     "versions-and-support.md": "f0462a69a39a4bb2c6452541874473b2946fbaac0d5c433291246bf57d6a8b35"
   }

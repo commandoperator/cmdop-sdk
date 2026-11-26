@@ -120,6 +120,28 @@ with cmdop.connect() as client:
     print(output.text)
 ```
 
+For TypeScript, save this as `follow.mts` in your SDK application and pass the
+task number as the first argument when running it with your TypeScript runner:
+
+```typescript
+import { connect } from "@cmdop/sdk";
+
+const machineId = process.env.CMDOP_MACHINE?.trim();
+const task = Number(process.argv[2]);
+if (!machineId || !Number.isSafeInteger(task) || task < 1) {
+  throw new Error("Set CMDOP_MACHINE and supply a positive task number.");
+}
+
+const client = connect();
+try {
+  const output = await client.machine(machineId).task.output({ task });
+  console.log(output.running ? "Running" : "Finished");
+  console.log(output.text);
+} finally {
+  await client.close();
+}
+```
+
 An empty first read is possible. While `running` is true, read the same task
 again, even if answer text is already visible. For this example, check that
 `running` is false and that the final text is exactly `CMDOP_AGENT_OK`.
