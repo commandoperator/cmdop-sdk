@@ -27,6 +27,21 @@ volume, use that mount instead of `/`.
 - If the mount is absent, the total is zero or the call fails, report the
   measurement as unavailable. A missing measurement cannot clear an alert.
 
-The [Python quickstart](../docs/python.md) and [TypeScript quickstart](../docs/typescript.md)
-show how to connect. Use the [system information tool reference](https://docs.cmdop.ai/reference/tools/sys_info)
-for the disk fields returned on the selected machine.
+## Run the SDK example
+
+Open the [Python program](https://github.com/commandoperator/cmdop-sdk/blob/a9f856edeba61e18d09c1f20e500b44b7ad054b0/examples/python/disk-space.py) or
+the [TypeScript program](https://github.com/commandoperator/cmdop-sdk/blob/a9f856edeba61e18d09c1f20e500b44b7ad054b0/examples/typescript/disk-space.ts).
+Both run one read-only check. In an SDK checkout at that revision, follow the
+[connection setup](../docs/examples/run.md) and set `CMDOP_MACHINE` to the
+selected machine ID. To see the measurement from Python, run:
+
+```sh
+CMDOP_MOUNT=/ uv run --with cmdop==3.6.0 python examples/python/disk-space.py
+```
+
+The JSON result includes the mount, free GiB and `below_10_percent`. Set
+`CMDOP_MOUNT` to the mounted volume holding your builds. To check that both
+language entry points run, use `ONLY=disk-space bash examples/run.sh` from
+the same checkout. The runner reports pass or failure for each language.
+
+[System information tool reference](https://docs.cmdop.ai/reference/tools/sys_info)
