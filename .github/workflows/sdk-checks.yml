@@ -1,0 +1,31 @@
+name: SDK checks
+on: [push, pull_request]
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install './python[dev]' build
+      - run: python -m build python
+      - run: python -m pytest -q python/tests/test_conformance.py
+      - run: pyright --project python/pyproject.toml python/src
+
+  typescript:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm exec -- vitest run test/conformance.test.ts
