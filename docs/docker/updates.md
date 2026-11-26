@@ -15,11 +15,14 @@ docker compose exec -T report-app python /opt/report/wait_online.py
 
 The installer verifies the release binary during the build. The home volume holds
 the identity and registration. Use the registered machine ID to confirm that your
-application can still read the report after the container reconnects.
+application can still read the report after the container reconnects. In a hosted
+Linux ARM64 run with CMDOP 0.1.16, Compose replaced the container while retaining
+its home volume. The same machine ID came online without another sign-in and
+answered the [MCP report request](call.md).
 
 ## Updates while the container is running
 
-The published reference with CMDOP 0.1.16 needs the rebuild procedure above.
+The reference running CMDOP 0.1.16 needs the rebuild procedure above.
 Its foreground client can check for a release, but its supervisor detection
 recognizes launchd and systemd. Docker restart policies need explicit client
 support. The reference keeps the executable in a directory owned by the service user,
@@ -52,4 +55,4 @@ Recreation restores the executable from the image and reattaches the existing
 machine-home volume. Files kept only in the container's writable layer are
 discarded. Confirm the same machine ID is online in your contour.
 
-[Docker overview and enrollment](../docker.md)
+[Docker overview](../docker.md) · [Enroll a container](connect.md)
