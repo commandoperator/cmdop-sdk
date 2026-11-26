@@ -12,6 +12,7 @@ Source availability does not establish live integration verification.
 | [List a machine's files](../docs/files-and-screen.md) | [files.py](python/files.py) | [files.ts](typescript/files.ts) | `read` | smoke |
 | [Read the demo guide and task summary](../docs/examples.md) | [showtime.py](python/showtime.py) | [showtime.ts](typescript/showtime.ts) | `read` | smoke |
 | [Discover installed agents without prompting](../docs/agents.md) | [agents.py](python/agents.py) | [agents.ts](typescript/agents.ts) | `read` | smoke |
+| [Read a build report from a machine-local MCP server](../docs/commands-and-tasks.md) | [local-mcp.py](python/local-mcp.py) | [local-mcp.ts](typescript/local-mcp.ts) | `exec` | outcome |
 | [Run and verify a bounded command](../docs/commands-and-tasks.md) | [command.py](python/command.py) | [command.ts](typescript/command.ts) | `exec` | outcome |
 | [Ask Codex explicitly](../docs/agents.md) | [prompt-codex.py](python/agents/codex.py) | [prompt-codex.ts](typescript/agents/codex.ts) | `read`, `agent` | outcome |
 | [Ask Claude Code explicitly](../docs/agents.md) | [prompt-claude-code.py](python/agents/claude-code.py) | [prompt-claude-code.ts](typescript/agents/claude-code.ts) | `read`, `agent` | outcome |
