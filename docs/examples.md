@@ -20,6 +20,23 @@ The language references cover [TypeScript](typescript.md) and
 [Python](python.md), including resource cleanup. Workflow snippets use the connected
 client and selected `box` from the quickstart; run them inside its `try` or context-manager block.
 
+## Published source programs
+
+Each source pair links to the same published revision. Availability is not a claim that every workflow has been run on your machine.
+
+| Program | Sources | Access | Prerequisites | Guide |
+|---|---|---|---|---|
+| Read a machine's OS and CPU | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/hello.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/hello.ts) | `read` | See guide | [Guide](quickstart.md) |
+| Inspect online computers | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/fleet.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/fleet.ts) | `read` | See guide | [Guide](examples.md) |
+| List a machine's files | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/files.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/files.ts) | `read` | See guide | [Guide](files-and-screen.md) |
+| Read the demo guide and task summary | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/showtime.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/showtime.ts) | `read` | See guide | [Guide](examples.md) |
+| Discover installed agents without prompting | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/agents.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/agents.ts) | `read` | See guide | [Guide](agents.md) |
+| Read a build report from a machine-local MCP server | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/local-mcp.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/local-mcp.ts) | `exec` | Exact machine ID | [Guide](commands-and-tasks.md) |
+| Find nonstop Bali to Bangkok flights through local Fli MCP | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/google-flights.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/google-flights.ts) | `exec`, `network` | Exact machine ID | [Guide](examples.md) |
+| Run and verify a bounded command | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/command.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/command.ts) | `exec` | Exact machine ID | [Guide](commands-and-tasks.md) |
+| Ask Codex explicitly | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/agents/codex.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/agents/codex.ts) | `read`, `agent` | Exact machine ID; named agent installed and authenticated | [Guide](agents.md) |
+| Ask Claude Code explicitly | [Python](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/python/agents/claude-code.py) · [TypeScript](https://github.com/commandoperator/cmdop-sdk/blob/b380b8e1749a0f0f15d97d653ecfbdb6e906e446/examples/typescript/agents/claude-code.ts) | `read`, `agent` | Exact machine ID; named agent installed and authenticated | [Guide](agents.md) |
+
 ## Run the executable examples
 
 The public repository includes [TypeScript and Python programs](https://github.com/commandoperator/cmdop-sdk/tree/main/examples).
@@ -114,6 +131,40 @@ executing examples. It still checks selection and effect opt-ins.
 The runner omits raw process/model output. An unfinished or uncertain effectful run prevents
 an automatic second-language attempt. Source availability, local checks, a real machine run
 and public delivery are separate facts.
+
+## Search Google Flights through a local MCP server
+
+“Which nonstop flights leave Bali for Bangkok on my travel date?” The Google Flights example
+asks Fli, an unofficial Google Flights interface running on your selected machine. It checks
+both Bangkok airports for one adult, then returns up to three distinct flights ordered by USD
+fare, with local departure times and booking links when available. Prices reflect the time
+of the search. The example only searches.
+
+On the target machine, install uv and prepare the Fli environment once:
+
+```bash
+uvx --from 'flights[mcp]==0.11.1' python -c "import fli.mcp.server"
+command -v uvx
+```
+
+With the SDK connection and machine ID set as described above, set `FLI_UVX` to the absolute
+path printed on the target and `FLIGHT_DATE` to your travel date in YYYY-MM-DD format.
+From the checkout, run the example in both languages:
+
+```bash
+ONLY=google-flights EXAMPLES_EXEC=1 EXAMPLES_NETWORK=1 bash examples/run.sh
+```
+
+The runner reports whether each caller succeeded. To see fares directly, set the same two
+effect flags and run the Python example:
+
+```bash
+EXAMPLES_EXEC=1 EXAMPLES_NETWORK=1 uv run --with cmdop==3.6.0 python examples/python/google-flights.py
+```
+
+An empty flight list means the search completed with no matching fares. A failed search
+exits with an error. The pinned local package runs offline from the uv cache while Fli
+uses the target machine's network to request current fares.
 
 ## Build an integration
 
