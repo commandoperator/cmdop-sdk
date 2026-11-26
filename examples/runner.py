@@ -27,6 +27,10 @@ def execute(root: Path, chosen: list[dict], version: str, build_only: bool = Fal
         work = Path(temporary)
         shutil.copytree(root / "typescript", work / "typescript",
                         ignore=shutil.ignore_patterns("node_modules", "build"))
+        if any(row["id"] == "google-flights" for row in chosen):
+            helpers = Path("python/local_mcp")
+            (work / helpers).mkdir(parents=True)
+            shutil.copy2(root / helpers / "search_flights.py", work / helpers)
         (work / "package.json").write_text(json.dumps({"private": True, "type": "module"}))
         config = {"compilerOptions": {"target": "ES2022", "module": "NodeNext",
                   "moduleResolution": "NodeNext", "types": ["node"], "strict": True,
