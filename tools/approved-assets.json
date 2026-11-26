@@ -1,6 +1,7 @@
 {
   "schema": 1,
   "sha256": {
+    "assets/sdk-hero-apps-v1.webp": "41dad5e32fab2cec90ff032866154a452688b3dcbd9647201fd1137bb4b36fb8",
     "assets/cmdop-logo-light.svg": "050f7e090d2188ff1911f3dc2be74ee6eb5d64c24023b782a672a5cf6ec1e408",
     "assets/cmdop-logo-dark.svg": "ad6dfe4f6163d23ae4391ebd834d8e05b067f00f6b6ee463a29c94080165389a"
   }

@@ -21,6 +21,10 @@ Open an app. Read a file. Run a build. Come back for the result.
 
 ---
 
+![Illustrated workflow: ChatGPT and Claude Code connect through CMDOP to run tests on a Mac, with VS Code, Chrome and Terminal shown on the computer.](assets/sdk-hero-apps-v1.webp)
+
+*Illustrated workflow: your AI, your applications and a computer you control.*
+
 ## Ask here. It happens there.
 
 **“Open Spotify on my Mac.”**
