@@ -33,3 +33,5 @@ Use the same workflow from [Python](../examples/python/google-flights.py) or
 [TypeScript](../examples/typescript/google-flights.ts). To prepare Fli, run the
 example, or save a successful search to your Desktop, follow the
 [Google Flights recipe](../docs/examples/google-flights.md).
+
+[Connect your Mac to CMDOP](https://cmdop.ai) · [Fli on GitHub](https://github.com/punitarani/fli)
