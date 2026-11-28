@@ -1,4 +1,4 @@
-# Generated from cmdop/crates/tools/tools.schema.json (sha256 7128f6bbae917b61, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
+# Generated from cmdop/crates/tools/tools.schema.json (sha256 cef76f12c6264508, cmdop 0.1.16) by exports/sdk/gen/gen.ts. Do not edit.
 # Types by datamodel-code-generator==0.30.2.
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ class ToolError(BaseModel):
     there. A tool the machine's own limit leaves out is `denied` instead.
     `bad_args`: The arguments do not match the tool's schema.
     `not_found`: The path or the thing named does not exist.
-    `busy`: The machine runs too many calls already.
+    `busy`: The computer cannot accept this call right now.
     `permission_missing`: The OS has not granted screen capture or input to the machine program.
     `screen_locked`: The screen is locked or asleep.
     `stale_capture`: A pixel action without a current capture of that display, or the display changed.

@@ -19,14 +19,24 @@ AGENT_HINTS = {
     "agent_tools_unavailable": "Check that the machine offers agent_list and agent_prompt.",
     "requested_agent_unavailable": "Check the named agent's installation on the selected machine.",
     "requested_agent_busy": "Wait for the named agent to finish its current task.",
+    "CmdopError": "Check the call outcome in the selected machine's Activity.",
+    "CarrierError": "Check connectivity and inspect Activity before repeating the prompt.",
+    "unexpected_agent_or_tier": "The responder or permission tier differed from the request.",
+    "unexpected_answer": "The agent completed the prompt with a different answer.",
+    "agent_did_not_finish": "Inspect the named agent's task outcome in Activity.",
     "unsupported_tier": "Check that the installed agent supports a text-only prompt.",
 }
 
 
 def agent_hint(errors) -> str:
-    errors.seek(0)
+    # Launchers can write warnings before the example's final JSON line.
+    size = errors.seek(0, os.SEEK_END)
+    errors.seek(max(0, size - 4096))
+    lines = errors.read().splitlines()
+    if not lines or (size > 4096 and len(lines) == 1):
+        return ""
     try:
-        report = json.loads(errors.read(4097))
+        report = json.loads(lines[-1])
     except (ValueError, RecursionError):
         return ""
     if isinstance(report, dict) and report.get("state") == "failed":

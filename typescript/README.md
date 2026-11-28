@@ -1,41 +1,61 @@
 # @cmdop/sdk
 
-Your machines' tools from a program: the same tools agents use through MCP, typed.
+Your computers' tools from TypeScript. Use the same tools AI agents call through MCP, with typed
+arguments and results, your agent's grant and a record of each call.
 
 ```bash
 npm install @cmdop/sdk
 ```
 
+Requires Node.js 20+. [Install CMDOP](https://cmdop.ai/download) on a computer, bring it online on
+your page and create an agent token in the Agents tab. Set `CMDOP_URL` to your page's address
+(`https://<address>.cmdop.dev`) and `CMDOP_TOKEN` to that token through your environment.
+The SDK package does not install the machine program. Start with the `read` risk class.
+
 ```ts
 import { connect } from "@cmdop/sdk";
 
-const cmdop = connect();                      // CMDOP_TOKEN, CMDOP_URL
-const box = cmdop.machine("box");
-console.log((await box.run("uptime")).stdout);
+const client = connect();
+try {
+  const online = (await client.machines()).find((machine) => machine.online);
+  if (!online) throw new Error("Bring a machine online on your CMDOP page.");
+  const info = await client.machine(online.id).sys.info({});
+  console.log(info.os, info.arch, info.cpus);
+} finally {
+  await client.close();
+}
+```
 
-const run = box.stream("make test");
+The program prints the selected computer's OS, architecture and CPU count.
+Use an explicit machine id when the target matters.
+
+## Commands and streaming
+
+Inside the connected client's `try` block, with `exec` allowed for the agent and machine:
+
+```ts
+const box = client.machine("<machine>");
+console.log((await box.run("uptime")).stdout);
+const run = box.stream("printf 'hello\\n'");
 for await (const piece of run) process.stdout.write(piece.data);
 console.log((await run.result).exit_code);
 ```
 
-Every tool is a typed method on a machine (`box.fs_read({ path })`, `box.task_start({ command })`, …), also under
-its group (`box.fs.read({ path })`, `box.task.start({ command })`); `box.screenshot()` decodes the picture; and
-`cmdop.call(tool, args, { machine })` reaches any of them by name. A refused call throws `CmdopError` with its
-`code`; `deadline` and `signal` bound and cancel any call.
+`box.fs.read({ path })` and `box.fs_read({ path })` call the same typed tool.
+`box.screenshot()` decodes the image. `client.tasks_list()` and `client.docs_read()` need no
+machine. Installed AI agents are available through `box.agent.*` with the `agent` risk class.
 
-The tools the server answers itself are methods of the client, with no machine: `cmdop.machines_list()`,
-`cmdop.tasks_list()`, `cmdop.history_search({ text })`, `cmdop.docs_read({ path })` (the docs, contents first) and
-`cmdop.showtime_guide({ language })`, the guide for a short live demo of what your machines can do.
+## Deadlines and errors
 
-A machine also lets you ask the AI agent programs installed on it (Claude Code, Codex), the same way for each:
-`box.agent.list({})` names them, `box.agent.prompt({ prompt, session? })` returns the answer and a `session` to
-continue, `box.agent.sessions({})` and `box.agent.cancel({ task })`. The agents answer in words or read files, never
-run commands; the token needs the `agent` class and the machine's `ceiling.json` its `agents` key.
+Pass `{ deadline: 5_000, signal: controller.signal }` as call options: deadlines use milliseconds
+and `AbortSignal` cancels a call. For `run`, options are its third argument:
+`box.run("uptime", {}, { deadline: 5_000 })`.
+Branch on `CmdopError.code`; `CarrierError` means a connection failed before an answer arrived.
+Python's deadline units differ; check the language reference.
 
-## The same tools over MCP
+[Quickstart](https://docs.cmdop.ai/reference/sdk/quickstart) ·
+[TypeScript API](https://docs.cmdop.ai/reference/sdk/typescript) ·
+[MCP client setup](https://docs.cmdop.ai/guides/connect) ·
+[Source and issues](https://github.com/commandoperator/cmdop-sdk)
 
-CMDOP is an MCP server too: an agent reaches these tools at `$CMDOP_URL/mcp` (streamable HTTP) with an agent token
-as `Authorization: Bearer`, the same kind of token this package takes, under the same grant and record. The
-command or settings for each client: https://docs.cmdop.ai/guides/connect
-
-Website: https://cmdop.ai · Docs: https://docs.cmdop.ai/reference/sdk/typescript · License: MIT
+License: MIT.
